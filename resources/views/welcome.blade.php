@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gloria Events - Penyedia Jasa Event Profesional</title>
+    <title>Harmoni Event - Penyelenggara Acara Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -28,86 +28,15 @@
             transform: translateY(-5px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        .auth-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-        }
-        .auth-modal.active {
-            display: flex;
-        }
     </style>
 </head>
 <body class="min-h-screen text-white">
-    <!-- Modal Login/Register -->
-    <div id="authModal" class="auth-modal">
-        <div class="glass-card rounded-2xl p-8 w-full max-w-md relative">
-            <button id="closeAuthModal" class="absolute top-4 right-4 text-xl">&times;</button>
-            
-            <!-- Tab Login/Register -->
-            <div class="flex border-b border-white border-opacity-20 mb-6">
-                <button id="loginTab" class="px-4 py-2 font-medium border-b-2 border-white">Masuk</button>
-                <button id="registerTab" class="px-4 py-2 font-medium opacity-70">Daftar</button>
-            </div>
-            
-            <!-- Form Login -->
-            <div id="loginForm">
-                <h3 class="text-2xl font-bold mb-6">Masuk ke Akun Anda</h3>
-                <form>
-                    <div class="mb-4">
-                        <label class="block mb-2">Email</label>
-                        <input type="email" class="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block mb-2">Password</label>
-                        <input type="password" class="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                    </div>
-                    <button type="submit" class="w-full bg-white text-purple-700 py-3 rounded-lg font-medium hover:bg-opacity-90 transition duration-300 mb-4">Masuk</button>
-                    <div class="text-center">
-                        <a href="#" class="text-sm hover:underline opacity-80">Lupa password?</a>
-                    </div>
-                </form>
-            </div>
-            
-            <!-- Form Register (hidden by default) -->
-            <div id="registerForm" class="hidden">
-                <h3 class="text-2xl font-bold mb-6">Buat Akun Baru</h3>
-                <form>
-                    <div class="mb-4">
-                        <label class="block mb-2">Nama Lengkap</label>
-                        <input type="text" class="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block mb-2">Email</label>
-                        <input type="email" class="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                    </div>
-                    <div class="mb-4">
-                        <label class="block mb-2">Password</label>
-                        <input type="password" class="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                    </div>
-                    <div class="mb-6">
-                        <label class="block mb-2">Konfirmasi Password</label>
-                        <input type="password" class="w-full bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                    </div>
-                    <button type="submit" class="w-full bg-white text-purple-700 py-3 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">Daftar</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <!-- Navigation -->
     <nav class="glass-nav fixed w-full z-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center">
-                    <span class="text-xl font-bold">Gloria Events</span>
+                    <span class="text-xl font-bold">Harmoni Event</span>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
@@ -116,12 +45,12 @@
                         <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-10">Layanan</a>
                         <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-10">Galeri</a>
                         <a href="#" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-10">Kontak</a>
+                        <a href="/login" class="px-3 py-2 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-10">Masuk</a>
+                        <a href="/register" class="px-3 py-2 rounded-md text-sm font-medium bg-purple-600 hover:bg-purple-700">Daftar</a>
                     </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                    <button id="loginButton" class="hidden md:block border border-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-white hover:bg-opacity-10 transition duration-300">Masuk</button>
-                    <button id="registerButton" class="hidden md:block bg-white text-purple-700 px-4 py-1.5 rounded-md text-sm font-medium hover:bg-opacity-90 transition duration-300">Daftar</button>
-                    <button class="md:hidden mobile-menu-button p-2 rounded-md hover:bg-white hover:bg-opacity-10">
+                <div class="md:hidden">
+                    <button class="mobile-menu-button p-2 rounded-md hover:bg-white hover:bg-opacity-10">
                         <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -137,8 +66,8 @@
             <div class="glass-card rounded-2xl p-8 md:p-12">
                 <div class="md:flex md:items-center md:justify-between">
                     <div class="md:w-1/2">
-                        <h1 class="text-4xl md:text-5xl font-bold mb-4">Wujudkan Acara Impian Anda</h1>
-                        <p class="text-lg mb-8 opacity-90">Kami merancang dan melaksanakan acara yang tak terlupakan. Dari pertemuan bisnis hingga pernikahan impian.</p>
+                        <h1 class="text-4xl md:text-5xl font-bold mb-4">Ciptakan Acara Tak Terlupakan</h1>
+                        <p class="text-lg mb-8 opacity-90">Kami merancang dan melaksanakan acara luar biasa yang meninggalkan kesan mendalam. Dari pertemuan perusahaan hingga pernikahan impian.</p>
                         <div class="flex space-x-4">
                             <button class="bg-white text-purple-700 px-6 py-3 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">Konsultasi Gratis</button>
                             <button class="border border-white px-6 py-3 rounded-lg font-medium hover:bg-white hover:bg-opacity-10 transition duration-300">Lihat Portofolio</button>
@@ -155,7 +84,7 @@
     <!-- Services Section -->
     <section class="py-16 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl font-bold text-center mb-12">Layanan Kami</h2>
+            <h2 class="text-3xl font-bold text-center mb-12">Layanan Unggulan Kami</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <!-- Layanan 1 -->
                 <div class="glass-card rounded-2xl p-6 transition duration-300 hover:bg-opacity-20">
@@ -176,7 +105,7 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Pencarian Venue</h3>
-                    <p class="opacity-90">Akses ke venue eksklusif dan hubungan dengan lokasi terbaik untuk menemukan tempat yang sempurna.</p>
+                    <p class="opacity-90">Akses ke venue eksklusif dan hubungan dengan lokasi terbaik untuk menemukan tempat sempurna untuk acara Anda.</p>
                 </div>
                 
                 <!-- Layanan 3 -->
@@ -204,14 +133,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Acara 1 -->
                 <div class="glass-card rounded-2xl overflow-hidden event-card transition duration-300">
-                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Acara musik" class="w-full h-48 object-cover">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Acara konser" class="w-full h-48 object-cover">
                     <div class="p-6">
                         <div class="flex justify-between items-start mb-2">
                             <span class="bg-white bg-opacity-20 text-xs px-3 py-1 rounded-full">Musik</span>
                             <span class="text-sm opacity-80">15 Juni 2023</span>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Festival Musik Summer Beats</h3>
-                        <p class="text-sm opacity-90 mb-4">Bergabunglah dengan festival musik terbesar musim panas ini menampilkan artis internasional ternama.</p>
+                        <h3 class="text-xl font-semibold mb-2">Festival Summer Beats</h3>
+                        <p class="text-sm opacity-90 mb-4">Bergabunglah dengan kami untuk festival musik terbesar musim panas ini menampilkan artis internasional ternama.</p>
                         <button class="w-full bg-white text-purple-700 py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">Dapatkan Tiket</button>
                     </div>
                 </div>
@@ -225,7 +154,7 @@
                             <span class="text-sm opacity-80">5 Juli 2023</span>
                         </div>
                         <h3 class="text-xl font-semibold mb-2">Tech Innovators Summit</h3>
-                        <p class="text-sm opacity-90 mb-4">Pertemuan para pemimpin industri untuk membahas masa depan teknologi dan inovasi.</p>
+                        <p class="text-sm opacity-90 mb-4">Pertemuan pemimpin industri untuk membahas masa depan teknologi dan inovasi.</p>
                         <button class="w-full bg-white text-purple-700 py-2 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">Daftar Sekarang</button>
                     </div>
                 </div>
@@ -256,37 +185,37 @@
                     <!-- Testimoni 1 -->
                     <div class="bg-white bg-opacity-10 rounded-xl p-6">
                         <div class="flex items-center mb-4">
-                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Wijaya" class="w-12 h-12 rounded-full mr-4">
+                            <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson" class="w-12 h-12 rounded-full mr-4">
                             <div>
-                                <h4 class="font-semibold">Sarah Wijaya</h4>
+                                <h4 class="font-semibold">Sarah Johnson</h4>
                                 <p class="text-sm opacity-80">Klien Pernikahan</p>
                             </div>
                         </div>
-                        <p class="opacity-90">"Gloria Events membuat hari pernikahan kami benar-benar ajaib. Setiap detail sempurna dan mereka mengurus segalanya sehingga kami bisa menikmati hari spesial kami."</p>
+                        <p class="opacity-90">"Harmoni Event membuat hari pernikahan kami benar-benar magis. Setiap detail sempurna dan mereka mengurus segalanya sehingga kami bisa menikmati hari spesial kami."</p>
                     </div>
                     
                     <!-- Testimoni 2 -->
                     <div class="bg-white bg-opacity-10 rounded-xl p-6">
                         <div class="flex items-center mb-4">
-                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Chandra" class="w-12 h-12 rounded-full mr-4">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Chen" class="w-12 h-12 rounded-full mr-4">
                             <div>
-                                <h4 class="font-semibold">Michael Chandra</h4>
+                                <h4 class="font-semibold">Michael Chen</h4>
                                 <p class="text-sm opacity-80">Klien Korporat</p>
                             </div>
                         </div>
-                        <p class="opacity-90">"Konferensi tahunan kami berjalan sempurna. Perhatian tim terhadap detail dan kemampuan memecahkan masalah sangat mengesankan. Sangat direkomendasikan!"</p>
+                        <p class="opacity-90">"Konferensi tahunan kami dieksekusi dengan sempurna. Perhatian tim terhadap detail dan keterampilan pemecahan masalah sangat mengesankan. Sangat direkomendasikan!"</p>
                     </div>
                     
                     <!-- Testimoni 3 -->
                     <div class="bg-white bg-opacity-10 rounded-xl p-6">
                         <div class="flex items-center mb-4">
-                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emily Susanto" class="w-12 h-12 rounded-full mr-4">
+                            <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emily Rodriguez" class="w-12 h-12 rounded-full mr-4">
                             <div>
-                                <h4 class="font-semibold">Emily Susanto</h4>
+                                <h4 class="font-semibold">Emily Rodriguez</h4>
                                 <p class="text-sm opacity-80">Pesta Ulang Tahun</p>
                             </div>
                         </div>
-                        <p class="opacity-90">"Pesta kejutan yang mereka selenggarakan untuk ulang tahun ke-30 saya melebihi mimpi terliar saya. Tema, dekorasi, dan hiburan semuanya tepat!"</p>
+                        <p class="opacity-90">"Pesta kejutan yang mereka atur untuk ulang tahun ke-30 saya melebihi mimpi terliar saya. Tema, dekorasi, dan hiburan semuanya tepat!"</p>
                     </div>
                 </div>
             </div>
@@ -297,8 +226,8 @@
     <section class="py-20 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
             <div class="glass-card rounded-2xl p-12 text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6">Siap Mewujudkan Acara Impian Anda?</h2>
-                <p class="text-lg mb-8 max-w-2xl mx-auto opacity-90">Mari diskusikan bagaimana kami dapat mewujudkan visi Anda dengan layanan perencanaan acara profesional kami.</p>
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Siap Menciptakan Acara Impian Anda?</h2>
+                <p class="text-lg mb-8 max-w-2xl mx-auto opacity-90">Mari diskusikan bagaimana kami dapat mewujudkan visi Anda dengan layanan perencanaan acara ahli kami.</p>
                 <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                     <button class="bg-white text-purple-700 px-8 py-3 rounded-lg font-medium hover:bg-opacity-90 transition duration-300">Mulai Sekarang</button>
                     <button class="border border-white px-8 py-3 rounded-lg font-medium hover:bg-white hover:bg-opacity-10 transition duration-300">Hubungi Kami</button>
@@ -312,8 +241,8 @@
         <div class="max-w-7xl mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-lg font-semibold mb-4">Gloria Events</h3>
-                    <p class="text-sm opacity-80">Menciptakan pengalaman tak terlupakan melalui perencanaan dan pelaksanaan acara yang luar biasa.</p>
+                    <h3 class="text-lg font-semibold mb-4">Harmoni Event</h3>
+                    <p class="text-sm opacity-80">Menciptakan pengalaman tak terlupakan melalui perencanaan dan eksekusi acara yang luar biasa.</p>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-4">Tautan Cepat</h3>
@@ -338,79 +267,29 @@
                     <ul class="space-y-2">
                         <li class="text-sm opacity-80">Jl. Acara No. 123, Suite 100</li>
                         <li class="text-sm opacity-80">Jakarta Selatan, 12345</li>
-                        <li class="text-sm opacity-80">info@gloriaevents.id</li>
+                        <li class="text-sm opacity-80">info@harmonievent.com</li>
                         <li class="text-sm opacity-80">(021) 1234-5678</li>
                     </ul>
                 </div>
             </div>
             <div class="border-t border-white border-opacity-20 mt-12 pt-8 text-center text-sm opacity-80">
-                <p>© 2023 Gloria Events. Semua hak dilindungi.</p>
+                <p>© 2023 Harmoni Event. Semua hak dilindungi.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // Fungsi untuk modal login/register
-        const authModal = document.getElementById('authModal');
-        const loginButton = document.getElementById('loginButton');
-        const registerButton = document.getElementById('registerButton');
-        const closeAuthModal = document.getElementById('closeAuthModal');
-        const loginTab = document.getElementById('loginTab');
-        const registerTab = document.getElementById('registerTab');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-
-        // Tampilkan modal login
-        loginButton.addEventListener('click', () => {
-            authModal.classList.add('active');
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-            loginTab.classList.add('border-white');
-            registerTab.classList.remove('border-white');
-            registerTab.classList.add('opacity-70');
-            loginTab.classList.remove('opacity-70');
+        // Mobile menu toggle functionality would go here
+        document.querySelector('.mobile-menu-button').addEventListener('click', function() {
+            // Toggle mobile menu
         });
 
-        // Tampilkan modal register
-        registerButton.addEventListener('click', () => {
-            authModal.classList.add('active');
-            registerForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-            registerTab.classList.add('border-white');
-            loginTab.classList.remove('border-white');
-            loginTab.classList.add('opacity-70');
-            registerTab.classList.remove('opacity-70');
-        });
-
-        // Tutup modal
-        closeAuthModal.addEventListener('click', () => {
-            authModal.classList.remove('active');
-        });
-
-        // Switch tab login/register
-        loginTab.addEventListener('click', () => {
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-            loginTab.classList.add('border-white');
-            registerTab.classList.remove('border-white');
-            registerTab.classList.add('opacity-70');
-            loginTab.classList.remove('opacity-70');
-        });
-
-        registerTab.addEventListener('click', () => {
-            registerForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-            registerTab.classList.add('border-white');
-            loginTab.classList.remove('border-white');
-            loginTab.classList.add('opacity-70');
-            registerTab.classList.remove('opacity-70');
-        });
-
-        // Tutup modal saat klik di luar modal
-        window.addEventListener('click', (e) => {
-            if (e.target === authModal) {
-                authModal.classList.remove('active');
-            }
+        // Handle login/register navigation
+        document.querySelectorAll('a[href="/login"], a[href="/register"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = this.getAttribute('href');
+            });
         });
     </script>
 </body>
