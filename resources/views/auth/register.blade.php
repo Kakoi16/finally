@@ -1,28 +1,56 @@
-
 @extends('layouts.app')
-@section('title', 'Register')
 
 @section('content')
-<h2>Register</h2>
-<form method="POST" action="{{ route('register') }}">
-    @csrf
-    <div class="mb-3">
-        <label>Nama</label>
-        <input type="text" name="name" class="form-control" required value="{{ old('name') }}">
+<div class="glass-card rounded-2xl p-8 w-full max-w-md">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold">Buat Akun Baru</h1>
+        <p class="opacity-80 mt-2">Mulai perjalanan event planning Anda bersama kami</p>
     </div>
-    <div class="mb-3">
-        <label>Email</label>
-        <input type="email" name="email" class="form-control" required value="{{ old('email') }}">
-    </div>
-    <div class="mb-3">
-        <label>Password</label>
-        <input type="password" name="password" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Konfirmasi Password</label>
-        <input type="password" name="password_confirmation" class="form-control" required>
-    </div>
-    <button class="btn btn-primary">Register</button>
-    <a href="{{ route('login') }}" class="btn btn-link">Sudah punya akun?</a>
-</form>
+
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
+        
+        <div class="mb-6">
+            <label class="block mb-2 font-medium">Nama Lengkap</label>
+            <input type="text" name="name" class="form-input w-full px-4 py-3 rounded-lg" 
+                   required value="{{ old('name') }}" placeholder="Nama Anda">
+            @error('name')
+                <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+        
+        <div class="mb-6">
+            <label class="block mb-2 font-medium">Alamat Email</label>
+            <input type="email" name="email" class="form-input w-full px-4 py-3 rounded-lg" 
+                   required value="{{ old('email') }}" placeholder="email@contoh.com">
+            @error('email')
+                <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+        
+        <div class="mb-6">
+            <label class="block mb-2 font-medium">Password</label>
+            <input type="password" name="password" class="form-input w-full px-4 py-3 rounded-lg" 
+                   required placeholder="••••••••">
+            @error('password')
+                <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+        
+        <div class="mb-6">
+            <label class="block mb-2 font-medium">Konfirmasi Password</label>
+            <input type="password" name="password_confirmation" class="form-input w-full px-4 py-3 rounded-lg" 
+                   required placeholder="••••••••">
+        </div>
+        
+        <button type="submit" class="w-full bg-white text-purple-700 py-3 rounded-lg font-medium hover:bg-opacity-90 transition duration-300 mb-4">
+            Daftar
+        </button>
+        
+        <div class="text-center text-sm">
+            Sudah punya akun? 
+            <a href="{{ route('login') }}" class="font-medium hover:underline">Masuk disini</a>
+        </div>
+    </form>
+</div>
 @endsection
