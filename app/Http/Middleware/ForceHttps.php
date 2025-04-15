@@ -15,11 +15,15 @@ class ForceHttps
      */
     public function handle($request, Closure $next)
     {
-        if (!$request->secure()) {
+        if (
+            !$request->secure() &&
+            (!isset($_SERVER['HTTP_X_FORWARDED_PROTO']) || $_SERVER['HTTP_X_FORWARDED_PROTO'] !== 'https')
+        ) {
             return redirect()->secure($request->getRequestUri());
         }
     
         return $next($request);
     }
+    
     
 }
