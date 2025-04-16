@@ -10,18 +10,40 @@
 
   <!-- Navbar -->
   <header class="fixed w-full top-0 z-50 bg-gray-900/80 backdrop-blur-md shadow-md">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-white">Modern Ui lek</h1>
-    <nav class="space-x-4">
-      <a href="#" class="hover:text-teal-300 transition">Home</a>
-      <a href="#" class="hover:text-teal-300 transition">About</a>
-      <a href="#" class="hover:text-teal-300 transition">Contact</a>
-      <a href="{{ route('login') }}" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg inline-block">Login</a>
-      <a href="{{ route('register') }}" class="bg-white text-gray-900 hover:bg-gray-200 px-4 py-2 rounded-lg inline-block">Register</a>
-    </nav>
-  </div>
-</header>
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-white">Modern Ui lek</h1>
 
+      <!-- Hamburger button -->
+      <button id="menu-toggle" class="text-white md:hidden focus:outline-none">
+        <svg id="hamburger" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg id="close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <!-- Desktop Menu -->
+      <nav class="hidden md:flex space-x-4">
+        <a href="#" class="hover:text-teal-300 transition">Home</a>
+        <a href="#" class="hover:text-teal-300 transition">About</a>
+        <a href="#" class="hover:text-teal-300 transition">Contact</a>
+        <a href="/login" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg inline-block">Login</a>
+        <a href="/register" class="bg-white text-gray-900 hover:bg-gray-200 px-4 py-2 rounded-lg inline-block">Register</a>
+      </nav>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden px-4 pb-4 space-y-2 bg-gray-900">
+      <a href="#" class="block hover:text-teal-300 transition">Home</a>
+      <a href="#" class="block hover:text-teal-300 transition">About</a>
+      <a href="#" class="block hover:text-teal-300 transition">Contact</a>
+      <a href="/login" class="block bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg">Login</a>
+      <a href="/register" class="block bg-white text-gray-900 hover:bg-gray-200 px-4 py-2 rounded-lg">Register</a>
+    </div>
+  </header>
 
   <!-- Hero Section -->
   <section class="h-screen bg-[url('https://images.unsplash.com/photo-1506744038136-46273834b3fb')] bg-cover bg-center bg-fixed flex items-center justify-center">
@@ -56,5 +78,20 @@
   <footer class="bg-gray-900 py-6 text-center text-gray-400">
     © 2025 ParallaxWeb. All rights reserved.
   </footer>
+
+  <!-- Script -->
+  <script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburgerIcon = document.getElementById('hamburger');
+    const closeIcon = document.getElementById('close');
+
+    menuToggle.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      hamburgerIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+    });
+  </script>
+
 </body>
 </html>
