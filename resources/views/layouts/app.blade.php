@@ -14,7 +14,7 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg,rgb(58, 59, 66) 0%,rgb(149, 140, 158) 100%);
             min-height: 100vh;
         }
         .glass-card {
