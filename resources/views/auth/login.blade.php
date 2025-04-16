@@ -1,49 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="glass-card rounded-2xl p-8 w-full max-w-md">
-    <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold">Masuk ke Akun Anda</h1>
-        <p class="opacity-80 mt-2">Selamat datang kembali di Harmoni Event</p>
-    </div>
+<div class="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
+    <div class="glass-card w-full max-w-md p-8 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold">Masuk ke Akun Anda</h1>
+            <p class="text-gray-300 mt-2">Selamat datang kembali di Harmoni Event</p>
+        </div>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
-        
-        <div class="mb-6">
-            <label class="block mb-2 font-medium">Alamat Email</label>
-            <input type="email" name="email" class="form-input w-full px-4 py-3 rounded-lg" 
-                   required value="{{ old('email') }}" placeholder="email@contoh.com">
-            @error('email')
-                <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-        
-        <div class="mb-6">
-            <label class="block mb-2 font-medium">Password</label>
-            <input type="password" name="password" class="form-input w-full px-4 py-3 rounded-lg" 
-                   required placeholder="••••••••">
-            @error('password')
-                <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
-            @enderror
-        </div>
-        
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex items-center">
-                <input type="checkbox" name="remember" id="remember" class="mr-2">
-                <label for="remember">Ingat saya</label>
+        <!-- Form -->
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
+
+            <!-- Email -->
+            <div class="mb-6">
+                <label class="block mb-2 text-sm font-medium text-white">Alamat Email</label>
+                <input 
+                    type="email" 
+                    name="email" 
+                    class="w-full px-4 py-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 placeholder-gray-400"
+                    required value="{{ old('email') }}" 
+                    placeholder="email@contoh.com"
+                >
+                @error('email')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-            <a href="{{ route('password.request') }}" class="text-sm hover:underline">Lupa Password?</a>
-        </div>
-        
-        <button type="submit" class="w-full bg-white text-purple-700 py-3 rounded-lg font-medium hover:bg-opacity-90 transition duration-300 mb-4">
-            Masuk
-        </button>
-        
-        <div class="text-center text-sm">
-            Belum punya akun? 
-            <a href="{{ route('register') }}" class="font-medium hover:underline">Daftar sekarang</a>
-        </div>
-    </form>
+
+            <!-- Password -->
+            <div class="mb-6">
+                <label class="block mb-2 text-sm font-medium text-white">Password</label>
+                <input 
+                    type="password" 
+                    name="password" 
+                    class="w-full px-4 py-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 placeholder-gray-400"
+                    required placeholder="••••••••"
+                >
+                @error('password')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Remember Me & Forgot -->
+            <div class="flex items-center justify-between mb-6 text-sm">
+                <label class="flex items-center space-x-2">
+                    <input type="checkbox" name="remember" class="form-checkbox text-teal-500 rounded-sm">
+                    <span>Ingat saya</span>
+                </label>
+                <a href="{{ route('password.request') }}" class="text-teal-400 hover:underline">Lupa Password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+                type="submit" 
+                class="w-full bg-teal-500 hover:bg-teal-600 text-white py-3 rounded-lg font-semibold transition duration-300"
+            >
+                Masuk
+            </button>
+
+            <!-- Register Link -->
+            <div class="text-center text-sm text-gray-300 mt-6">
+                Belum punya akun? 
+                <a href="{{ route('register') }}" class="text-teal-400 hover:underline font-medium">Daftar sekarang</a>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection
