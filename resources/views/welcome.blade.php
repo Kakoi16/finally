@@ -90,9 +90,9 @@
             background: rgba(255, 255, 255, 0.05);
         }
         
-        /* Parallax Elements */
+        /* Improved Parallax Elements */
         .parallax-bg {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 100%;
             top: 0;
@@ -101,11 +101,16 @@
             background-size: cover;
             background-position: center;
             will-change: transform;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000px;
         }
         
         .parallax-element {
             will-change: transform;
-            transition: transform 0.1s ease-out;
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000px;
         }
         
         .parallax-container {
@@ -117,12 +122,17 @@
             position: relative;
             z-index: 2;
         }
+        
+        /* Smooth transitions */
+        .smooth-parallax {
+            transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
     </style>
 </head>
 <body class="min-h-screen text-white">
     <!-- Parallax Background Elements -->
-    <div class="parallax-bg fixed -z-10" id="parallax-bg-1"></div>
-    <div class="parallax-bg fixed -z-20 opacity-20" id="parallax-bg-2"></div>
+    <div class="parallax-bg smooth-parallax -z-10" id="parallax-bg-1"></div>
+    <div class="parallax-bg smooth-parallax -z-20 opacity-20" id="parallax-bg-2"></div>
     
     <!-- Navigation -->
     <nav class="glass-nav fixed w-full z-10">
@@ -172,7 +182,7 @@
             <div class="max-w-7xl mx-auto">
                 <div class="glass-card rounded-2xl p-8 md:p-12">
                     <div class="md:flex md:items-center md:justify-between">
-                        <div class="md:w-1/2 parallax-element" data-speed="0.2">
+                        <div class="md:w-1/2 parallax-element smooth-parallax" data-speed="0.2">
                             <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">Ciptakan Acara Tak Terlupakan</h1>
                             <p class="text-lg mb-8 text-white text-opacity-90">Kami merancang dan melaksanakan acara luar biasa yang meninggalkan kesan mendalam. Dari pertemuan perusahaan hingga pernikahan impian.</p>
                             <div class="flex space-x-4">
@@ -180,7 +190,7 @@
                                 <button class="btn-outline px-6 py-3 rounded-lg font-medium">Lihat Portofolio</button>
                             </div>
                         </div>
-                        <div class="hidden md:block md:w-2/5 mt-8 md:mt-0 parallax-element" data-speed="0.1">
+                        <div class="hidden md:block md:w-2/5 mt-8 md:mt-0 parallax-element smooth-parallax" data-speed="0.1">
                             <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Persiapan acara" class="rounded-xl shadow-xl">
                         </div>
                     </div>
@@ -193,10 +203,10 @@
     <section class="py-16 px-4 sm:px-6 lg:px-8 parallax-container">
         <div class="parallax-content">
             <div class="max-w-7xl mx-auto">
-                <h2 class="text-3xl font-bold text-center mb-12 text-white parallax-element" data-speed="0.15">Layanan Unggulan Kami</h2>
+                <h2 class="text-3xl font-bold text-center mb-12 text-white parallax-element smooth-parallax" data-speed="0.15">Layanan Unggulan Kami</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Layanan 1 -->
-                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:bg-opacity-20 parallax-element" data-speed="0.05">
+                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:bg-opacity-20 parallax-element smooth-parallax" data-speed="0.05">
                         <div class="bg-white bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -207,7 +217,7 @@
                     </div>
                     
                     <!-- Layanan 2 -->
-                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:bg-opacity-20 parallax-element" data-speed="0.1">
+                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:bg-opacity-20 parallax-element smooth-parallax" data-speed="0.1">
                         <div class="bg-white bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -218,7 +228,7 @@
                     </div>
                     
                     <!-- Layanan 3 -->
-                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:bg-opacity-20 parallax-element" data-speed="0.15">
+                    <div class="glass-card rounded-2xl p-6 transition duration-300 hover:bg-opacity-20 parallax-element smooth-parallax" data-speed="0.15">
                         <div class="bg-white bg-opacity-10 w-16 h-16 rounded-full flex items-center justify-center mb-4">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -237,13 +247,13 @@
         <div class="parallax-content">
             <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-12">
-                    <h2 class="text-3xl font-bold text-white parallax-element" data-speed="0.1">Acara Mendatang</h2>
-                    <a href="#" class="text-sm font-medium hover:underline text-white parallax-element" data-speed="0.05">Lihat Semua Acara →</a>
+                    <h2 class="text-3xl font-bold text-white parallax-element smooth-parallax" data-speed="0.1">Acara Mendatang</h2>
+                    <a href="#" class="text-sm font-medium hover:underline text-white parallax-element smooth-parallax" data-speed="0.05">Lihat Semua Acara →</a>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Acara 1 -->
-                    <div class="glass-card rounded-2xl overflow-hidden event-card transition duration-300 parallax-element" data-speed="0.05">
+                    <div class="glass-card rounded-2xl overflow-hidden event-card transition duration-300 parallax-element smooth-parallax" data-speed="0.05">
                         <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Acara konser" class="w-full h-48 object-cover">
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-2">
@@ -257,7 +267,7 @@
                     </div>
                     
                     <!-- Acara 2 -->
-                    <div class="glass-card rounded-2xl overflow-hidden event-card transition duration-300 parallax-element" data-speed="0.1">
+                    <div class="glass-card rounded-2xl overflow-hidden event-card transition duration-300 parallax-element smooth-parallax" data-speed="0.1">
                         <img src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Acara korporat" class="w-full h-48 object-cover">
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-2">
@@ -271,7 +281,7 @@
                     </div>
                     
                     <!-- Acara 3 -->
-                    <div class="glass-card rounded-2xl overflow-hidden event-card transition duration-300 parallax-element" data-speed="0.15">
+                    <div class="glass-card rounded-2xl overflow-hidden event-card transition duration-300 parallax-element smooth-parallax" data-speed="0.15">
                         <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Acara pernikahan" class="w-full h-48 object-cover">
                         <div class="p-6">
                             <div class="flex justify-between items-start mb-2">
@@ -292,11 +302,11 @@
     <section class="py-16 px-4 sm:px-6 lg:px-8 parallax-container">
         <div class="parallax-content">
             <div class="max-w-7xl mx-auto">
-                <h2 class="text-3xl font-bold text-center mb-12 text-white parallax-element" data-speed="0.1">Apa Kata Klien Kami</h2>
+                <h2 class="text-3xl font-bold text-center mb-12 text-white parallax-element smooth-parallax" data-speed="0.1">Apa Kata Klien Kami</h2>
                 <div class="glass-card rounded-2xl p-8">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <!-- Testimoni 1 -->
-                        <div class="bg-white bg-opacity-10 rounded-xl p-6 parallax-element" data-speed="0.05">
+                        <div class="bg-white bg-opacity-10 rounded-xl p-6 parallax-element smooth-parallax" data-speed="0.05">
                             <div class="flex items-center mb-4">
                                 <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sarah Johnson" class="w-12 h-12 rounded-full mr-4">
                                 <div>
@@ -308,7 +318,7 @@
                         </div>
                         
                         <!-- Testimoni 2 -->
-                        <div class="bg-white bg-opacity-10 rounded-xl p-6 parallax-element" data-speed="0.1">
+                        <div class="bg-white bg-opacity-10 rounded-xl p-6 parallax-element smooth-parallax" data-speed="0.1">
                             <div class="flex items-center mb-4">
                                 <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Michael Chen" class="w-12 h-12 rounded-full mr-4">
                                 <div>
@@ -320,7 +330,7 @@
                         </div>
                         
                         <!-- Testimoni 3 -->
-                        <div class="bg-white bg-opacity-10 rounded-xl p-6 parallax-element" data-speed="0.15">
+                        <div class="bg-white bg-opacity-10 rounded-xl p-6 parallax-element smooth-parallax" data-speed="0.15">
                             <div class="flex items-center mb-4">
                                 <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Emily Rodriguez" class="w-12 h-12 rounded-full mr-4">
                                 <div>
@@ -341,11 +351,11 @@
         <div class="parallax-content">
             <div class="max-w-7xl mx-auto">
                 <div class="glass-card rounded-2xl p-12 text-center">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-white parallax-element" data-speed="0.1">Siap Menciptakan Acara Impian Anda?</h2>
-                    <p class="text-lg mb-8 max-w-2xl mx-auto text-white text-opacity-90 parallax-element" data-speed="0.05">Mari diskusikan bagaimana kami dapat mewujudkan visi Anda dengan layanan perencanaan acara ahli kami.</p>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-white parallax-element smooth-parallax" data-speed="0.1">Siap Menciptakan Acara Impian Anda?</h2>
+                    <p class="text-lg mb-8 max-w-2xl mx-auto text-white text-opacity-90 parallax-element smooth-parallax" data-speed="0.05">Mari diskusikan bagaimana kami dapat mewujudkan visi Anda dengan layanan perencanaan acara ahli kami.</p>
                     <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                        <button class="btn-primary px-8 py-3 rounded-lg font-medium parallax-element" data-speed="0.05">Mulai Sekarang</button>
-                        <button class="btn-outline px-8 py-3 rounded-lg font-medium parallax-element" data-speed="0.05">Hubungi Kami</button>
+                        <button class="btn-primary px-8 py-3 rounded-lg font-medium parallax-element smooth-parallax" data-speed="0.05">Mulai Sekarang</button>
+                        <button class="btn-outline px-8 py-3 rounded-lg font-medium parallax-element smooth-parallax" data-speed="0.05">Hubungi Kami</button>
                     </div>
                 </div>
             </div>
@@ -429,27 +439,42 @@
             });
         });
 
-        // Parallax Effect
+        // Improved Parallax Effect with requestAnimationFrame
         document.addEventListener('DOMContentLoaded', function() {
             // Set background images
             document.getElementById('parallax-bg-1').style.backgroundImage = 'url("https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80")';
             document.getElementById('parallax-bg-2').style.backgroundImage = 'url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80")';
             
-            // Parallax effect
-            window.addEventListener('scroll', function() {
-                const scrollPosition = window.pageYOffset;
-                
+            // Use requestAnimationFrame for smoother performance
+            let lastScrollPosition = 0;
+            let ticking = false;
+            
+            function updateParallax() {
                 // Background parallax
-                document.getElementById('parallax-bg-1').style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
-                document.getElementById('parallax-bg-2').style.transform = 'translateY(' + scrollPosition * 0.3 + 'px)';
+                document.getElementById('parallax-bg-1').style.transform = 'translateY(' + lastScrollPosition * 0.5 + 'px)';
+                document.getElementById('parallax-bg-2').style.transform = 'translateY(' + lastScrollPosition * 0.3 + 'px)';
                 
                 // Element parallax
                 document.querySelectorAll('.parallax-element').forEach(el => {
                     const speed = parseFloat(el.getAttribute('data-speed')) || 0.1;
-                    const offset = scrollPosition * speed;
+                    const offset = lastScrollPosition * speed;
                     el.style.transform = 'translateY(' + offset + 'px)';
                 });
+                
+                ticking = false;
+            }
+            
+            window.addEventListener('scroll', function() {
+                lastScrollPosition = window.pageYOffset;
+                
+                if (!ticking) {
+                    window.requestAnimationFrame(updateParallax);
+                    ticking = true;
+                }
             });
+            
+            // Initialize parallax on load
+            updateParallax();
         });
     </script>
 </body>
