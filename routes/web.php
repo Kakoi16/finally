@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 Route::get('/test-supabase', [AuthController::class, 'testSupabaseConnection']);
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
 
 
 Route::get('/', function () {

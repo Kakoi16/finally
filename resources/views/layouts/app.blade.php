@@ -38,5 +38,14 @@
     <div class="min-h-screen flex items-center justify-center p-4">
         @yield('content')
     </div>
+    <a href="{{ route('logout') }}"
+   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+   Logout
+</a>
+
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
+
 </body>
 </html>

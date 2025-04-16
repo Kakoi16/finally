@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Http\Controllers\DashboardController;
 
 class AuthController extends Controller
 {
@@ -120,7 +121,7 @@ class AuthController extends Controller
 
         session(['user' => $data]);
 
-        return redirect('/')->with('success', 'Login berhasil');
+        return redirect('/dashboard')->with('success', 'Login berhasil');
     }
 
     public function logout() {
