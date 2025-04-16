@@ -59,6 +59,9 @@
             >
                 Masuk
             </button>
+            <a href="{{ route('google.login') }}" class="btn btn-danger w-full">
+    <i class="fab fa-google"></i> Login dengan Google
+</a>
 
             <!-- Register Link -->
             <div class="text-center text-sm text-gray-300 mt-6">
