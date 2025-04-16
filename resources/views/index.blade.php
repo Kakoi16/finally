@@ -33,9 +33,9 @@
 
     <!-- Desktop -->
     <nav class="hidden md:flex space-x-4">
-      <a href="#" class="hover:text-teal-300 transition">Home</a>
-      <a href="#" class="hover:text-teal-300 transition">About</a>
-      <a href="#" class="hover:text-teal-300 transition">Contact</a>
+      <a href="#" class="hover:text-teal-300 px-4 py-2 transition">Home</a>
+      <a href="#" class="hover:text-teal-300 px-4 py-2 transition">About</a>
+      <a href="#" class="hover:text-teal-300 px-4 py-2 transition">Contact</a>
       <a href="/login" class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg transition-all duration-300">Login</a>
       <a href="/register" class="bg-white text-gray-900 hover:bg-gray-200 px-4 py-2 rounded-lg transition-all duration-300">Register</a>
     </nav>
