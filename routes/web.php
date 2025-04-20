@@ -16,30 +16,26 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
-// Rute untuk pendaftaran karyawan
+// Route for registering karyawan
 Route::get('/register/karyawan', [AuthController::class, 'showRegisterForm'])->name('register.karyawan');
 Route::post('/register/karyawan', [AuthController::class, 'registerKaryawan'])->name('register.karyawan.submit');
 
-// Rute untuk verifikasi OTP setelah pendaftaran
-Route::get('/verify-otp', [AuthController::class, 'showOtpForm'])->name('verify.otp.form'); // Form verifikasi OTP
-Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp.submit'); // Proses verifikasi OTP
+// Route for email verification
+Route::get('/verify/{token}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
-// Rute untuk verifikasi email (jika diperlukan)
-Route::get('/verify/{id}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
-
-// Rute untuk logout
+// Route for logout
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Rute untuk dashboard
+// Route for dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
 
-// Rute untuk halaman utama
+// Route for the main page
 Route::get('/', function () {
     return view('archive');
 });
 
-// Rute untuk login menggunakan Google
+// Route for Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
