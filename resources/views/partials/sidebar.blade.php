@@ -37,6 +37,13 @@
                     <span>Tong Sampah</span>
                 </a>
             </li>
+            <li>
+    <a href="{{ route('register') }}" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
+        <i class="fas fa-user-plus w-5"></i>
+        <span>Tambah Karyawan</span>
+    </a>
+</li>
+
         </ul>
     </nav>
 

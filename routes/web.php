@@ -6,8 +6,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleController;
 
 Route::middleware('guest')->group(function () {
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'register']);
+    // Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    // Route::post('/register', [AuthController::class, 'register']);
 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
@@ -18,6 +18,12 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
+
+Route::view('/register', 'register')->name('register');
+Route::post('/register/store', function () {
+    // proses simpan data karyawan di sini
+    // atau redirect ke controller
+})->name('register.store');
 
 Route::get('/verify/{id}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
