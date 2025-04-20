@@ -14,58 +14,73 @@ class AuthController extends Controller
     }
 
     public function registerKaryawan(Request $request)
-    {
-        // Validate form input
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+{
+    // Step 1: Validasi input
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255',
+        'password' => 'required|string|min:6|confirmed',
+    ]);
 
-        // Create a new user (no email_verified_at yet)
-        $userData = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'email_verified_at' => null, // Email is unverified initially
-        ];
+    // Step 2: Cek apakah email sudah ada di Supabase
+    $checkEmail = Http::withHeaders([
+        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+    ])->get(env('SUPABASE_URL') . '/rest/v1/' . env('SUPABASE_TABLE') . '?email=eq.' . $request->email);
 
-        // Insert user into Supabase
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-        ])->post(env('SUPABASE_URL') . '/rest/v1/' . env('SUPABASE_TABLE'), $userData);
+    if ($checkEmail->successful() && count($checkEmail->json()) > 0) {
+        return back()->withErrors(['email' => 'Email sudah digunakan.']);
+    }
 
-        if ($response->successful()) {
-            // Generate verification token
-            $token = Str::random(60);
+    // Step 3: Buat user baru
+    $userData = [
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+        'email_verified_at' => null,
+    ];
 
-            // Store token in Supabase (or in a separate table, if needed)
-            $verificationData = [
-                'user_id' => $response->json()['id'], // Assuming the Supabase API returns the user's ID
-                'token' => $token,
-                'created_at' => now(),
-            ];
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        'Content-Type'  => 'application/json',
+        'Prefer'        => 'return=representation',
+    ])->post(env('SUPABASE_URL') . '/rest/v1/' . env('SUPABASE_TABLE'), $userData);
 
-            // Store verification data in Supabase
-            $verificationResponse = Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-            ])->post(env('SUPABASE_URL') . '/rest/v1/verification_tokens', $verificationData);
-
-            if ($verificationResponse->successful()) {
-                // Send email verification link
-                $verificationUrl = route('verification.verify', ['token' => $token]);
-                Mail::raw("Click this link to verify your email: $verificationUrl", function ($message) use ($request) {
-                    $message->to($request->email)->subject('Email Verification');
-                });
-
-                return redirect()->route('login')->with('success', 'A verification link has been sent to your email.');
-            } else {
-                return back()->withErrors(['error' => 'Unable to generate verification token.']);
-            }
-        }
-
+    if (!$response->successful()) {
         return back()->withErrors(['error' => 'User registration failed.']);
     }
+
+    $userId = $response->json()['id'] ?? null;
+
+    if (!$userId) {
+        return back()->withErrors(['error' => 'User created but ID not returned.']);
+    }
+
+    // Step 4: Generate token untuk verifikasi email
+    $token = Str::random(60);
+
+    $verificationData = [
+        'user_id' => $userId,
+        'token' => $token,
+        'created_at' => now()->toISOString(),
+    ];
+
+    $verificationResponse = Http::withHeaders([
+        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        'Content-Type'  => 'application/json',
+    ])->post(env('SUPABASE_URL') . '/rest/v1/verification_tokens', $verificationData);
+
+    if (!$verificationResponse->successful()) {
+        return back()->withErrors(['error' => 'Gagal menyimpan token verifikasi.']);
+    }
+
+    // Step 5: Kirim email verifikasi
+    $verificationUrl = route('verification.verify', ['token' => $token]);
+    Mail::raw("Klik link berikut untuk verifikasi email Anda: $verificationUrl", function ($message) use ($request) {
+        $message->to($request->email)->subject('Verifikasi Email');
+    });
+
+    return redirect()->route('login')->with('success', 'Link verifikasi telah dikirim ke email Anda.');
+}
 
     // Email verification route handler
     public function verifyEmail($token)
