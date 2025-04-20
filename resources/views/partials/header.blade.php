@@ -5,7 +5,7 @@
                 <i class="fas fa-bars text-xl"></i>
             </button>
             <i class="fas fa-archive text-2xl"></i>
-            <h1 class="text-xl font-bold">Archive Perusahaan</h1>
+            <h1 class="text-xl font-bold hidden md:block">Archive Perusahaan</h1>
         </div>
         <div class="flex items-center space-x-4">
             <div class="relative">
