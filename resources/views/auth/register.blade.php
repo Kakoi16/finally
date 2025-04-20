@@ -21,7 +21,7 @@
         <form method="POST" action="{{ route('register') }}" class="space-y-6">
             @csrf
 
-            <!-- Name -->
+            <!-- Nama -->
             <div>
                 <label class="block mb-2 text-sm font-medium text-gray-300">Nama Lengkap</label>
                 <div class="relative">

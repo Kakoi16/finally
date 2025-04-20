@@ -32,9 +32,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Rute untuk tes koneksi ke Supabase
-Route::get('/test-supabase', [AuthController::class, 'testSupabaseConnection']);
-
 // Rute untuk dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
 
