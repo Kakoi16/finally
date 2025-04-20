@@ -15,39 +15,88 @@
 @endsection
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebar = document.getElementById('sidebar');
-
-        sidebarToggle?.addEventListener('click', function () {
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('block');
-        });
-
-        function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(page => {
-                page.classList.add('hidden');
+           document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            // Toggle sidebar di mobile
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('block');
             });
-            document.getElementById(pageId)?.classList.remove('hidden');
-        }
 
-        function updateBreadcrumb(pageId) {
-            const breadcrumb = document.getElementById('breadcrumb');
-            let html = '<a href="#">Archive</a>';
-            // Tambah isi sesuai kebutuhan...
-            breadcrumb.innerHTML = html;
-        }
-
-        document.querySelectorAll('.sidebar-menu').forEach(menu => {
-            menu.addEventListener('click', function (e) {
-                e.preventDefault();
-                const pageId = this.getAttribute('data-page');
-                showPage(pageId);
+            // Fungsi untuk menampilkan halaman berdasarkan menu yang dipilih
+            function showPage(pageId) {
+                // Sembunyikan semua halaman
+                document.querySelectorAll('.page-content').forEach(page => {
+                    page.classList.add('hidden');
+                });
+                
+                // Tampilkan halaman yang dipilih
+                document.getElementById(pageId).classList.remove('hidden');
+                
+                // Update breadcrumb
                 updateBreadcrumb(pageId);
-            });
-        });
+                
+                // Tutup sidebar di mobile
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('block');
+                }
+            }
 
-        showPage('dashboard-page');
-    });
+            // Fungsi untuk update breadcrumb
+            function updateBreadcrumb(pageId) {
+                const breadcrumb = document.getElementById('breadcrumb');
+                let html = '<a href="#" class="hover:text-blue-600">Archive</a>';
+                
+                switch(pageId) {
+                    case 'dashboard-page':
+                        html += '<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">Dashboard</a>';
+                        break;
+                    case 'all-files-page':
+                        html += '<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">Semua File</a>';
+                        break;
+                    case 'shared-page':
+                        html += '<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">Shared</a>';
+                        break;
+                    case 'recent-page':
+                        html += '<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">Recent</a>';
+                        break;
+                    case 'favorites-page':
+                        html += '<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">Favorites</a>';
+                        break;
+                    case 'trash-page':
+                        html += '<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">Trash</a>';
+                        break;
+                    default:
+                        html += '<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">Dashboard</a>';
+                }
+                
+                breadcrumb.innerHTML = html;
+            }
+
+            // Tambahkan event listener untuk setiap menu sidebar
+            document.querySelectorAll('.sidebar-menu').forEach(menu => {
+                menu.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                    
+                    // Update active menu
+                    document.querySelectorAll('.sidebar-menu').forEach(m => {
+                        m.classList.remove('bg-blue-100', 'text-blue-600');
+                        m.classList.add('hover:bg-gray-100');
+                    });
+                    this.classList.add('bg-blue-100', 'text-blue-600');
+                    this.classList.remove('hover:bg-gray-100');
+                });
+            });
+
+            // Tampilkan halaman default (Dashboard)
+            showPage('dashboard-page');
+            document.querySelector('[data-page="dashboard-page"]').classList.add('bg-blue-100', 'text-blue-600');
+            document.querySelector('[data-page="dashboard-page"]').classList.remove('hover:bg-gray-100');
+        });
 </script>
 @endpush
