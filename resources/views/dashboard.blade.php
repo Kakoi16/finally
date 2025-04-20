@@ -13,3 +13,41 @@
         <p class="text-gray-600">Pilih menu di sidebar untuk melihat konten</p>
     </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        sidebarToggle?.addEventListener('click', function () {
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('block');
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId)?.classList.remove('hidden');
+        }
+
+        function updateBreadcrumb(pageId) {
+            const breadcrumb = document.getElementById('breadcrumb');
+            let html = '<a href="#">Archive</a>';
+            // Tambah isi sesuai kebutuhan...
+            breadcrumb.innerHTML = html;
+        }
+
+        document.querySelectorAll('.sidebar-menu').forEach(menu => {
+            menu.addEventListener('click', function (e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                showPage(pageId);
+                updateBreadcrumb(pageId);
+            });
+        });
+
+        showPage('dashboard-page');
+    });
+</script>
+@endpush
