@@ -29,7 +29,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 
 Route::get('/', function () {
-    return view('dashboard');
+    return view('archive');
 });
 
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');

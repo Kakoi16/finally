@@ -10,19 +10,26 @@
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen flex flex-col">
+        
+        {{-- Header --}}
         @include('partials.header')
 
+        {{-- Main --}}
         <main class="flex-grow container mx-auto px-4 py-6 flex flex-col md:flex-row">
+            
+            {{-- Sidebar --}}
             @include('partials.sidebar')
+
+            {{-- Content --}}
             <section class="flex-grow bg-white rounded-lg shadow-md p-4">
                 @yield('content')
             </section>
         </main>
 
+        {{-- Footer --}}
         @include('partials.footer')
     </div>
-    
+
     @stack('scripts')
-    
 </body>
 </html>
