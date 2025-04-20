@@ -18,7 +18,7 @@
             <p class="text-gray-300 mt-2 text-sm">Mulai perjalanan event planning Anda bersama kami</p>
         </div>
 
-        <form method="POST" action="{{ route('register') }}" class="space-y-6">
+        <form method="POST" action="{{ route('register.karyawan') }}" class="space-y-6">
             @csrf
 
             <!-- Nama -->
