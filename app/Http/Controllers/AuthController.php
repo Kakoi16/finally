@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -23,53 +22,81 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Create a new user and generate a verification token
-        $user = User::create([
+        // Create a new user (no email_verified_at yet)
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'email_verified_at' => null, // Set email as unverified initially
-        ]);
+            'email_verified_at' => null, // Email is unverified initially
+        ];
 
-        // Generate a unique token for verification
-        $token = Str::random(60);
+        // Insert user into Supabase
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        ])->post(env('SUPABASE_URL') . '/rest/v1/' . env('SUPABASE_TABLE'), $userData);
 
-        // Store the token in the database (or temporarily in session if you prefer)
-        $user->verification_token = $token;
-        $user->save();
+        if ($response->successful()) {
+            // Generate verification token
+            $token = Str::random(60);
 
-        // Send the verification link to the user's email
-        $verificationUrl = route('verification.verify', ['token' => $token]);
-        Mail::raw("Click this link to verify your email: $verificationUrl", function ($message) use ($request) {
-            $message->to($request->email)->subject('Email Verification');
-        });
+            // Store token in Supabase (or in a separate table, if needed)
+            $verificationData = [
+                'user_id' => $response->json()['id'], // Assuming the Supabase API returns the user's ID
+                'token' => $token,
+                'created_at' => now(),
+            ];
 
-        // Redirect to a page telling the user to check their email
-        return redirect()->route('register.karyawan')->with('success', 'Pendaftaran berhasil! Cek email untuk verifikasi.');
-    }
+            // Store verification data in Supabase
+            $verificationResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            ])->post(env('SUPABASE_URL') . '/rest/v1/verification_tokens', $verificationData);
 
-    // Method to handle email verification
-    public function verifyEmail($token)
-    {
-        // Find the user by the verification token
-        $user = User::where('verification_token', $token)->first();
+            if ($verificationResponse->successful()) {
+                // Send email verification link
+                $verificationUrl = route('verification.verify', ['token' => $token]);
+                Mail::raw("Click this link to verify your email: $verificationUrl", function ($message) use ($request) {
+                    $message->to($request->email)->subject('Email Verification');
+                });
 
-        if (!$user) {
-            return redirect('/')->with('error', 'Token verifikasi tidak valid.');
+                return redirect()->route('login')->with('success', 'A verification link has been sent to your email.');
+            } else {
+                return back()->withErrors(['error' => 'Unable to generate verification token.']);
+            }
         }
 
-        // Mark the user's email as verified
-        $user->email_verified_at = now();
-        $user->verification_token = null; // Remove the token
-        $user->save();
-
-        // Redirect to login or dashboard
-        return redirect('/login')->with('success', 'Email berhasil diverifikasi!');
+        return back()->withErrors(['error' => 'User registration failed.']);
     }
 
-    public function logout()
+    // Email verification route handler
+    public function verifyEmail($token)
     {
-        auth()->logout();
-        return redirect('/');
+        // Verify the token in Supabase and activate the user
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        ])->get(env('SUPABASE_URL') . '/rest/v1/verification_tokens', [
+            'token' => $token,
+        ]);
+
+        if ($response->successful() && $response->json()) {
+            $verificationData = $response->json()[0];
+
+            // Activate the user by updating their email_verified_at field
+            $updateResponse = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            ])->patch(env('SUPABASE_URL') . '/rest/v1/' . env('SUPABASE_TABLE') . '/' . $verificationData['user_id'], [
+                'email_verified_at' => now(),
+            ]);
+
+            if ($updateResponse->successful()) {
+                // Remove verification token (optional)
+                Http::withHeaders([
+                    'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                ])->delete(env('SUPABASE_URL') . '/rest/v1/verification_tokens/' . $verificationData['id']);
+
+                return redirect()->route('login')->with('success', 'Your email has been verified.');
+            }
+        }
+
+        return back()->withErrors(['error' => 'Invalid verification link.']);
     }
 }
