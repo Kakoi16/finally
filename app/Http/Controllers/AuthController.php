@@ -25,14 +25,18 @@ class AuthController extends Controller
         $table = env('SUPABASE_TABLE');
         $headers = [
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'apikey' => env('SUPABASE_API_KEY'),
             'Content-Type' => 'application/json',
             'Prefer' => 'return=representation',
         ];
+        
     
         // Cek email
         $checkEmail = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'apikey' => env('SUPABASE_API_KEY'),
         ])->get("$supabaseUrl/rest/v1/$table?email=eq." . $request->email);
+        
     
         if (!$checkEmail->successful()) {
             return back()->withErrors(['email' => 'Gagal memeriksa email: ' . $checkEmail->body()]);
