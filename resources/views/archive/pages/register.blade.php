@@ -23,6 +23,13 @@
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
                 <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-300" required>
             </div>
+            <div class="mb-4">
+    <label for="role" class="block text-sm font-medium text-gray-700">Peran</label>
+    <select name="role" id="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-300" required>
+        <option value="karyawan">Karyawan</option>
+        <option value="admin">Admin</option>
+    </select>
+</div>
 
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 Daftar

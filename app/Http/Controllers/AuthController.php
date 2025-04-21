@@ -19,7 +19,9 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|in:admin,karyawan'
         ]);
+        
     
         $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
         $table = env('SUPABASE_TABLE');
@@ -51,8 +53,10 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'role' => $request->role,
             'email_verified_at' => null,
         ];
+        
     
         $createUser = Http::withHeaders($headers)->post("$supabaseUrl/rest/v1/$table", $userData);
     
