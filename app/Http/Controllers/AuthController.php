@@ -169,7 +169,12 @@ class AuthController extends Controller
             'is_admin'  => true,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Login berhasil.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Login berhasil.',
+            'redirect' => route('archive')
+        ]);
+        
     }
     public function showLogin()
 {

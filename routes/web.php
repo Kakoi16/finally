@@ -36,9 +36,8 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/', function () {
     return view('dashboard');
 });
-Route::middleware(['admin.only'])->group(function () {
-    Route::get('/archive', [DashboardController::class, 'index'])->name('archive');
-});
+Route::get('/archive', [DashboardController::class, 'index'])->name('archive')->middleware('admin.only');
+
 
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
