@@ -20,29 +20,56 @@
             background-repeat: no-repeat;
             background-size: cover;
         }
+        /* Tambahan untuk navbar mobile */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .mobile-menu.open {
+            max-height: 500px;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navbar -->
-    <nav class="fixed w-full bg-white shadow-md z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                </svg>
-                <span class="ml-2 text-xl font-semibold text-gray-800">ArsipDigital</span>
+      <!-- Navbar yang Diperbaiki -->
+      <nav class="fixed w-full bg-white shadow-md z-50" id="navbar">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    </svg>
+                    <a href="#" class="ml-2 text-xl font-semibold text-gray-800">ArsipDigital</a>
+                </div>
+                
+                <!-- Menu Desktop -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition duration-300">Fitur</a>
+                    <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition duration-300">Tentang</a>
+                    <a href="#harga" class="text-gray-600 hover:text-blue-600 transition duration-300">Harga</a>
+                    <a href="#testimoni" class="text-gray-600 hover:text-blue-600 transition duration-300">Testimoni</a>
+                    <a href="#kontak" class="text-gray-600 hover:text-blue-600 transition duration-300">Kontak</a>
+                </div>
+                
+                <!-- Tombol Mobile Menu -->
+                <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
-            <div class="hidden md:flex space-x-8">
-                <a href="#fitur" class="text-gray-600 hover:text-blue-600">Fitur</a>
-                <a href="#tentang" class="text-gray-600 hover:text-blue-600">Tentang</a>
-                <a href="#harga" class="text-gray-600 hover:text-blue-600">Harga</a>
-                <a href="#kontak" class="text-gray-600 hover:text-blue-600">Kontak</a>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden bg-white">
+                <div class="px-2 pt-2 pb-4 space-y-1">
+                    <a href="#fitur" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Fitur</a>
+                    <a href="#tentang" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Tentang</a>
+                    <a href="#harga" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Harga</a>
+                    <a href="#testimoni" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Testimoni</a>
+                    <a href="#kontak" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Kontak</a>
+                </div>
             </div>
-            <button class="md:hidden focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
         </div>
     </nav>
 
@@ -444,7 +471,56 @@
             </div>
         </div>
     </footer>
-
+    <script>
+        // Toggle mobile menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+        });
+        
+        // Tutup mobile menu ketika item diklik
+        const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+            });
+        });
+        
+        // Smooth scroll untuk semua link navigasi
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80, // Sesuaikan dengan tinggi navbar
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update URL tanpa reload halaman
+                    history.pushState(null, null, targetId);
+                }
+            });
+        });
+        
+        // Efek sticky navbar saat scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg');
+                navbar.classList.add('bg-white');
+                navbar.classList.remove('bg-opacity-90');
+            } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.classList.add('bg-opacity-90');
+            }
+        });
+    </script>
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
