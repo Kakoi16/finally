@@ -36,6 +36,8 @@
     @include('archive.pages.recent')
     @include('archive.pages.favorites')
     @include('archive.pages.trash')
+    @include('archive.pages.register')
+
 @endsection
 
 @push('scripts')
@@ -76,7 +78,9 @@ document.addEventListener('DOMContentLoaded', function () {
             'shared-page': 'Shared',
             'recent-page': 'Recent',
             'favorites-page': 'Favorites',
-            'trash-page': 'Trash'
+            'trash-page': 'Trash',
+            'register-page': 'Daftar Karyawan'
+
 
         };
         const name = names[pageId] || 'Dashboard';

@@ -37,14 +37,13 @@
                     <span>Tong Sampah</span>
                 </a>
             </li>
-
-            {{-- Tambahan: Link Registrasi --}}
             <li>
-                <a href="{{ route('register') }}" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
-                    <i class="fas fa-user-plus w-5"></i>
-                    <span>Daftar Karyawan</span>
-                </a>
-            </li>
+    <a href="#" class="sidebar-menu flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100" data-page="register-page">
+        <i class="fas fa-user-plus w-5"></i>
+        <span>Daftar Karyawan</span>
+    </a>
+</li>
+
         </ul>
     </nav>
 
