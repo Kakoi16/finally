@@ -42,45 +42,6 @@
 
 @push('scripts')
 <script>
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // cegah reload
-
-    const form = e.target;
-    const formData = new FormData(form);
-
-    fetch("{{ route('register.karyawan') }}", {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: data.message,
-            });
-            form.reset(); // kosongkan form
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Gagal',
-                text: data.message,
-            });
-        }
-    })
-    .catch(err => {
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Terjadi kesalahan saat mendaftar.',
-        });
-        console.error(err);
-    });
-});
 document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
