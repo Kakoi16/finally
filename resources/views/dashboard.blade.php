@@ -50,6 +50,7 @@
                     <a href="#harga" class="text-gray-600 hover:text-blue-600 transition duration-300">Harga</a>
                     <a href="#testimoni" class="text-gray-600 hover:text-blue-600 transition duration-300">Testimoni</a>
                     <a href="#kontak" class="text-gray-600 hover:text-blue-600 transition duration-300">Kontak</a>
+                    <a href="/login" class="text-gray-600 hover:text-blue-600 transition duration-300">Login</a>
                 </div>
                 
                 <!-- Tombol Mobile Menu -->
