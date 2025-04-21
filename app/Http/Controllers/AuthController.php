@@ -89,10 +89,12 @@ class AuthController extends Controller
                 $message->to($request->email)->subject('Verifikasi Email');
             });
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Gagal mengirim email: ' . $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => 'Gagal mengirim email: ' . $e->getMessage()], 500);
+
         }
     
-        return back()->with('success', 'Link verifikasi telah dikirim ke email Anda.');
+        return response()->json(['success' => true, 'message' => 'Link verifikasi telah dikirim ke email Anda.']);
+
     }
     
 
