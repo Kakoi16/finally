@@ -80,12 +80,6 @@
             >
                 Daftar
             </button>
-
-            <!-- Link Login -->
-            <p class="text-center text-sm text-gray-400 mt-4">
-                Sudah punya akun? 
-                <a href="{{ route('login') }}" class="text-teal-400 hover:underline">Masuk</a>
-            </p>
         </form>
     </div>
 </div>

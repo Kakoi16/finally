@@ -92,7 +92,7 @@ class AuthController extends Controller
             return back()->withErrors(['error' => 'Gagal mengirim email: ' . $e->getMessage()]);
         }
     
-        return redirect()->route('login')->with('success', 'Link verifikasi telah dikirim ke email Anda.');
+        return redirect()->route('archive')->with('success', 'Link verifikasi telah dikirim ke email Anda.');
     }
     
 

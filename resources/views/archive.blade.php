@@ -76,7 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
             'shared-page': 'Shared',
             'recent-page': 'Recent',
             'favorites-page': 'Favorites',
-            'trash-page': 'Trash'
+            'trash-page': 'Trash',
+            'add-karyawan': 'Add karyawan'
+
         };
         const name = names[pageId] || 'Dashboard';
         html += `<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">${name}</a>`;
