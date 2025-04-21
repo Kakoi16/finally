@@ -37,13 +37,14 @@
                     <span>Tong Sampah</span>
                 </a>
             </li>
-            <li>
-    <a href="{{ route('register.karyawan') }}" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
-        <i class="fas fa-user-plus w-5"></i>
-        <span>Tambah Karyawan</span>
-    </a>
-</li>
 
+            {{-- Tambahan: Link Registrasi --}}
+            <li>
+                <a href="{{ route('register') }}" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
+                    <i class="fas fa-user-plus w-5"></i>
+                    <span>Daftar Karyawan</span>
+                </a>
+            </li>
         </ul>
     </nav>
 
@@ -52,7 +53,7 @@
         <ul class="space-y-1">
             <li><a href="#" class="text-sm p-2 block rounded-lg hover:bg-gray-100">Keuangan</a></li>
             <li><a href="#" class="text-sm p-2 block rounded-lg hover:bg-gray-100">HRD</a></li>
-            <li><a href="#" class="text-sm p-2 block rouznded-lg hover:bg-gray-100">Proyek</a></li>
+            <li><a href="#" class="text-sm p-2 block rounded-lg hover:bg-gray-100">Proyek</a></li>
             <li><a href="#" class="text-sm p-2 block rounded-lg hover:bg-gray-100">Legal</a></li>
         </ul>
     </div>
