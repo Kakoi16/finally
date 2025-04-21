@@ -43,8 +43,9 @@
         fetch("{{ route('register.karyawan') }}", {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
+    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+    'Accept': 'application/json'
+},
             body: formData
         })
         .then(res => res.json())
