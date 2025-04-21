@@ -171,4 +171,9 @@ class AuthController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Login berhasil.']);
     }
+    public function showLogin()
+{
+    return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
+}
+
 }
