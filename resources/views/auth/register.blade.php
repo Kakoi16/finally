@@ -3,7 +3,7 @@
 @section('title', 'Daftar')
 
 @section('content')
-<div id="add-karyawan" class="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
+<div id="add-karyawan-page" class="min-h-screen flex items-center justify-center bg-gray-900 text-white px-4">
     <div class="w-full max-w-sm p-6 rounded-xl bg-gray-800 border border-gray-700 shadow-md">
         <!-- Header -->
         <div class="text-center mb-6">

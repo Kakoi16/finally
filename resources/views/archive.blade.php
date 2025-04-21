@@ -36,6 +36,7 @@
     @include('archive.pages.recent')
     @include('archive.pages.favorites')
     @include('archive.pages.trash')
+    @include('views.auth.register')
 @endsection
 
 @push('scripts')

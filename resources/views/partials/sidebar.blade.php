@@ -38,7 +38,7 @@
                 </a>
             </li>
             <li>
-    <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100" data-page="add-karyawan">
+    <a href="#" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100" data-page="add-karyawan-page">
         <i class="fas fa-user-plus w-5"></i>
         <span>Tambah Karyawan</span>
     </a>
