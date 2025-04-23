@@ -131,51 +131,51 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'email'    => 'required|email',
+        'password' => 'required|string',
+    ]);
 
-        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-        $table       = env('SUPABASE_TABLE');
+    $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+    $table       = env('SUPABASE_TABLE');
 
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                'apikey'        => env('SUPABASE_API_KEY'),
-            ])->get("$supabaseUrl/rest/v1/$table?email=eq." . $request->email . "&select=*");
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menghubungi server.'], 500);
-        }
-
-        if (!$response->successful() || empty($response->json())) {
-            return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
-        }
-
-        $user = $response->json()[0];
-
-        // Validasi role admin
-        if ($user['role'] !== 'admin') {
-            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat login.'], 403);
-        }
-
-        if (!Hash::check($request->password, $user['password'])) {
-            return response()->json(['success' => false, 'message' => 'Password salah.'], 401);
-        }
-
-        session([
-            'user'      => $user,
-            'is_admin'  => true,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login berhasil.',
-            'redirect' => route('archive')
-        ]);
-        
+    try {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'apikey'        => env('SUPABASE_API_KEY'),
+        ])->get("$supabaseUrl/rest/v1/$table?email=eq." . $request->email . "&select=*");
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Gagal menghubungi server.'], 500);
     }
+
+    if (!$response->successful() || empty($response->json())) {
+        return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
+    }
+
+    $user = $response->json()[0];
+
+    // Validasi password
+    if (!Hash::check($request->password, $user['password'])) {
+        return response()->json(['success' => false, 'message' => 'Password salah.'], 401);
+    }
+
+    // Simpan session
+    session([
+        'user'     => $user,
+        'is_admin' => $user['role'] === 'admin',
+    ]);
+
+    // Redirect berdasarkan role
+    $redirectRoute = $user['role'] === 'admin' ? route('archive') : route('dashboard');
+
+    return response()->json([
+        'success'  => true,
+        'message'  => 'Login berhasil.',
+        'redirect' => $redirectRoute
+    ]);
+}
+
     public function showLogin()
 {
     return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
