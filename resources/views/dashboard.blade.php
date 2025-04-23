@@ -20,61 +20,51 @@
             background-repeat: no-repeat;
             background-size: cover;
         }
-        /* Tambahan untuk navbar mobile */
-        .mobile-menu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        .mobile-menu.open {
-            max-height: 500px;
-        }
     </style>
 </head>
 <body class="bg-gray-50">
-      <!-- Navbar yang Diperbaiki -->
-      <nav class="fixed w-full bg-white shadow-md z-50" id="navbar">
-        <div class="container mx-auto px-6 py-3">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                    </svg>
-                    <a href="#" class="ml-2 text-xl font-semibold text-gray-800">ArsipDigital</a>
-                </div>
-                
-                <!-- Menu Desktop -->
-                <div class="hidden md:flex space-x-8">
-                    <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition duration-300">Fitur</a>
-                    <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition duration-300">Tentang</a>
-                    <a href="#harga" class="text-gray-600 hover:text-blue-600 transition duration-300">Harga</a>
-                    <a href="#testimoni" class="text-gray-600 hover:text-blue-600 transition duration-300">Testimoni</a>
-                    <a href="#kontak" class="text-gray-600 hover:text-blue-600 transition duration-300">Kontak</a>
-                    <a href="/login" class="text-gray-600 hover:text-blue-600 transition duration-300">Login</a>
-                </div>
-                
-                <!-- Tombol Mobile Menu -->
-                <button id="mobile-menu-button" class="md:hidden focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+     <!-- Navbar yang Diperbaiki -->
+<nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50 transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 sm:px-6 py-3">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+                <a href="#" class="ml-2 text-xl font-semibold text-gray-800 hover:text-blue-600 transition duration-300">ArsipDigital</a>
             </div>
             
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="mobile-menu md:hidden bg-white">
-                <div class="px-2 pt-2 pb-4 space-y-1">
-                    <a href="#fitur" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Fitur</a>
-                    <a href="#tentang" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Tentang</a>
-                    <a href="#harga" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Harga</a>
-                    <a href="#testimoni" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Testimoni</a>
-                    <a href="#kontak" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Kontak</a>
-                    <a href="/login" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">Login</a>
-                </div>
+            <!-- Menu Desktop -->
+            <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Fitur</a>
+                <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Tentang</a>
+                <a href="#harga" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Harga</a>
+                <a href="#testimoni" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Testimoni</a>
+                <a href="#kontak" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Kontak</a>
+                <a href="/login" class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300 ml-4">Login</a>
+            </div>
+            
+            <!-- Tombol Mobile Menu -->
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 rounded-md hover:bg-gray-100 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-lg rounded-lg mt-2 py-2">
+            <div class="px-2 pb-3 space-y-1">
+                <a href="#fitur" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Fitur</a>
+                <a href="#tentang" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Tentang</a>
+                <a href="#harga" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Harga</a>
+                <a href="#testimoni" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Testimoni</a>
+                <a href="#kontak" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Kontak</a>
+                <a href="/login" class="block px-4 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-300 mx-2 mt-2 text-center">Login</a>
             </div>
         </div>
-    </nav>
-
+    </div>
+</nav>
     <!-- Hero Section dengan Parallax -->
     <section class="parallax bg-gray-900 text-white pt-32 pb-20" style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
         <div class="container mx-auto px-6 text-center" data-aos="fade-up">
@@ -252,20 +242,45 @@
     <script>
         // Toggle mobile menu
         const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        mobileMenu.classList.toggle('block');
         
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('open');
+        // Animasi untuk menu mobile
+        if (!mobileMenu.classList.contains('hidden')) {
+            mobileMenu.style.opacity = '0';
+            mobileMenu.style.transform = 'translateY(-10px)';
+            setTimeout(() => {
+                mobileMenu.style.opacity = '1';
+                mobileMenu.style.transform = 'translateY(0)';
+            }, 50);
+        }
+    });
+    
+    // Tutup mobile menu ketika item diklik
+    const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
+    mobileMenuLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('block');
         });
-        
-        // Tutup mobile menu ketika item diklik
-        const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
-        mobileMenuLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.remove('open');
-            });
-        });
-        
+    });
+    
+    // Efek scroll untuk navbar
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 10) {
+            navbar.classList.add('shadow-lg');
+            navbar.classList.add('py-2');
+            navbar.classList.remove('py-3');
+        } else {
+            navbar.classList.remove('shadow-lg');
+            navbar.classList.remove('py-2');
+            navbar.classList.add('py-3');
+        }
+    });
         // Smooth scroll untuk semua link navigasi
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
