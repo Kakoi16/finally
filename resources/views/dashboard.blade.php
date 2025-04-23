@@ -20,54 +20,75 @@
             background-repeat: no-repeat;
             background-size: cover;
         }
+        /* Tambahan untuk konten yang tidak melebihi batas */
+        .content-container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        @media (min-width: 640px) {
+            .content-container {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
+        @media (min-width: 1024px) {
+            .content-container {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50">
-     <!-- Navbar yang Diperbaiki -->
-<nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50 transition-all duration-300" id="navbar">
-    <div class="container mx-auto px-4 sm:px-6 py-3">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                </svg>
-                <a href="#" class="ml-2 text-xl font-semibold text-gray-800 hover:text-blue-600 transition duration-300">ArsipDigital</a>
+    <!-- Navbar yang Diperbaiki -->
+    <nav class="fixed top-0 left-0 w-full bg-white shadow-md z-50 transition-all duration-300" id="navbar">
+        <div class="content-container">
+            <div class="flex justify-between items-center py-3">
+                <div class="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                    </svg>
+                    <a href="#" class="ml-2 text-xl font-semibold text-gray-800 hover:text-blue-600 transition duration-300">ArsipDigital</a>
+                </div>
+                
+                <!-- Menu Desktop -->
+                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                    <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Fitur</a>
+                    <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Tentang</a>
+                    <a href="#harga" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Harga</a>
+                    <a href="#testimoni" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Testimoni</a>
+                    <a href="#kontak" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Kontak</a>
+                    <a href="/login" class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300 ml-4">Login</a>
+                </div>
+                
+                <!-- Tombol Mobile Menu -->
+                <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 rounded-md hover:bg-gray-100 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
             </div>
             
-            <!-- Menu Desktop -->
-            <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
-                <a href="#fitur" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Fitur</a>
-                <a href="#tentang" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Tentang</a>
-                <a href="#harga" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Harga</a>
-                <a href="#testimoni" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Testimoni</a>
-                <a href="#kontak" class="text-gray-600 hover:text-blue-600 transition duration-300 py-2">Kontak</a>
-                <a href="/login" class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition duration-300 ml-4">Login</a>
-            </div>
-            
-            <!-- Tombol Mobile Menu -->
-            <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 rounded-md hover:bg-gray-100 transition duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-        </div>
-        
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white shadow-lg rounded-lg mt-2 py-2">
-            <div class="px-2 pb-3 space-y-1">
-                <a href="#fitur" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Fitur</a>
-                <a href="#tentang" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Tentang</a>
-                <a href="#harga" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Harga</a>
-                <a href="#testimoni" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Testimoni</a>
-                <a href="#kontak" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Kontak</a>
-                <a href="/login" class="block px-4 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-300 mx-2 mt-2 text-center">Login</a>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden bg-white shadow-lg rounded-lg mt-2 py-2">
+                <div class="px-2 pb-3 space-y-1">
+                    <a href="#fitur" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Fitur</a>
+                    <a href="#tentang" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Tentang</a>
+                    <a href="#harga" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Harga</a>
+                    <a href="#testimoni" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Testimoni</a>
+                    <a href="#kontak" class="block px-4 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50 transition duration-300">Kontak</a>
+                    <a href="/login" class="block px-4 py-2 rounded-md text-base font-medium text-white bg-blue-600 hover:bg-blue-700 transition duration-300 mx-2 mt-2 text-center">Login</a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
+
     <!-- Hero Section dengan Parallax -->
     <section class="parallax bg-gray-900 text-white pt-32 pb-20" style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
-        <div class="container mx-auto px-6 text-center" data-aos="fade-up">
+        <div class="content-container text-center" data-aos="fade-up">
             <h1 class="text-4xl md:text-6xl font-bold mb-6">Kelola Arsip Perusahaan dengan Mudah</h1>
             <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">Solusi digital untuk manajemen dokumen dan arsip perusahaan yang efisien dan terorganisir</p>
         </div>
@@ -75,7 +96,7 @@
 
     <!-- Fitur Section -->
     <section id="fitur" class="py-20 bg-white">
-        <div class="container mx-auto px-6">
+        <div class="content-container">
             <div class="text-center mb-16" data-aos="fade-up">
                 <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Fitur Unggulan</h2>
                 <p class="text-gray-600 max-w-2xl mx-auto">Pengelolaan fitur archive pada perusahaan</p>
@@ -109,7 +130,7 @@
 
     <!-- Parallax Section 2 -->
     <section class="parallax py-32" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
-        <div class="container mx-auto px-6 text-center text-white" data-aos="fade-up">
+        <div class="content-container text-center text-white" data-aos="fade-up">
             <h2 class="text-3xl md:text-4xl font-bold mb-6">Manajemen Arsip Dokumen Digital</h2>
             <p class="text-xl max-w-3xl mx-auto mb-8">Tinggalkan cara manual yang ribet dan beralih ke sistem arsip digital yang efisien dan terintegrasi</p>
             <button class="bg-white text-blue-600 hover:bg-blue-600 hover:text-white font-bold py-3 px-8 rounded-lg transition duration-300">Pelajari Lebih Lanjut</button>
@@ -118,10 +139,10 @@
 
     <!-- Tentang Section -->
     <section id="tentang" class="py-20 bg-gray-50">
-        <div class="container mx-auto px-6">
+        <div class="content-container">
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 mb-10 md:mb-0" data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Tentang Kami" class="rounded-lg shadow-xl">
+                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Tentang Kami" class="rounded-lg shadow-xl w-full">
                 </div>
                 <div class="md:w-1/2 md:pl-12" data-aos="fade-left">
                     <h2 class="text-3xl font-bold text-gray-800 mb-6">Tentang ArsipDigital</h2>
@@ -152,14 +173,9 @@
         </div>
     </section>
 
-  
-
-    <!-- Testimoni Section -->
-
-
     <!-- Footer -->
     <footer id="kontak" class="bg-gray-900 text-white py-12">
-        <div class="container mx-auto px-6">
+        <div class="content-container">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
                     <div class="flex items-center mb-4">
@@ -239,48 +255,50 @@
             </div>
         </div>
     </footer>
+
     <script>
         // Toggle mobile menu
         const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        mobileMenu.classList.toggle('block');
+        const mobileMenu = document.getElementById('mobile-menu');
         
-        // Animasi untuk menu mobile
-        if (!mobileMenu.classList.contains('hidden')) {
-            mobileMenu.style.opacity = '0';
-            mobileMenu.style.transform = 'translateY(-10px)';
-            setTimeout(() => {
-                mobileMenu.style.opacity = '1';
-                mobileMenu.style.transform = 'translateY(0)';
-            }, 50);
-        }
-    });
-    
-    // Tutup mobile menu ketika item diklik
-    const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
-    mobileMenuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
-            mobileMenu.classList.remove('block');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('block');
+            
+            // Animasi untuk menu mobile
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.style.opacity = '0';
+                mobileMenu.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    mobileMenu.style.opacity = '1';
+                    mobileMenu.style.transform = 'translateY(0)';
+                }, 50);
+            }
         });
-    });
-    
-    // Efek scroll untuk navbar
-    window.addEventListener('scroll', () => {
-        const navbar = document.getElementById('navbar');
-        if (window.scrollY > 10) {
-            navbar.classList.add('shadow-lg');
-            navbar.classList.add('py-2');
-            navbar.classList.remove('py-3');
-        } else {
-            navbar.classList.remove('shadow-lg');
-            navbar.classList.remove('py-2');
-            navbar.classList.add('py-3');
-        }
-    });
+        
+        // Tutup mobile menu ketika item diklik
+        const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('block');
+            });
+        });
+        
+        // Efek scroll untuk navbar
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 10) {
+                navbar.classList.add('shadow-lg');
+                navbar.classList.add('py-2');
+                navbar.classList.remove('py-3');
+            } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.classList.remove('py-2');
+                navbar.classList.add('py-3');
+            }
+        });
+        
         // Smooth scroll untuk semua link navigasi
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -300,20 +318,8 @@
                 }
             });
         });
-        
-        // Efek sticky navbar saat scroll
-        window.addEventListener('scroll', function() {
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('shadow-lg');
-                navbar.classList.add('bg-white');
-                navbar.classList.remove('bg-opacity-90');
-            } else {
-                navbar.classList.remove('shadow-lg');
-                navbar.classList.add('bg-opacity-90');
-            }
-        });
     </script>
+    
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -322,17 +328,6 @@
             duration: 800,
             easing: 'ease-in-out',
             once: true
-        });
-        
-        // Smooth scroll untuk navigasi
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
-            });
         });
     </script>
 </body>
