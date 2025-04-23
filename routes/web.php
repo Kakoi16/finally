@@ -29,15 +29,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Dashboard
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
+// Ubah dashboard agar redirect ke archive
+Route::get('/dashboard', function () {
+    return redirect()->route('archive');
+})->name('dashboard');
 
-// Home page
+// Ubah homepage agar redirect ke archive juga
 Route::get('/', function () {
-    return view('dashboard');
+    return redirect()->route('archive');
 });
-Route::get('/archive', [DashboardController::class, 'index'])->name('archive')->middleware('admin.only');
 
+// Archive untuk admin-only
+Route::get('/archive', [DashboardController::class, 'index'])
+    ->name('archive')
+    ->middleware('admin.only');
 
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
