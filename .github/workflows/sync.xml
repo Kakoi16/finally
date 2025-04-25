@@ -1,0 +1,17 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'  # Setiap 10 menit
+  workflow_dispatch:         # Bisa dijalankan manual juga
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone upstream repo
+        run: |
+          git clone --bare https://github.com/sumber/upstream-repo.git upstream.git
+          cd upstream.git
+          git push --mirror https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/kamu/my-mirror-repo.git
