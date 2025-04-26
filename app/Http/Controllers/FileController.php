@@ -31,9 +31,7 @@ class FileController extends Controller
         }
 
         $originalFileName = $file->getClientOriginalName();
-        $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $originalFileName); // hanya huruf, angka, titik, underscore, dash
-        $fileName = str_replace(' ', '-', $fileName);
-        $fileName = strtolower($fileName);
+        $fileName = $this->sanitizeFileName($originalFileName);
 
         $fileContent = file_get_contents($file->getRealPath());
         $fileSize = $file->getSize();
@@ -59,21 +57,19 @@ class FileController extends Controller
         $userId = Auth::id();
 
         $data = [
-            'name' => $this->cleanUtf8($fileName),
-            'path' => $this->cleanUtf8($path),
-            'type' => $this->cleanUtf8($fileType),
+            'name' => $fileName,
+            'path' => $path,
+            'type' => $fileType,
             'size' => $fileSize,
             'uploaded_by' => $userId,
         ];
 
-        // Encode manual JSON untuk menghindari error UTF-8
         $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE);
 
         if ($jsonData === false) {
             return back()->with('error', 'Gagal encode data JSON: ' . json_last_error_msg());
         }
 
-        // Kirim request ke Supabase
         $insertResponse = Http::withHeaders([
             'apikey' => env('SUPABASE_API_KEY'),
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
@@ -88,15 +84,18 @@ class FileController extends Controller
         return back()->with('success', 'File berhasil diupload dan disimpan!');
     }
 
-    private function cleanUtf8($string)
+    private function sanitizeFileName($fileName)
     {
-        // Pertama force detect encoding dan konversi ke UTF-8
-        if (!mb_detect_encoding($string, 'UTF-8', true)) {
-            $string = mb_convert_encoding($string, 'UTF-8', 'auto');
+        // Pastikan UTF-8 valid
+        if (!mb_detect_encoding($fileName, 'UTF-8', true)) {
+            $fileName = mb_convert_encoding($fileName, 'UTF-8', 'auto');
         }
-    
-        // Bersihkan karakter yang tidak valid (non printable, control characters)
-        return preg_replace('/[^\x20-\x7E\xA0-\xFF]/u', '', $string);
+
+        // Bersihkan karakter aneh
+        $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $fileName);
+        $fileName = str_replace(' ', '-', $fileName);
+        $fileName = strtolower($fileName);
+
+        return $fileName;
     }
-    
 }
