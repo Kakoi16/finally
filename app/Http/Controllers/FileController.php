@@ -57,18 +57,22 @@ class FileController extends Controller
         $userId = Auth::id();
 
         $data = [
-            'name' => $this->ensureUtf8($fileName),
-            'path' => $this->ensureUtf8($path),
-            'type' => $this->ensureUtf8($fileType),
+            'name' => $this->fixEncoding($fileName),
+            'path' => $this->fixEncoding($path),
+            'type' => $this->fixEncoding($fileType),
             'size' => $fileSize,
             'uploaded_by' => $userId,
         ];
-
+        
+        // Tambahin debug sementara
+        dd($data); // uncomment ini untuk lihat isi $data di browser pas error.
+        
         $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-
+        
         if ($jsonData === false) {
             return back()->with('error', 'Gagal encode data JSON: ' . json_last_error_msg());
         }
+        
 
         $insertResponse = Http::withHeaders([
             'apikey' => env('SUPABASE_API_KEY'),
@@ -83,7 +87,23 @@ class FileController extends Controller
 
         return back()->with('success', 'File berhasil diupload dan disimpan!');
     }
-
+    private function fixEncoding($value)
+    {
+        // Kalau bukan string, jangan diapa-apain
+        if (!is_string($value)) {
+            return $value;
+        }
+    
+        // Paksa detect encoding
+        $encoding = mb_detect_encoding($value, mb_detect_order(), true);
+        if ($encoding !== 'UTF-8') {
+            $value = mb_convert_encoding($value, 'UTF-8', $encoding ?: 'UTF-8');
+        }
+    
+        // Hilangkan karakter aneh yang tidak bisa di encode
+        return preg_replace('/[^\PC\s]/u', '', $value);
+    }
+    
     private function sanitizeFileName($fileName)
     {
         // Ensure UTF-8 encoding
