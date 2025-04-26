@@ -57,12 +57,13 @@ class FileController extends Controller
         $userId = Auth::id();
 
         $data = [
-            'name' => $fileName,
-            'path' => $path,
-            'type' => $fileType,
-            'size' => $fileSize,
-            'uploaded_by' => $userId,
+            'name' => mb_convert_encoding($fileName, 'UTF-8', 'UTF-8'),
+            'path' => mb_convert_encoding($path, 'UTF-8', 'UTF-8'),
+            'type' => mb_convert_encoding($fileType, 'UTF-8', 'UTF-8'),
+            'size' => $fileSize, // integer tidak perlu
+            'uploaded_by' => $userId, // integer tidak perlu
         ];
+        
 
         $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE);
 
