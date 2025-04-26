@@ -69,9 +69,11 @@ class FileController extends Controller
         $insertResponse = Http::withHeaders([
             'apikey' => env('SUPABASE_API_KEY'),
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-            'Content-Type' => 'application/json',
             'Prefer' => 'return=minimal',
-        ])->post($supabaseInsertUrl, $data);
+        ])->post($supabaseInsertUrl, [
+            'json' => $data, // << INI PENTING
+        ]);
+        
 
         if (!$insertResponse->successful()) {
             return back()->with('error', 'Gagal simpan metadata file: ' . $insertResponse->body());
