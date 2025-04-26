@@ -10,7 +10,6 @@ class FileController extends Controller
 {
     public function upload(Request $request)
     {
-        // Validasi input
         if (!$request->hasFile('file')) {
             return back()->with('error', 'Tidak ada file yang diupload.');
         }
@@ -21,14 +20,15 @@ class FileController extends Controller
             return back()->with('error', 'File tidak valid.');
         }
 
-        // Baca file
         $fileContent = file_get_contents($file->getRealPath());
         $fileName = $file->getClientOriginalName();
+        $fileName = mb_convert_encoding($fileName, 'UTF-8', 'UTF-8'); 
+        $fileName = preg_replace('/[^\x20-\x7E]/', '', $fileName); // optional: lebih aman
+        
         $fileSize = $file->getSize();
-        $fileType = $file->getClientOriginalExtension(); // Misal pdf, jpg, dll
+        $fileType = $file->getClientOriginalExtension();
 
-        // Upload ke Supabase Storage
-        $bucketName = 'storage'; // <- sesuaikan dengan nama bucket kamu
+        $bucketName = 'storage';
         $path = 'uploads/' . $fileName;
         $storageUrl = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $path;
 
@@ -41,15 +41,14 @@ class FileController extends Controller
             return back()->with('error', 'Gagal upload ke Supabase Storage: ' . $storageResponse->body());
         }
 
-        // Simpan metadata ke tabel 'archives' di Supabase via REST API
-        $supabaseInsertUrl = env('SUPABASE_URL') . '/rest/v1/archives'; // Tabel archives
-        $userId = Auth::id(); // ID user yang upload (pastikan user sudah login)
+        $supabaseInsertUrl = env('SUPABASE_URL') . '/rest/v1/archives';
+        $userId = Auth::id();
 
         $insertResponse = Http::withHeaders([
             'apikey' => env('SUPABASE_API_KEY'),
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
             'Content-Type' => 'application/json',
-            'Prefer' => 'return=minimal', // Biar Supabase lebih cepat (tidak kembalikan data)
+            'Prefer' => 'return=minimal',
         ])->post($supabaseInsertUrl, [
             'name' => $fileName,
             'path' => $path,
