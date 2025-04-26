@@ -24,12 +24,12 @@
                 <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-300" required>
             </div>
             <div class="mb-4">
-    <label for="role" class="block text-sm font-medium text-gray-700">Peran</label>
-    <select name="role" id="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-300" required>
-        <option value="karyawan">Karyawan</option>
-        <option value="admin">Admin</option>
-    </select>
-</div>
+                <label for="role" class="block text-sm font-medium text-gray-700">Peran</label>
+                <select name="role" id="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-300" required>
+                    <option value="karyawan">Karyawan</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
 
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                 Daftar
@@ -48,37 +48,37 @@
         const formData = new FormData(form);
 
         fetch("{{ route('register.karyawan') }}", {
-            method: 'POST',
-            headers: {
-    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-    'Accept': 'application/json'
-},
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: data.message,
-                });
-                form.reset();
-            } else {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: data.message,
+                    });
+                    form.reset();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: data.message || 'Terjadi kesalahan saat proses.',
+                    });
+                }
+            })
+            .catch(err => {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Gagal',
-                    text: data.message || 'Terjadi kesalahan saat proses.',
+                    title: 'Oops...',
+                    text: 'Terjadi kesalahan jaringan.',
                 });
-            }
-        })
-        .catch(err => {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Terjadi kesalahan jaringan.',
+                console.error(err);
             });
-            console.error(err);
-        });
     });
 </script>

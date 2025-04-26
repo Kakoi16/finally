@@ -230,7 +230,6 @@
     </footer>
     
     <script>
-        // Toggle mobile menu with animation
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
         
@@ -240,7 +239,6 @@
             mobileMenu.classList.toggle('mobile-menu-open');
         });
         
-        // Close mobile menu when clicking on a link
         const mobileMenuLinks = document.querySelectorAll('#mobile-menu a');
         mobileMenuLinks.forEach(link => {
             link.addEventListener('click', () => {
