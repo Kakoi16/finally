@@ -4,14 +4,6 @@
     <!-- Page Title & Action -->
     <div class="flex justify-between items-center mb-6">
         <h2 id="page-title" class="text-lg font-semibold">Dashboard</h2>
-        <div class="flex space-x-2">
-            <button class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 flex items-center">
-                <i class="fas fa-plus mr-1"></i> Upload
-            </button>
-            <button class="border border-gray-300 px-3 py-1 rounded-md text-sm hover:bg-gray-100 flex items-center">
-                <i class="fas fa-folder mr-1"></i> Folder Baru
-            </button>
-        </div>
     </div>
 
     <!-- Breadcrumb -->
