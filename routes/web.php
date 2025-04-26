@@ -6,6 +6,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ArchiveController;
 
+use App\Http\Controllers\FileController;
+use App\Http\Controllers\FolderController;
+
 Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -42,6 +45,8 @@ Route::get('/', function () {
 Route::get('/archive', [ArchiveController::class, 'index'])->name('archive')->middleware('admin.only');
 
 
+Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
+Route::post('/folders/create', [FolderController::class, 'create'])->name('folders.create');
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
