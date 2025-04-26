@@ -24,19 +24,34 @@
                 </svg>
                 <span class="text-xl font-bold">ArsipKu</span>
             </div>
+            
+            <!-- Desktop Menu -->
             <div class="hidden md:flex space-x-6">
-                <a href="#" class="hover:text-blue-200">Beranda</a>
-                <a href="#" class="hover:text-blue-200">Arsip</a>
-                <a href="#" class="hover:text-blue-200">Kategori</a>
-                <a href="#" class="hover:text-blue-200">Tentang</a>
+                <a href="#" class="hover:text-blue-200 transition duration-300">Beranda</a>
+                <a href="#" class="hover:text-blue-200 transition duration-300">Arsip</a>
+                <a href="#" class="hover:text-blue-200 transition duration-300">Kategori</a>
+                <a href="#" class="hover:text-blue-200 transition duration-300">Tentang</a>
             </div>
+            
             <div class="flex items-center space-x-4">
-                <a href="/login" class=`bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg">Login</a>
-                <button class="md:hidden">
+                <a href="/login" class="hidden md:block bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition duration-300">Login</a>
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-button" class="md:hidden focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu (Hidden by default) -->
+        <div id="mobile-menu" class="md:hidden hidden bg-blue-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Beranda</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Arsip</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Kategori</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Tentang</a>
+                <a href="/login" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 hover:bg-blue-500">Login</a>
             </div>
         </div>
     </nav>
@@ -202,5 +217,15 @@
             </div>
         </div>
     </footer>
+    
+    <script>
+        // Toggle mobile menu
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
 </body>
 </html>
