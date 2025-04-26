@@ -77,6 +77,12 @@ class FileController extends Controller
                 dd("Field $key bukan UTF-8", $val);
             }
         }
+        foreach ($data as $key => $val) {
+            if (!mb_detect_encoding($val, 'UTF-8', true)) {
+                dd("Field $key encodingnya rusak", $val);
+            }
+        }
+        
         
 
         $insertResponse = Http::withHeaders([
@@ -98,11 +104,14 @@ class FileController extends Controller
             return $value;
         }
     
-        // Paksa convert ke UTF-8, buang karakter invalid
+        // Convert ke UTF-8
         $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
     
-        // Hapus karakter non-printable (selain spasi)
-        $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
+        // Hapus karakter non-printable termasuk invisible character (lebih agresif)
+        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', $value);
+    
+        // Trim spasi di awal dan akhir string
+        $value = trim($value);
     
         return $value;
     }
