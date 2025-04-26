@@ -90,8 +90,13 @@ class FileController extends Controller
 
     private function cleanUtf8($string)
     {
-        // Konversi ke UTF-8 dan hapus karakter tak terlihat
-        $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
-        return preg_replace('/[^\P{C}\n]+/u', '', $string);
+        // Pertama force detect encoding dan konversi ke UTF-8
+        if (!mb_detect_encoding($string, 'UTF-8', true)) {
+            $string = mb_convert_encoding($string, 'UTF-8', 'auto');
+        }
+    
+        // Bersihkan karakter yang tidak valid (non printable, control characters)
+        return preg_replace('/[^\x20-\x7E\xA0-\xFF]/u', '', $string);
     }
+    
 }
