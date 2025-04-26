@@ -33,9 +33,11 @@ Route::middleware('auth')->group(function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
 
 // Home page
+// Route untuk halaman utama
 Route::get('/', function () {
-    return view('dashboard');
+    return view('layouts.home');
 });
+
 Route::get('/archive', [DashboardController::class, 'index'])->name('archive')->middleware('admin.only');
 
 
