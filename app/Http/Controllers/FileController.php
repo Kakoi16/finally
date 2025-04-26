@@ -57,15 +57,14 @@ class FileController extends Controller
         $userId = Auth::id();
 
         $data = [
-            'name' => mb_convert_encoding($fileName, 'UTF-8', 'UTF-8'),
-            'path' => mb_convert_encoding($path, 'UTF-8', 'UTF-8'),
-            'type' => mb_convert_encoding($fileType, 'UTF-8', 'UTF-8'),
-            'size' => $fileSize, // integer tidak perlu
-            'uploaded_by' => $userId, // integer tidak perlu
+            'name' => $this->ensureUtf8($fileName),
+            'path' => $this->ensureUtf8($path),
+            'type' => $this->ensureUtf8($fileType),
+            'size' => $fileSize,
+            'uploaded_by' => $userId,
         ];
-        
 
-        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
 
         if ($jsonData === false) {
             return back()->with('error', 'Gagal encode data JSON: ' . json_last_error_msg());
@@ -87,16 +86,22 @@ class FileController extends Controller
 
     private function sanitizeFileName($fileName)
     {
-        // Pastikan UTF-8 valid
-        if (!mb_detect_encoding($fileName, 'UTF-8', true)) {
-            $fileName = mb_convert_encoding($fileName, 'UTF-8', 'auto');
-        }
+        // Ensure UTF-8 encoding
+        $fileName = $this->ensureUtf8($fileName);
 
-        // Bersihkan karakter aneh
+        // Remove special characters
         $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $fileName);
         $fileName = str_replace(' ', '-', $fileName);
         $fileName = strtolower($fileName);
 
         return $fileName;
+    }
+
+    private function ensureUtf8($string)
+    {
+        if (!mb_check_encoding($string, 'UTF-8')) {
+            $string = mb_convert_encoding($string, 'UTF-8', 'auto');
+        }
+        return $string;
     }
 }
