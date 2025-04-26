@@ -44,9 +44,9 @@ Route::get('/', function () {
 
 Route::get('/archive', [ArchiveController::class, 'index'])->name('archive')->middleware('admin.only');
 
-
 Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
 Route::post('/folders/create', [FolderController::class, 'create'])->name('folders.create');
+
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);

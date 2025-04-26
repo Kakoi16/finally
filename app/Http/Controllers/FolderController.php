@@ -3,19 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class FolderController extends Controller
 {
     public function create(Request $request)
     {
-        $folderName = $request->input('folder_name');
+        $request->validate([
+            'folder_name' => 'required|string|max:255',
+        ]);
 
-        if ($folderName) {
-            Storage::disk('public')->makeDirectory('uploads/' . $folderName);
+        $folderName = trim($request->input('folder_name'));
+        $path = 'uploads/' . $folderName . '/placeholder.txt'; // Supabase butuh file agar folder eksis
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'Content-Type' => 'application/octet-stream',
+        ])->put(env('SUPABASE_URL') . '/storage/v1/object/storage/' . $path, '');
+
+        if ($response->successful()) {
             return back()->with('success', 'Folder berhasil dibuat!');
         }
 
-        return back()->with('error', 'Nama folder tidak boleh kosong.');
+        return back()->with('error', 'Gagal membuat folder: ' . $response->body());
     }
 }
