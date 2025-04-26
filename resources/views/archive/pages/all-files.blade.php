@@ -1,10 +1,11 @@
 <!-- resources/views/all-files.blade.php -->
 
-<div id="all-files-page" class="page-content hidden p-6 space-y-6">
-    <!-- Upload File Section -->
-    <div class="bg-white p-6 rounded-lg shadow relative">
+<div id="all-files-page" class="page-content p-6 space-y-6">
+    <!-- Header Actions -->
+    <div class="bg-white p-4 rounded-lg shadow relative">
         <div class="absolute top-4 right-4 flex items-center gap-2">
-            <form action="{{ route('files.upload') }}" method="POST" enctype="multipart/form-data" class="relative">
+            <!-- Upload File Button -->
+            <form action="{{ route('files.upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" id="file" class="hidden" onchange="this.form.submit()">
                 <label for="file" class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full flex items-center justify-center">
@@ -21,9 +22,10 @@
                 </svg>
             </button>
         </div>
+        <h1 class="text-2xl font-semibold text-gray-700">Manajemen File</h1>
     </div>
 
-    <!-- Create Folder Form (hidden initially) -->
+    <!-- Create Folder Form (Hidden Initially) -->
     <div id="create-folder-form" class="bg-white p-6 rounded-lg shadow hidden">
         <h2 class="text-lg font-semibold mb-4">Buat Folder Baru</h2>
         <form action="{{ route('folders.create') }}" method="POST" class="space-y-4">
@@ -39,11 +41,3 @@
             </div>
         </form>
     </div>
-</div>
-
-<script>
-    function toggleCreateFolderForm() {
-        const form = document.getElementById('create-folder-form');
-        form.classList.toggle('hidden');
-    }
-</script>
