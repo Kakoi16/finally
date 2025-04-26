@@ -2,7 +2,7 @@
 
 <div id="all-files-page" class="page-content hidden p-6 space-y-6">
 
-    <div class="flex gap-6 w-10">
+    <div class="flex gap-6 w-10 h-6">
             <!-- Upload File Section -->
             <div class="bg-white p-6 rounded-lg shadow">
                 <h2 class="text-lg font-semibold mb-4">Upload File</h2>
