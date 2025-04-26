@@ -60,21 +60,26 @@ class FileController extends Controller
         }
 
         // Insert metadata ke table Supabase (table: archives)
-        $supabaseInsertUrl = env('SUPABASE_URL') . '/rest/v1/archives';
-        $userId = Auth::id();
+      // Insert metadata ke table Supabase (table: archives)
+$supabaseInsertUrl = env('SUPABASE_URL') . '/rest/v1/archives';
+$userId = Auth::id();
 
-        $insertResponse = Http::withHeaders([
-            'apikey' => env('SUPABASE_API_KEY'),
-            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-            'Content-Type' => 'application/json',
-            'Prefer' => 'return=minimal',
-        ])->post($supabaseInsertUrl, [
-            'name' => $fileName,
-            'path' => $path,
-            'type' => $fileType,
-            'size' => $fileSize,
-            'uploaded_by' => $userId,
-        ]);
+// Pastikan semua data UTF-8 valid
+$data = [
+    'name' => mb_convert_encoding($fileName, 'UTF-8', 'UTF-8'),
+    'path' => mb_convert_encoding($path, 'UTF-8', 'UTF-8'),
+    'type' => mb_convert_encoding($fileType, 'UTF-8', 'UTF-8'),
+    'size' => $fileSize, // size integer, aman
+    'uploaded_by' => $userId, // id user, integer, aman
+];
+
+$insertResponse = Http::withHeaders([
+    'apikey' => env('SUPABASE_API_KEY'),
+    'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+    'Content-Type' => 'application/json',
+    'Prefer' => 'return=minimal',
+])->post($supabaseInsertUrl, $data);
+
 
         if (!$insertResponse->successful()) {
             return back()->with('error', 'Gagal simpan metadata file: ' . $insertResponse->body());
