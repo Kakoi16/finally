@@ -12,7 +12,7 @@ class AdminOnly
     {
         $user = session('user');
 
-        if (!$user || $user['role'] !== 'admin') {
+        if (!is_array($user) || !isset($user['role']) || $user['role'] !== 'admin') {
             abort(403, 'Akses hanya untuk admin.');
         }
 

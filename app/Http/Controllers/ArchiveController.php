@@ -15,17 +15,21 @@ class ArchiveController extends Controller
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
             'apikey'        => env('SUPABASE_API_KEY'),
         ];
-
-        // Ambil semua data file dari tabel archives
-        $response = Http::withHeaders($headers)
-            ->get("$supabaseUrl/rest/v1/archives?select=*");
-
-        if (!$response->successful()) {
-            abort(500, 'Gagal mengambil data file.');
+    
+        try {
+            $response = Http::withHeaders($headers)
+                ->get("$supabaseUrl/rest/v1/archives?select=*");
+    
+            if (!$response->successful()) {
+                throw new \Exception('Supabase API error: ' . $response->body());
+            }
+    
+            $archives = $response->json();
+            return view('archive.archive', compact('archives'));
+    
+        } catch (\Exception $e) {
+            return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
         }
-
-        $archives = $response->json();
-
-        return view('archive.archive', compact('archives'));
     }
+    
 }
