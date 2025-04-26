@@ -72,6 +72,11 @@ class FileController extends Controller
         if ($jsonData === false) {
             return back()->with('error', 'Gagal encode data JSON: ' . json_last_error_msg());
         }
+        foreach ($data as $key => $val) {
+            if (!mb_check_encoding($val, 'UTF-8')) {
+                dd("Field $key bukan UTF-8", $val);
+            }
+        }
         
 
         $insertResponse = Http::withHeaders([
@@ -89,33 +94,34 @@ class FileController extends Controller
     }
     private function fixEncoding($value)
     {
-        // Kalau bukan string, jangan diapa-apain
         if (!is_string($value)) {
             return $value;
         }
     
-        // Paksa detect encoding
-        $encoding = mb_detect_encoding($value, mb_detect_order(), true);
-        if ($encoding !== 'UTF-8') {
-            $value = mb_convert_encoding($value, 'UTF-8', $encoding ?: 'UTF-8');
-        }
+        // Paksa convert ke UTF-8, buang karakter invalid
+        $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
     
-        // Hilangkan karakter aneh yang tidak bisa di encode
-        return preg_replace('/[^\PC\s]/u', '', $value);
+        // Hapus karakter non-printable (selain spasi)
+        $value = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
+    
+        return $value;
     }
+    
     
     private function sanitizeFileName($fileName)
     {
-        // Ensure UTF-8 encoding
+        // Pastikan UTF-8
         $fileName = $this->ensureUtf8($fileName);
-
-        // Remove special characters
-        $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $fileName);
+    
+        // Replace spasi jadi dash (-), tapi JANGAN ubah huruf kapital
         $fileName = str_replace(' ', '-', $fileName);
-        $fileName = strtolower($fileName);
-
+    
+        // Hapus karakter yang tidak wajar, tapi biarkan huruf besar/kecil, angka, dash, underscore, titik
+        $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $fileName);
+    
         return $fileName;
     }
+    
 
     private function ensureUtf8($string)
     {
