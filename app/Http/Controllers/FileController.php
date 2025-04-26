@@ -32,8 +32,8 @@ class FileController extends Controller
 
         $originalFileName = $file->getClientOriginalName();
         $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $originalFileName); // hanya huruf, angka, titik, underscore, dash
-        $fileName = str_replace(' ', '-', $fileName); 
-        $fileName = strtolower($fileName); 
+        $fileName = str_replace(' ', '-', $fileName);
+        $fileName = strtolower($fileName);
 
         $fileContent = file_get_contents($file->getRealPath());
         $fileSize = $file->getSize();
@@ -44,6 +44,7 @@ class FileController extends Controller
 
         $storageUrl = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $path;
 
+        // Upload file ke Supabase Storage
         $storageResponse = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
             'Content-Type' => 'application/octet-stream',
@@ -57,7 +58,6 @@ class FileController extends Controller
         $supabaseInsertUrl = env('SUPABASE_URL') . '/rest/v1/archives';
         $userId = Auth::id();
 
-        // Prepare safe UTF-8 data
         $data = [
             'name' => $this->cleanUtf8($fileName),
             'path' => $this->cleanUtf8($path),
@@ -66,14 +66,20 @@ class FileController extends Controller
             'uploaded_by' => $userId,
         ];
 
+        // Encode manual JSON untuk menghindari error UTF-8
+        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE);
+
+        if ($jsonData === false) {
+            return back()->with('error', 'Gagal encode data JSON: ' . json_last_error_msg());
+        }
+
+        // Kirim request ke Supabase
         $insertResponse = Http::withHeaders([
             'apikey' => env('SUPABASE_API_KEY'),
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'Content-Type' => 'application/json',
             'Prefer' => 'return=minimal',
-        ])->post($supabaseInsertUrl, [
-            'json' => $data, // << INI PENTING
-        ]);
-        
+        ])->withBody($jsonData, 'application/json')->post($supabaseInsertUrl);
 
         if (!$insertResponse->successful()) {
             return back()->with('error', 'Gagal simpan metadata file: ' . $insertResponse->body());
@@ -84,8 +90,8 @@ class FileController extends Controller
 
     private function cleanUtf8($string)
     {
-        // Hilangkan karakter non-UTF8 atau konversi aman
+        // Konversi ke UTF-8 dan hapus karakter tak terlihat
         $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
-        return preg_replace('/[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]/u', '', $string);
+        return preg_replace('/[^\P{C}\n]+/u', '', $string);
     }
 }
