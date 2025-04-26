@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\ArchiveController;
 
 Route::middleware('guest')->group(function () {
     // Login
@@ -38,7 +39,7 @@ Route::get('/', function () {
     return view('layouts.home');
 });
 
-Route::get('/archive', [DashboardController::class, 'index'])->name('archive')->middleware('admin.only');
+Route::get('/archive', [ArchiveController::class, 'index'])->name('archive')->middleware('admin.only');
 
 
 // Google login
