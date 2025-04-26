@@ -26,6 +26,7 @@ class FileController extends Controller
 
         $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'docx'];
         $fileExtension = strtolower($file->getClientOriginalExtension());
+
         if (!in_array($fileExtension, $allowedExtensions)) {
             return back()->with('error', 'Tipe file tidak diperbolehkan.');
         }
@@ -52,10 +53,11 @@ class FileController extends Controller
             return back()->with('error', 'Gagal upload ke Supabase Storage: ' . $storageResponse->body());
         }
 
-        // Insert metadata ke table Supabase (table: archives)
+        // Insert metadata ke Supabase table
         $supabaseInsertUrl = env('SUPABASE_URL') . '/rest/v1/archives';
         $userId = Auth::id();
 
+        // Pastikan semua field aman UTF-8
         $data = [
             'name' => $this->fixEncoding($fileName),
             'path' => $this->fixEncoding($path),
@@ -63,27 +65,12 @@ class FileController extends Controller
             'size' => $fileSize,
             'uploaded_by' => $userId,
         ];
-        
-        // Tambahin debug sementara
-        dd($data); // uncomment ini untuk lihat isi $data di browser pas error.
-        
-        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
-        
+
+        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+
         if ($jsonData === false) {
-            return back()->with('error', 'Gagal encode data JSON: ' . json_last_error_msg());
+            return back()->with('error', 'Gagal encode JSON: ' . json_last_error_msg());
         }
-        foreach ($data as $key => $val) {
-            if (!mb_check_encoding($val, 'UTF-8')) {
-                dd("Field $key bukan UTF-8", $val);
-            }
-        }
-        foreach ($data as $key => $val) {
-            if (!mb_detect_encoding($val, 'UTF-8', true)) {
-                dd("Field $key encodingnya rusak", $val);
-            }
-        }
-        
-        
 
         $insertResponse = Http::withHeaders([
             'apikey' => env('SUPABASE_API_KEY'),
@@ -98,44 +85,42 @@ class FileController extends Controller
 
         return back()->with('success', 'File berhasil diupload dan disimpan!');
     }
+
     private function fixEncoding($value)
     {
         if (!is_string($value)) {
             return $value;
         }
-    
-        // Convert ke UTF-8
-        $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-    
-        // Hapus karakter non-printable termasuk invisible character (lebih agresif)
+
+        // Convert ke UTF-8 jika perlu
+        if (!mb_check_encoding($value, 'UTF-8')) {
+            $value = mb_convert_encoding($value, 'UTF-8', 'auto');
+        }
+
+        // Hilangkan karakter aneh (invisible, null byte, dsb)
         $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', $value);
-    
-        // Trim spasi di awal dan akhir string
-        $value = trim($value);
-    
-        return $value;
+
+        return trim($value);
     }
-    
-    
+
     private function sanitizeFileName($fileName)
     {
         // Pastikan UTF-8
         $fileName = $this->ensureUtf8($fileName);
-    
-        // Replace spasi jadi dash (-), tapi JANGAN ubah huruf kapital
+
+        // Ganti spasi dengan dash
         $fileName = str_replace(' ', '-', $fileName);
-    
-        // Hapus karakter yang tidak wajar, tapi biarkan huruf besar/kecil, angka, dash, underscore, titik
+
+        // Hapus semua karakter aneh kecuali huruf, angka, titik, underscore, dash
         $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $fileName);
-    
+
         return $fileName;
     }
-    
 
     private function ensureUtf8($string)
     {
         if (!mb_check_encoding($string, 'UTF-8')) {
-            $string = mb_convert_encoding($string, 'UTF-8', 'auto');
+            return mb_convert_encoding($string, 'UTF-8', 'auto');
         }
         return $string;
     }
