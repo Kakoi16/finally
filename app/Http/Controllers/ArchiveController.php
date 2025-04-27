@@ -25,7 +25,11 @@ class ArchiveController extends Controller
             }
     
             $archives = $response->json();
-            return view('archive.archive', compact('archives'));
+            return view('archive.archive', [
+                'archives' => $archives,
+                'files' => $archives, // tambahan ini untuk all-files
+            ]);
+            
     
         } catch (\Exception $e) {
             return response()->view('errors.custom', ['message' => $e->getMessage()], 500);

@@ -24,11 +24,12 @@
 
     <!-- Halaman lainnya -->
     @include('archive.pages.all-files')
-    @include('archive.pages.shared')
-    @include('archive.pages.recent')
-    @include('archive.pages.favorites')
-    @include('archive.pages.trash')
-    @include('archive.pages.register')
+@include('archive.pages.shared')
+@include('archive.pages.recent')
+@include('archive.pages.favorites')
+@include('archive.pages.trash')
+@include('archive.pages.register')
+
 
 @endsection
 

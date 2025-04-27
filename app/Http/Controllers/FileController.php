@@ -124,9 +124,8 @@ class FileController extends Controller
     ];
 
     try {
-        // Ambil file berdasarkan path folder
         $response = Http::withHeaders($headers)
-            ->get("$supabaseUrl/rest/v1/archives?path=eq.uploads/$folderName&select=*");
+            ->get("$supabaseUrl/rest/v1/archives?path=like.uploads/$folderName/%&select=*");
 
         if (!$response->successful()) {
             throw new \Exception('Supabase API error: ' . $response->body());
@@ -144,7 +143,10 @@ class FileController extends Controller
             }
         }
 
-        return view('archive.pages.all-files', ['files' => $archives]);
+        return view('archive.pages.all-files', [
+            'files' => $archives,
+            'currentFolder' => $folderName, // <-- Tambahkan info folder sekarang
+        ]);
     } catch (\Exception $e) {
         return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
     }
