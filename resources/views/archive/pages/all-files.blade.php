@@ -52,6 +52,31 @@
             </div>
         </form>
     </div>
+    <!-- List Files -->
+<div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-lg font-semibold mb-4">Daftar File</h2>
+
+    @if(count($files) > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @foreach($files as $file)
+                <div class="border p-4 rounded-lg shadow-sm flex flex-col justify-between">
+                    <div>
+                        <p class="text-gray-700 font-semibold truncate">{{ $file['name'] }}</p>
+                        <p class="text-gray-500 text-sm mt-1">{{ $file['created_at'] }}</p>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <a href="{{ $file['url'] }}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">
+                            Lihat
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <p class="text-gray-500">Belum ada file yang diupload.</p>
+    @endif
+</div>
+
     <script>
 function toggleCreateFolderForm() {
     var form = document.getElementById('create-folder-form');
