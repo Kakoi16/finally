@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class FolderController extends Controller
 {
+    // Method untuk create folder
     public function create(Request $request)
     {
         $request->validate([
@@ -26,5 +27,12 @@ class FolderController extends Controller
         }
 
         return back()->with('error', 'Gagal membuat folder: ' . $response->body());
+    }
+
+    // Method untuk menampilkan halaman folder
+    public function show($folderName)
+    {
+        return view('folders.folder-jokowi'); 
+        // Nanti bisa dibuat dinamis juga kalau mau, sekarang simple dulu
     }
 }

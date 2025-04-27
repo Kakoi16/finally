@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ArchiveController;
-
+use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
 
 Route::middleware('guest')->group(function () {
@@ -50,10 +50,8 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 
 // routes/folders
 // routes/web.php
-
-Route::get('/folders/{folderName}', [FileController::class, 'openFolder'])->name('folders.open');
-
-
+Route::get('/folders/{folderName}', [FolderController::class, 'show']);
+Route::post('/folders/create', [FolderController::class, 'create']);
 
 Route::get('/files', [FileController::class, 'index'])->name('files.index');
 
