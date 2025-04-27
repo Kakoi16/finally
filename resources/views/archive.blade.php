@@ -124,6 +124,15 @@ document.addEventListener('DOMContentLoaded', function () {
         defaultMenu.classList.add('bg-blue-100', 'text-blue-600');
         defaultMenu.classList.remove('hover:bg-gray-100');
     }
+
+    // Handling URL hash (e.g. for /folders/{folderName}#)
+    window.addEventListener('hashchange', function () {
+        const folderName = window.location.hash.substring(1); // Ambil bagian setelah '#'
+        if (folderName) {
+            // Logika untuk menampilkan halaman folder
+            showPage(folderName);
+        }
+    });
 });
 
 </script>

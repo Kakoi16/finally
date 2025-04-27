@@ -45,10 +45,22 @@ class FolderController extends Controller
         }
     }
 
-    // Method untuk menampilkan halaman folder
-    public function show($folderName)
-    {
-        return view('archive.pages.folder-detail', compact('folderName'));
-    }
+ // Method untuk menampilkan halaman folder
+ public function show($folderName)
+ {
+     // Ambil daftar file berdasarkan folderName dari Supabase (atau database)
+     $response = Http::withHeaders([
+         'apikey' => $this->supabaseKey,
+         'Authorization' => 'Bearer ' . $this->supabaseKey,
+         'Content-Type' => 'application/json',
+     ])->get($this->supabaseUrl, [
+         'folder' => $folderName, // Misalnya ada kolom 'folder' yang menyimpan nama folder
+     ]);
+ 
+     $files = $response->json();
+ 
+     return view('archive.pages.folder-detail', compact('folderName', 'files'));
+ }
+ 
     
 }

@@ -50,7 +50,8 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 
 // routes/folders
 // routes/web.php
-Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
+Route::get('/folders/{folderName}', [FolderController::class, 'show'])
+     ->name('folders.open');
 
 Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
 
