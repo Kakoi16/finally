@@ -1,127 +1,84 @@
 <?php
 
+// app/Http/Controllers/FileController.php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class FileController extends Controller
 {
+    protected $supabaseUrl;
+    protected $supabaseKey;
+
+    public function __construct()
+    {
+        $this->supabaseUrl = env('SUPABASE_URL') . '/rest/v1/archives';
+        $this->supabaseKey = env('SUPABASE_API_KEY');
+    }
+
     public function upload(Request $request)
     {
-        if (!$request->hasFile('file')) {
-            return back()->with('error', 'Tidak ada file yang diupload.');
-        }
+        $request->validate([
+            'file' => 'required|file',
+        ]);
 
         $file = $request->file('file');
 
-        if (!$file->isValid()) {
-            return back()->with('error', 'File tidak valid.');
-        }
+        // Simpan file ke local storage sementara
+        $path = $file->store('uploads', 'public');
 
-        if ($file->getSize() > 5 * 1024 * 1024) {
-            return back()->with('error', 'Ukuran file maksimal 5MB.');
-        }
-
-        $allowedExtensions = ['pdf', 'jpg', 'jpeg', 'png', 'docx'];
-        $fileExtension = strtolower($file->getClientOriginalExtension());
-
-        if (!in_array($fileExtension, $allowedExtensions)) {
-            return back()->with('error', 'Tipe file tidak diperbolehkan.');
-        }
-
-        $originalFileName = $file->getClientOriginalName();
-        $fileName = $this->sanitizeFileName($originalFileName);
-
-        $fileContent = file_get_contents($file->getRealPath());
-        $fileSize = $file->getSize();
-        $fileType = $fileExtension;
-
-        $bucketName = 'storage';
-        $path = 'uploads/' . $fileName;
-
-        $storageUrl = env('SUPABASE_URL') . '/storage/v1/object/' . $bucketName . '/' . $path;
-
-        // Upload file ke Supabase Storage
-        $storageResponse = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-            'Content-Type' => 'application/octet-stream',
-        ])->put($storageUrl, $fileContent);
-
-        if (!$storageResponse->successful()) {
-            return back()->with('error', 'Gagal upload ke Supabase Storage: ' . $storageResponse->body());
-        }
-
-        // Insert metadata ke Supabase table
-        $supabaseInsertUrl = env('SUPABASE_URL') . '/rest/v1/archives';
-        $userId = Auth::id();
-
-        // Pastikan semua field aman UTF-8
-        $data = [
-            'name' => $this->fixEncoding($fileName),
-            'path' => $this->fixEncoding($path),
-            'type' => $this->fixEncoding($fileType),
-            'size' => $fileSize,
-            'uploaded_by' => $userId,
-        ];
-
-        $jsonData = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-
-        if ($jsonData === false) {
-            return back()->with('error', 'Gagal encode JSON: ' . json_last_error_msg());
-        }
-
-        $insertResponse = Http::withHeaders([
-            'apikey' => env('SUPABASE_API_KEY'),
-            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        // Ambil user ID (kalau pakai Auth::user())
+        $uploadedBy = auth()->user()->id ?? null; // Asumsi kamu udah login pakai UUID
+        
+        // Kirim ke Supabase
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
             'Content-Type' => 'application/json',
             'Prefer' => 'return=minimal',
-        ])->withBody($jsonData, 'application/json')->post($supabaseInsertUrl);
+        ])->post($this->supabaseUrl, [
+            'name' => $file->getClientOriginalName(),
+            'path' => $path,
+            'type' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+            'uploaded_by' => $uploadedBy,
+        ]);
 
-        if (!$insertResponse->successful()) {
-            return back()->with('error', 'Gagal simpan metadata file: ' . $insertResponse->body());
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'File berhasil diupload.');
+        } else {
+            return redirect()->back()->with('error', 'Gagal upload file.');
         }
-
-        return back()->with('success', 'File berhasil diupload dan disimpan!');
     }
 
-    private function fixEncoding($value)
+    public function createFolder(Request $request)
     {
-        if (!is_string($value)) {
-            return $value;
+        $request->validate([
+            'folder_name' => 'required|string|max:255',
+        ]);
+
+        $uploadedBy = auth()->user()->id ?? null;
+
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+            'Prefer' => 'return=minimal',
+        ])->post($this->supabaseUrl, [
+            'name' => $request->folder_name,
+            'path' => 'uploads/' . Str::slug($request->folder_name),
+            'type' => 'folder',
+            'size' => 0,
+            'uploaded_by' => $uploadedBy,
+        ]);
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Folder berhasil dibuat.');
+        } else {
+            return redirect()->back()->with('error', 'Gagal membuat folder.');
         }
-
-        // Convert ke UTF-8 jika perlu
-        if (!mb_check_encoding($value, 'UTF-8')) {
-            $value = mb_convert_encoding($value, 'UTF-8', 'auto');
-        }
-
-        // Hilangkan karakter aneh (invisible, null byte, dsb)
-        $value = preg_replace('/[\x00-\x1F\x7F\xA0]/u', '', $value);
-
-        return trim($value);
-    }
-
-    private function sanitizeFileName($fileName)
-    {
-        // Pastikan UTF-8
-        $fileName = $this->ensureUtf8($fileName);
-
-        // Ganti spasi dengan dash
-        $fileName = str_replace(' ', '-', $fileName);
-
-        // Hapus semua karakter aneh kecuali huruf, angka, titik, underscore, dash
-        $fileName = preg_replace('/[^\p{L}\p{N}\.\_\-]/u', '', $fileName);
-
-        return $fileName;
-    }
-
-    private function ensureUtf8($string)
-    {
-        if (!mb_check_encoding($string, 'UTF-8')) {
-            return mb_convert_encoding($string, 'UTF-8', 'auto');
-        }
-        return $string;
     }
 }
