@@ -53,20 +53,37 @@ class FolderController extends Controller
             'Authorization' => 'Bearer ' . $this->supabaseKey,
             'Content-Type' => 'application/json',
         ])->get($this->supabaseUrl . '?path=like.uploads/' . $folderName . '/%');
-        
-        
     
-        // Cek apakah respons berhasil dan formatnya sesuai dengan yang diharapkan
         if ($response->successful()) {
-            $files = $response->json();  // Pastikan respons sudah berupa array atau objek yang sesuai
+            $files = $response->json();
         } else {
-            // Jika gagal, kembalikan error atau data kosong
             $files = [];
         }
     
-        // Kirim data ke view
-        return view('archive.pages.folder-detail', compact('folderName', 'files'));
+        // Path folder saat ini
+        $currentFolder = 'uploads/' . $folderName;
+    
+        // FILTER supaya hanya tampil file/folder di dalam folder ini saja (bukan subfolder/subfile lebih dalam)
+        $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
+            $path = $file['path'] ?? '';
+    
+            // Harus mulai dengan current folder
+            if (Str::startsWith($path, $currentFolder . '/')) {
+                $remainingPath = Str::after($path, $currentFolder . '/');
+    
+                // Pastikan tidak ada "/" lagi (artinya langsung di dalam folder ini, bukan subfolder)
+                return !Str::contains($remainingPath, '/');
+            }
+    
+            return false;
+        });
+    
+        return view('archive.pages.folder-detail', [
+            'folderName' => $folderName,
+            'files' => $filteredFiles
+        ]);
     }
+    
     
     public function createSubfolder(Request $request, $parentFolder)
 {
