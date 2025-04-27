@@ -15,9 +15,7 @@ $files = $archives ?? [];
     {{ session('error') }}
 </div>
 @endif
-@extends('layouts.app')
 
-@section('content')
 <div id="all-files-page" class="page-content p-6 space-y-6">
     <!-- Header with Breadcrumbs and Actions -->
     <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
@@ -174,8 +172,7 @@ $files = $archives ?? [];
         </div>
         @endif
     </div>
-</div>
-@endsection
+</div>a
 <script>
     function toggleCreateFolderForm() {
         var form = document.getElementById('create-folder-form');
