@@ -58,7 +58,8 @@
 
     @if(!empty($files) && count($files) > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @foreach($files as $file)
+        @foreach ($archives as $file)
+
                 <div class="border p-4 rounded-lg shadow-sm flex flex-col justify-between">
                     <div>
                         <p class="text-gray-700 font-semibold truncate">{{ $file['name'] }}</p>
