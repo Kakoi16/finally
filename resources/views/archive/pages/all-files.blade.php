@@ -1,4 +1,10 @@
 <!-- resources/views/all-files.blade.php -->
+
+@php
+    $files = $archives ?? [];
+@endphp
+
+
 @if(session('success'))
     <div class="bg-green-100 text-green-800 p-4 rounded mb-4">
         {{ session('success') }}
@@ -58,8 +64,7 @@
 
     @if(!empty($files) && count($files) > 0)
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        @foreach ($archives as $file)
-
+            @foreach($files as $file)
                 <div class="border p-4 rounded-lg shadow-sm flex flex-col justify-between">
                     <div>
                         <p class="text-gray-700 font-semibold truncate">{{ $file['name'] }}</p>
