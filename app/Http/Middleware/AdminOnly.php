@@ -12,7 +12,13 @@ class AdminOnly
     {
         $user = session('user');
 
-        if (!is_array($user) || !isset($user['role']) || $user['role'] !== 'admin') {
+        // Kalau belum login (session kosong), redirect ke login
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        // Kalau bukan admin, abort 403
+        if (!isset($user['role']) || $user['role'] !== 'admin') {
             abort(403, 'Akses hanya untuk admin.');
         }
 

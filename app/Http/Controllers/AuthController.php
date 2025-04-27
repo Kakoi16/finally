@@ -136,10 +136,10 @@ class AuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required|string',
         ]);
-
+    
         $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
         $table       = env('SUPABASE_TABLE');
-
+    
         try {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
@@ -148,34 +148,40 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal menghubungi server.'], 500);
         }
-
+    
         if (!$response->successful() || empty($response->json())) {
             return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
         }
-
+    
         $user = $response->json()[0];
-
-        // Validasi role admin
-        if ($user['role'] !== 'admin') {
-            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat login.'], 403);
-        }
-
+    
+        // Cek password
         if (!Hash::check($request->password, $user['password'])) {
             return response()->json(['success' => false, 'message' => 'Password salah.'], 401);
         }
-
+    
+        // Cek role admin
+        if ($user['role'] !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat login.'], 403);
+        }
+    
+        // Simpan user ke session
         session([
-            'user'      => $user,
-            'is_admin'  => true,
+            'user' => [
+                'id'    => $user['id'],
+                'name'  => $user['name'],
+                'email' => $user['email'],
+                'role'  => $user['role'], // 'admin'
+            ],
         ]);
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
-            'redirect' => route('archive')
+            'redirect' => route('dashboard') // atau ke /archive kalau mau langsung
         ]);
-        
     }
+    
     public function showLogin()
 {
     return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
