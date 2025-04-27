@@ -32,7 +32,7 @@ class FolderController extends Controller
     // Method untuk menampilkan halaman folder
     public function show($folderName)
     {
-        return view('folders.folder-jokowi'); 
-        // Nanti bisa dibuat dinamis juga kalau mau, sekarang simple dulu
+        return view('archive.pages.folder-detail', compact('folderName'));
     }
+    
 }
