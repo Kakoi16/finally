@@ -172,7 +172,7 @@ $files = $archives ?? [];
         </div>
         @endif
     </div>
-</div>a
+</div>
 <script>
     function toggleCreateFolderForm() {
         var form = document.getElementById('create-folder-form');
