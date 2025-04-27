@@ -2,7 +2,22 @@
 
 @php
 $files = $archives ?? [];
+
+$filteredFiles = [];
+
+foreach ($files as $file) {
+    if (!isset($file['path'])) {
+        continue;
+    }
+
+    $relativePath = str_replace('uploads/', '', $file['path']);
+
+    if (strpos($relativePath, '/') === false) {
+        $filteredFiles[] = $file;
+    }
+}
 @endphp
+
 
 @if(session('success'))
 <div class="bg-green-100 text-green-800 p-4 rounded mb-4">
@@ -113,7 +128,7 @@ $files = $archives ?? [];
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($files as $file)
+                @foreach($filteredFiles as $file)
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
