@@ -36,7 +36,11 @@
                             <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                             </svg>
-                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">All Files</span>
+                            @if(isset($currentFolder))
+    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">{{ $currentFolder }}</span>
+@else
+    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">All Files</span>
+@endif
                         </div>
                     </li>
                 </ol>
@@ -137,7 +141,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end gap-2">
                                         @if(isset($file['type']) && $file['type'] === 'folder')
-                                            <a href="#" class="text-blue-600 hover:text-blue-900">Open</a>
+                                            <a href="{{ route('folders.open', ['folderName' => basename($file['path'])]) }}" class="text-blue-600 hover:text-blue-900">Open</a>
                                         @else
                                             <a href="{{ $file['url'] ?? '#' }}" target="_blank" class="text-blue-600 hover:text-blue-900">View</a>
                                         @endif

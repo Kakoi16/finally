@@ -115,48 +115,45 @@ class FileController extends Controller
             return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
         }
     }
-    public function openFolder($folderName)
-    {
-        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-        $headers = [
-            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-            'apikey'        => env('SUPABASE_API_KEY'),
-        ];
-    
-        try {
-            // Fetch files and folders from the specified folder
-            $response = Http::withHeaders($headers)
-                ->get("$supabaseUrl/rest/v1/archives?select=*&path=like.uploads/$folderName/%");
-    
-            if (!$response->successful()) {
-                throw new \Exception('Supabase API error: ' . $response->body());
-            }
-    
-            // Get the list of files in the folder
-            $files = $response->json();
-    
-            // Set current folder to show on breadcrumb
-            $currentFolder = 'uploads/' . $folderName;
-    
-            // Add the full URL for each file
-            $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
-    
-            foreach ($files as &$file) {
-                if (($file['type'] ?? '') !== 'folder') {
-                    $file['url'] = $supabaseStorageUrl . $file['path'];
-                } else {
-                    $file['url'] = '#';
-                }
-            }
-    
-            // Return the view with the current folder and files in that folder
-            return view('archive.pages.all-files', [
-                'files' => $files,
-                'currentFolder' => $currentFolder,
-            ]);
-        } catch (\Exception $e) {
-            return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
+    // FileController.php
+
+public function openFolder($folderName)
+{
+    $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+    $headers = [
+        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        'apikey'        => env('SUPABASE_API_KEY'),
+    ];
+
+    try {
+        // Fetch files that are inside the selected folder
+        $response = Http::withHeaders($headers)
+            ->get("$supabaseUrl/rest/v1/archives?select=*&path=like.uploads/$folderName/%");
+
+        if (!$response->successful()) {
+            throw new \Exception('Supabase API error: ' . $response->body());
         }
+
+        $files = $response->json();
+
+        $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
+
+        foreach ($files as &$file) {
+            if (($file['type'] ?? '') !== 'folder') {
+                $file['url'] = $supabaseStorageUrl . $file['path'];
+            } else {
+                $file['url'] = '#';
+            }
+        }
+
+        // Tambahkan variable currentFolder agar breadcrumb tau kita lagi di folder mana
+        return view('archive.pages.all-files', [
+            'files' => $files,
+            'currentFolder' => $folderName,
+        ]);
+    } catch (\Exception $e) {
+        return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
     }
+}
     
 }

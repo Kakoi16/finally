@@ -49,7 +49,10 @@ Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upl
 Route::post('/folders/create', [FileController::class, 'createFolder'])->name('folders.create');
 
 // routes/folders
-Route::get('/folders/{folder}', [FileController::class, 'openFolder'])->name('folders.open');
+// routes/web.php
+
+Route::get('/folders/{folderName}', [FileController::class, 'openFolder'])->name('folders.open');
+
 
 
 Route::get('/files', [FileController::class, 'index'])->name('files.index');
