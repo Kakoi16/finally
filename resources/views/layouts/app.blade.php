@@ -19,7 +19,12 @@
         <main class="flex-grow container mx-auto px-4 py-6 flex flex-col md:flex-row">
             
             {{-- Sidebar --}}
-            @include('partials.sidebar')
+@if(View::hasSection('custom-sidebar'))
+    @yield('custom-sidebar')
+@else
+    @include('partials.sidebar')
+@endif
+
 
             {{-- Content --}}
             <section class="flex-grow bg-white rounded-lg shadow-md p-4">
