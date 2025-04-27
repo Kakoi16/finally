@@ -57,7 +57,7 @@ class FileController extends Controller
 }
 
 
-public function index()
+public function index(Request $request, $folderName = null)
 {
     $response = Http::withHeaders([
         'apikey' => $this->supabaseKey,
@@ -66,15 +66,20 @@ public function index()
 
     $files = $response->json();
 
-    // Filter hanya yang ada langsung di dalam "uploads"
-    $filteredFiles = array_filter($files, function ($file) {
+    // Path folder yang sedang dibuka
+    $currentFolder = 'uploads';
+    if ($folderName) {
+        $currentFolder .= '/' . $folderName;
+    }
+
+    $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
         $path = $file['path'] ?? '';
 
-        // Hanya ambil yang berada LANGSUNG di uploads/ (tidak ada / lagi setelah uploads/xxx)
-        if (Str::startsWith($path, 'uploads/')) {
-            $remainingPath = Str::after($path, 'uploads/');
+        // Pastikan file berada di folder saat ini
+        if (Str::startsWith($path, $currentFolder . '/')) {
+            $remainingPath = Str::after($path, $currentFolder . '/');
 
-            // Kalau tidak ada "/" lagi setelah uploads/xxx
+            // Kalau setelah path folder saat ini tidak ada '/' lagi (artinya langsung file/folder)
             return !Str::contains($remainingPath, '/');
         }
 
@@ -82,7 +87,8 @@ public function index()
     });
 
     return view('all-files', [
-        'archives' => $filteredFiles
+        'archives' => $filteredFiles,
+        'currentFolder' => $folderName,
     ]);
 }
 
