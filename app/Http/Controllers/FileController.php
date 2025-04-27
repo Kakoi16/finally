@@ -66,7 +66,6 @@ public function index(Request $request, $folderName = null)
 
     $files = $response->json();
 
-    // Path folder yang sedang dibuka
     $currentFolder = 'uploads';
     if ($folderName) {
         $currentFolder .= '/' . $folderName;
@@ -74,13 +73,16 @@ public function index(Request $request, $folderName = null)
 
     $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
         $path = $file['path'] ?? '';
+        $type = $file['type'] ?? '';
 
-        // Pastikan file berada di folder saat ini
+        // Hanya ambil file/folder yang langsung di dalam currentFolder
         if (Str::startsWith($path, $currentFolder . '/')) {
             $remainingPath = Str::after($path, $currentFolder . '/');
 
-            // Kalau setelah path folder saat ini tidak ada '/' lagi (artinya langsung file/folder)
-            return !Str::contains($remainingPath, '/');
+            // Jika tidak mengandung '/' lagi, berarti langsung di current folder
+            if (!Str::contains($remainingPath, '/')) {
+                return true;
+            }
         }
 
         return false;
