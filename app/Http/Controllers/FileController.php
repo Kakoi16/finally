@@ -125,7 +125,7 @@ class FileController extends Controller
 
     try {
         $response = Http::withHeaders($headers)
-            ->get("$supabaseUrl/rest/v1/archives?path=like.uploads/$folderName/%&select=*");
+            ->get("$supabaseUrl/rest/v1/archives?select=*&path=like.uploads/$folderName/%");
 
         if (!$response->successful()) {
             throw new \Exception('Supabase API error: ' . $response->body());
@@ -136,16 +136,17 @@ class FileController extends Controller
         $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
 
         foreach ($archives as &$file) {
-            if (($file['type'] ?? '') !== 'folder') {
-                $file['url'] = $supabaseStorageUrl . $file['path'];
+            if (($file['type'] ?? '') === 'folder') {
+                $file['url'] = route('folders.open', ['folder' => basename($file['path'])]);
             } else {
-                $file['url'] = '#';
+                $file['url'] = $supabaseStorageUrl . $file['path'];
             }
         }
 
         return view('archive.pages.all-files', [
             'files' => $archives,
-            'currentFolder' => $folderName, // <-- Tambahkan info folder sekarang
+            'currentFolder' => $folderName,
+            'isInFolder' => true,
         ]);
     } catch (\Exception $e) {
         return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
