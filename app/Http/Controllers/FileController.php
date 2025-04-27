@@ -100,7 +100,7 @@ class FileController extends Controller
         $archives = $response->json();
 
         // Tambahkan url untuk setiap file
-        $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/YOUR_BUCKET_NAME/';
+        $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
 
         foreach ($archives as &$file) {
             if (($file['type'] ?? '') !== 'folder') {
