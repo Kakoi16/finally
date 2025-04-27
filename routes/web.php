@@ -50,12 +50,10 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 
 // routes/folders
 // routes/web.php
-// Folder routes, khusus admin
-Route::middleware(['auth', 'admin.only'])->group(function () {
-    Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
-    Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
-});
+Route::get('/folders/{folderName}', [FolderController::class, 'show'])
+     ->name('folders.open');
 
+Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
 
 Route::get('/files', [FileController::class, 'index'])->name('files.index');
 
