@@ -24,6 +24,24 @@
 
 @section('content')
     <div class="p-6">
+    <div class="mt-6">
+    <h2 class="text-xl font-semibold mb-2">Tambah Subfolder</h2>
+    <form method="POST" action="{{ route('folders.createSubfolder', $folderName) }}">
+        @csrf
+        <input type="text" name="folder_name" placeholder="Nama Subfolder" class="border p-2 rounded w-full mb-2">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Buat Subfolder</button>
+    </form>
+</div>
+
+<div class="mt-6">
+    <h2 class="text-xl font-semibold mb-2">Upload File ke Folder Ini</h2>
+    <form method="POST" action="{{ route('files.uploadToFolder', $folderName) }}" enctype="multipart/form-data">
+        @csrf
+        <input type="file" name="file" class="border p-2 rounded w-full mb-2">
+        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Upload File</button>
+    </form>
+</div>
+
         <h1 class="text-2xl font-bold">Folder: {{ $folderName }}</h1>
         <p>Berikut adalah isi folder <strong>{{ $folderName }}</strong>.</p>
 
