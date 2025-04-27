@@ -52,6 +52,8 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 Route::get('/folders/{folder}', [FileController::class, 'openFolder'])->name('folders.open');
 
 
+Route::get('/files', [FileController::class, 'index'])->name('files.index');
+
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
