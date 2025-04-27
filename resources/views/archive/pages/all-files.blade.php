@@ -65,9 +65,10 @@
                         <p class="text-gray-500 text-sm mt-1">{{ $file['created_at'] }}</p>
                     </div>
                     <div class="flex justify-end mt-4">
-                        <a href="{{ $file['url'] }}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">
-                            Lihat
-                        </a>
+                    <a href="{{ $file['url'] ?? '#' }}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm">
+    Lihat
+</a>
+
                     </div>
                 </div>
             @endforeach

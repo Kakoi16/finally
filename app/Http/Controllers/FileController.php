@@ -82,31 +82,41 @@ class FileController extends Controller
         }
     }
     public function index()
-    {
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-        ])->get($this->supabaseUrl);
-    
+{
+    $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+    $headers = [
+        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+        'apikey'        => env('SUPABASE_API_KEY'),
+    ];
+
+    try {
+        $response = Http::withHeaders($headers)
+            ->get("$supabaseUrl/rest/v1/archives?select=*");
+
         if (!$response->successful()) {
-            return view('all-files', ['files' => []]);
+            throw new \Exception('Supabase API error: ' . $response->body());
         }
-    
-        $files = $response->json() ?? [];
-    
-        // Tambahkan URL download kalau file (bukan folder)
+
+        $archives = $response->json();
+
+        // Tambahkan url untuk setiap file
         $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/YOUR_BUCKET_NAME/';
-    
-        foreach ($files as &$file) {
+
+        foreach ($archives as &$file) {
             if (($file['type'] ?? '') !== 'folder') {
                 $file['url'] = $supabaseStorageUrl . $file['path'];
             } else {
                 $file['url'] = '#';
             }
         }
-    
-        return view('all-files', compact('files'));
+
+        return view('archive.pages.all-files', ['files' => $archives]);
+
+    } catch (\Exception $e) {
+        return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
     }
+}
+
     
 
 }
