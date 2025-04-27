@@ -1,4 +1,16 @@
-<!-- resources/views/all-files.blade.php -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Perusahaan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @stack('styles')
+</head>
+<body>
+    <!-- resources/views/all-files.blade.php -->
+
 @php
 $files = $archives ?? [];
 @endphp
@@ -14,8 +26,7 @@ $files = $archives ?? [];
     {{ session('error') }}
 </div>
 @endif
-@extends('layouts.app') 
-@section('content')
+
 <div id="all-files-page" class="page-content p-6 space-y-6 hidden">
     <!-- Header with Breadcrumbs and Actions -->
     <div class="bg-white p-4 rounded-lg shadow flex justify-between items-center">
@@ -194,10 +205,12 @@ $files = $archives ?? [];
         @endif
     </div>
 </div>
-@endsection
+
 <script>
     function toggleCreateFolderForm() {
         var form = document.getElementById('create-folder-form');
         form.classList.toggle('hidden');
     }
 </script>
+</body>
+</html>
