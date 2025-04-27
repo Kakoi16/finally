@@ -25,12 +25,16 @@
                 </form>
             </li>
             <li>
-                <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-blue-50 text-gray-700 hover:text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    Tambah File
-                </a>
+            <form method="POST" action="{{ route('files.uploadToFolder', $folderName) }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-3">
+                        <input type="file" name="file" 
+                               class="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-200">
+                    </div>
+                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-200">
+                        Upload File
+                    </button>
+                </form>
             </li>
             <li>
                 <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-blue-50 text-gray-700 hover:text-blue-600">
@@ -56,38 +60,6 @@
     <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
         <h1 class="text-2xl font-bold text-gray-800 mb-2">Folder: {{ $folderName }}</h1>
         <p class="text-gray-600 mb-6">Berikut adalah isi folder <strong>{{ $folderName }}</strong>.</p>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Form Tambah Subfolder -->
-            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                <h2 class="text-lg font-semibold mb-3 text-gray-700">Tambah Subfolder</h2>
-                <form method="POST" action="{{ route('folders.createSubfolder', $folderName) }}">
-                    @csrf
-                    <div class="mb-3">
-                        <input type="text" name="folder_name" placeholder="Nama Subfolder" 
-                               class="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-200">
-                    </div>
-                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition duration-200">
-                        Buat Subfolder
-                    </button>
-                </form>
-            </div>
-
-            <!-- Form Upload File -->
-            <div class="bg-green-50 p-4 rounded-lg border border-green-100">
-                <h2 class="text-lg font-semibold mb-3 text-gray-700">Upload File ke Folder Ini</h2>
-                <form method="POST" action="{{ route('files.uploadToFolder', $folderName) }}" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-3">
-                        <input type="file" name="file" 
-                               class="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-200">
-                    </div>
-                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition duration-200">
-                        Upload File
-                    </button>
-                </form>
-            </div>
-        </div>
 
         <!-- Daftar file dalam folder -->
         <div class="mt-8">
