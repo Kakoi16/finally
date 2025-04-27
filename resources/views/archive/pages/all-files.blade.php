@@ -15,6 +15,9 @@ $files = $archives ?? [];
     {{ session('error') }}
 </div>
 @endif
+@push('styles')
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+@endpush
 
 <div id="all-files-page" class="page-content p-6 space-y-6 hidden">
     <!-- Header with Breadcrumbs and Actions -->
@@ -33,33 +36,33 @@ $files = $archives ?? [];
                     </li>
 
                     @if (!empty($currentFolder))
-    @php
-        $folders = explode('/', $currentFolder);
-        $path = '';
-    @endphp
-    @foreach ($folders as $folder)
-        @php
-            $path .= $folder . '/';
-        @endphp
-        <li>
-            <div class="flex items-center">
-                <svg class="w-3 h-3 text-gray-400 mx-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
-                </svg>
-                <a href="{{ route('folders.open', ['folder' => rtrim($path, '/')]) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600">{{ $folder }}</a>
-            </div>
-        </li>
-    @endforeach
-@else
-    <li aria-current="page">
-        <div class="flex items-center">
-            <svg class="w-3 h-3 text-gray-400 mx-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
-            </svg>
-            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">All Files</span>
-        </div>
-    </li>
-@endif
+                    @php
+                    $folders = explode('/', $currentFolder);
+                    $path = '';
+                    @endphp
+                    @foreach ($folders as $folder)
+                    @php
+                    $path .= $folder . '/';
+                    @endphp
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-3 h-3 text-gray-400 mx-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                            </svg>
+                            <a href="{{ route('folders.open', ['folder' => rtrim($path, '/')]) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600">{{ $folder }}</a>
+                        </div>
+                    </li>
+                    @endforeach
+                    @else
+                    <li aria-current="page">
+                        <div class="flex items-center">
+                            <svg class="w-3 h-3 text-gray-400 mx-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+                            </svg>
+                            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2">All Files</span>
+                        </div>
+                    </li>
+                    @endif
 
                 </ol>
             </nav>
@@ -180,8 +183,8 @@ $files = $archives ?? [];
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
             </svg>
             <h3 class="mt-2 text-sm font-medium text-gray-900">
-    {{ !empty($currentFolder) ? 'No files in this folder' : 'No files' }}
-</h3>
+                {{ !empty($currentFolder) ? 'No files in this folder' : 'No files' }}
+            </h3>
             <p class="mt-1 text-sm text-gray-500">Get started by uploading a new file or creating a folder.</p>
             <div class="mt-6">
                 <button type="button" onclick="document.getElementById('file').click()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
