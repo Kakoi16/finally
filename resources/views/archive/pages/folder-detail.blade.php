@@ -9,8 +9,9 @@
         <div class="mt-4">
             <!-- Misalnya, menampilkan file terkait folder ini -->
             @foreach($files as $file)
-                <div>{{ $file->name }}</div>
-            @endforeach
+    <div>{{ $file['name'] }}</div>  
+@endforeach
+
         </div>
     </div>
 @endsection
