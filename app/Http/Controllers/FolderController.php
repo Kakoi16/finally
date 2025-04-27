@@ -8,25 +8,32 @@ use Illuminate\Support\Facades\Http;
 class FolderController extends Controller
 {
     // Method untuk create folder
-    public function create(Request $request)
+    public function createFolder(Request $request)
     {
         $request->validate([
             'folder_name' => 'required|string|max:255',
         ]);
 
-        $folderName = trim($request->input('folder_name'));
-        $path = 'uploads/' . $folderName . '/placeholder.txt'; // Supabase butuh file agar folder eksis
+        $uploadedBy = auth()->user()->id ?? null;
 
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-            'Content-Type' => 'application/octet-stream',
-        ])->put(env('SUPABASE_URL') . '/storage/v1/object/storage/' . $path, '');
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+            'Prefer' => 'return=minimal',
+        ])->post($this->supabaseUrl, [
+            'name' => $request->folder_name,
+            'path' => 'uploads/' . Str::slug($request->folder_name),
+            'type' => 'folder',
+            'size' => 0,
+            'uploaded_by' => $uploadedBy,
+        ]);
 
         if ($response->successful()) {
-            return back()->with('success', 'Folder berhasil dibuat!');
+            return redirect()->back()->with('success', 'Folder berhasil dibuat.');
+        } else {
+            return redirect()->back()->with('error', 'Gagal membuat folder.');
         }
-
-        return back()->with('error', 'Gagal membuat folder: ' . $response->body());
     }
 
     // Method untuk menampilkan halaman folder
