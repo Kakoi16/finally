@@ -25,7 +25,7 @@ class ArchiveController extends Controller
             }
     
             $archives = $response->json();
-            return view('archive.archive', compact('archives'));
+            return view('archive.pages.all-files', ['files' => $archives]);
     
         } catch (\Exception $e) {
             return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
