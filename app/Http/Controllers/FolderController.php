@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class FolderController extends Controller
 {
+    protected $supabaseUrl;
+    protected $supabaseKey;
+
+    public function __construct()
+    {
+        $this->supabaseUrl = env('SUPABASE_URL') . '/rest/v1/archives';
+        $this->supabaseKey = env('SUPABASE_API_KEY');
+    }
     // Method untuk create folder
     public function createFolder(Request $request)
     {
