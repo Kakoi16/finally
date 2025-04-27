@@ -13,12 +13,16 @@
         </div>
         <ul class="space-y-2">
             <li>
-                <a href="{{ route('folders.open', $folderName) }}" class="flex items-center px-3 py-2 rounded hover:bg-blue-50 text-gray-700 hover:text-blue-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
-                    </svg>
-                    Isi Folder
-                </a>
+            <form method="POST" action="{{ route('folders.createSubfolder', $folderName) }}">
+                    @csrf
+                    <div class="mb-3">
+                        <input type="text" name="folder_name" placeholder="Nama Subfolder" 
+                               class="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-200">
+                    </div>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition duration-200">
+                        Buat Subfolder
+                    </button>
+                </form>
             </li>
             <li>
                 <a href="#" class="flex items-center px-3 py-2 rounded hover:bg-blue-50 text-gray-700 hover:text-blue-600">
