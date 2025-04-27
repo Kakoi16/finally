@@ -82,30 +82,31 @@ class FileController extends Controller
         }
     }
     public function index()
-{
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-    ])->get($this->supabaseUrl);
-
-    if (!$response->successful()) {
-        return redirect()->back()->with('error', 'Gagal mengambil daftar file.');
-    }
-
-    $files = $response->json();
-
-    // Generate public URL untuk setiap file
-    $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
-
-    foreach ($files as &$file) {
-        if ($file['type'] !== 'folder') {
-            $file['url'] = $supabaseStorageUrl . $file['path'];
-        } else {
-            $file['url'] = '#'; // Folder tidak punya URL untuk preview
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->get($this->supabaseUrl);
+    
+        if (!$response->successful()) {
+            return view('all-files', ['files' => []]);
         }
+    
+        $files = $response->json() ?? [];
+    
+        // Tambahkan URL download kalau file (bukan folder)
+        $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/YOUR_BUCKET_NAME/';
+    
+        foreach ($files as &$file) {
+            if (($file['type'] ?? '') !== 'folder') {
+                $file['url'] = $supabaseStorageUrl . $file['path'];
+            } else {
+                $file['url'] = '#';
+            }
+        }
+    
+        return view('all-files', compact('files'));
     }
-
-    return view('all-files', compact('files'));
-}
+    
 
 }
