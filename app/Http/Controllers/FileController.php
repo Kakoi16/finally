@@ -32,7 +32,7 @@ class FileController extends Controller
 
         // Ambil user ID (kalau pakai Auth::user())
         $uploadedBy = auth()->user()->id ?? null; // Asumsi kamu udah login pakai UUID
-        
+
         // Kirim ke Supabase
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
@@ -82,6 +82,40 @@ class FileController extends Controller
         }
     }
     public function index()
+    {
+        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+        $headers = [
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'apikey'        => env('SUPABASE_API_KEY'),
+        ];
+
+        try {
+            $response = Http::withHeaders($headers)
+                ->get("$supabaseUrl/rest/v1/archives?select=*");
+
+            if (!$response->successful()) {
+                throw new \Exception('Supabase API error: ' . $response->body());
+            }
+
+            $archives = $response->json();
+
+            // Tambahkan url untuk setiap file
+            $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
+
+            foreach ($archives as &$file) {
+                if (($file['type'] ?? '') !== 'folder') {
+                    $file['url'] = $supabaseStorageUrl . $file['path'];
+                } else {
+                    $file['url'] = '#';
+                }
+            }
+
+            return view('archive.pages.all-files', ['files' => $archives]);
+        } catch (\Exception $e) {
+            return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
+        }
+    }
+    public function openFolder($folderName)
 {
     $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
     $headers = [
@@ -90,8 +124,9 @@ class FileController extends Controller
     ];
 
     try {
+        // Ambil file berdasarkan path folder
         $response = Http::withHeaders($headers)
-            ->get("$supabaseUrl/rest/v1/archives?select=*");
+            ->get("$supabaseUrl/rest/v1/archives?path=eq.uploads/$folderName&select=*");
 
         if (!$response->successful()) {
             throw new \Exception('Supabase API error: ' . $response->body());
@@ -99,7 +134,6 @@ class FileController extends Controller
 
         $archives = $response->json();
 
-        // Tambahkan url untuk setiap file
         $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
 
         foreach ($archives as &$file) {
@@ -111,12 +145,9 @@ class FileController extends Controller
         }
 
         return view('archive.pages.all-files', ['files' => $archives]);
-
     } catch (\Exception $e) {
         return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
     }
 }
-
-    
 
 }

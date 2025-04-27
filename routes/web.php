@@ -48,6 +48,9 @@ Route::get('/archive', [ArchiveController::class, 'index'])->name('archive')->mi
 Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
 Route::post('/folders/create', [FileController::class, 'createFolder'])->name('folders.create');
 
+// routes/folders
+Route::get('/folders/{folder}', [FileController::class, 'openFolder'])->name('folders.open');
+
 
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');

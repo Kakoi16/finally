@@ -137,7 +137,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end gap-2">
                                         @if(isset($file['type']) && $file['type'] === 'folder')
-                                            <a href="#" class="text-blue-600 hover:text-blue-900">Open</a>
+                                        <a href="{{ route('folders.open', ['folder' => $file['name']]) }}" class="text-blue-600 hover:text-blue-900">Open</a>
+
                                         @else
                                             <a href="{{ $file['url'] ?? '#' }}" target="_blank" class="text-blue-600 hover:text-blue-900">View</a>
                                         @endif
