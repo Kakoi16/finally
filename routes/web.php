@@ -8,6 +8,7 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
 
+// =================== Guest ===================
 Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -27,37 +28,35 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
-// Logout
+// =================== Authenticated User ===================
 Route::middleware('auth')->group(function () {
+    // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
+
+    // Archive (admin only)
+    Route::middleware('admin.only')->group(function () {
+        Route::get('/archive', [ArchiveController::class, 'index'])->name('archive');
+
+        // Folder routes
+        Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
+        Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
+        Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');
+
+        // File routes
+        Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
+        Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
+        Route::get('/files', [FileController::class, 'index'])->name('files.index');
+    });
 });
 
-// Dashboard
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
-
-// Home page
-// Route untuk halaman utama
+// =================== Public Pages ===================
 Route::get('/', function () {
     return view('layouts.home');
 });
 
-Route::get('/archive', [ArchiveController::class, 'index'])->name('archive')->middleware('admin.only');
-
-// routes/web.php
-
-Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
-Route::post('/folders/create', [FileController::class, 'createFolder'])->name('folders.create');
-
-// routes/folders
-// routes/web.php
-Route::middleware(['admin.only'])->group(function () {
-    Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
-    Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
-});
-
-
-Route::get('/files', [FileController::class, 'index'])->name('files.index');
-
-// Google login
+// =================== Google Login ===================
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);

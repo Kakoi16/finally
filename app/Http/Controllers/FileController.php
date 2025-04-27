@@ -19,68 +19,44 @@ class FileController extends Controller
         $this->supabaseKey = env('SUPABASE_API_KEY');
     }
 
-    public function upload(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file',
-        ]);
+    public function upload(Request $request, $folderName = null)
+{
+    $request->validate([
+        'file' => 'required|file',
+    ]);
 
-        $file = $request->file('file');
+    $file = $request->file('file');
+    $uploadedBy = auth()->user()->id ?? null;
 
-        // Simpan file ke local storage sementara
-        $path = $file->store('uploads', 'public');
-
-        // Ambil user ID (kalau pakai Auth::user())
-        $uploadedBy = auth()->user()->id ?? null; // Asumsi kamu udah login pakai UUID
-
-        // Kirim ke Supabase
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
-            'Prefer' => 'return=minimal',
-        ])->post($this->supabaseUrl, [
-            'name' => $file->getClientOriginalName(),
-            'path' => $path,
-            'type' => $file->getClientMimeType(),
-            'size' => $file->getSize(),
-            'uploaded_by' => $uploadedBy,
-        ]);
-
-        if ($response->successful()) {
-            return redirect()->back()->with('success', 'File berhasil diupload.');
-        } else {
-            return redirect()->back()->with('error', 'Gagal upload file.');
-        }
+    // Path penempatan
+    $path = 'uploads';
+    if ($folderName) {
+        $path .= '/' . $folderName;
     }
+    $path .= '/' . $file->getClientOriginalName(); // Nama file
 
-    public function createFolder(Request $request)
-    {
-        $request->validate([
-            'folder_name' => 'required|string|max:255',
-        ]);
+    // Kirim metadata file ke Supabase
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'Content-Type' => 'application/json',
+        'Prefer' => 'return=minimal',
+    ])->post($this->supabaseUrl, [
+        'name' => $file->getClientOriginalName(),
+        'path' => $path,
+        'type' => $file->getClientMimeType(),
+        'size' => $file->getSize(),
+        'uploaded_by' => $uploadedBy,
+    ]);
 
-        $uploadedBy = auth()->user()->id ?? null;
-
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
-            'Prefer' => 'return=minimal',
-        ])->post($this->supabaseUrl, [
-            'name' => $request->folder_name,
-            'path' => 'uploads/' . Str::slug($request->folder_name),
-            'type' => 'folder',
-            'size' => 0,
-            'uploaded_by' => $uploadedBy,
-        ]);
-
-        if ($response->successful()) {
-            return redirect()->back()->with('success', 'Folder berhasil dibuat.');
-        } else {
-            return redirect()->back()->with('error', 'Gagal membuat folder.');
-        }
+    if ($response->successful()) {
+        return redirect()->back()->with('success', 'File berhasil diupload.');
+    } else {
+        return redirect()->back()->with('error', 'Gagal upload file.');
     }
+}
+
+
     public function index()
     {
         $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
@@ -116,44 +92,5 @@ class FileController extends Controller
         }
     }
     // FileController.php
-
-public function openFolder($folderName)
-{
-    $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-    $headers = [
-        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-        'apikey'        => env('SUPABASE_API_KEY'),
-    ];
-
-    try {
-        // Fetch files that are inside the selected folder
-        $response = Http::withHeaders($headers)
-            ->get("$supabaseUrl/rest/v1/archives?select=*&path=like.uploads/$folderName/%");
-
-        if (!$response->successful()) {
-            throw new \Exception('Supabase API error: ' . $response->body());
-        }
-
-        $files = $response->json();
-
-        $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
-
-        foreach ($files as &$file) {
-            if (($file['type'] ?? '') !== 'folder') {
-                $file['url'] = $supabaseStorageUrl . $file['path'];
-            } else {
-                $file['url'] = '#';
-            }
-        }
-
-        // Tambahkan variable currentFolder agar breadcrumb tau kita lagi di folder mana
-        return view('archive.pages.all-files', [
-            'files' => $files,
-            'currentFolder' => $folderName,
-        ]);
-    } catch (\Exception $e) {
-        return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
-    }
-}
-    
+   
 }

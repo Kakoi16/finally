@@ -52,9 +52,8 @@ class FolderController extends Controller
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
             'Content-Type' => 'application/json',
-        ])->get($this->supabaseUrl, [
-            'filter' => 'folder.eq.' . $folderName,  // Sesuaikan dengan query Supabase yang benar
-        ]);
+        ])->get($this->supabaseUrl . '?path=like.uploads/' . $folderName . '/%');
+        
         
     
         // Cek apakah respons berhasil dan formatnya sesuai dengan yang diharapkan
@@ -69,5 +68,34 @@ class FolderController extends Controller
         return view('archive.pages.folder-detail', compact('folderName', 'files'));
     }
     
-    
+    public function createSubfolder(Request $request, $parentFolder)
+{
+    $request->validate([
+        'folder_name' => 'required|string|max:255',
+    ]);
+
+    $uploadedBy = auth()->user()->id ?? null;
+
+    $newPath = 'uploads/' . $parentFolder . '/' . Str::slug($request->folder_name);
+
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'Content-Type' => 'application/json',
+        'Prefer' => 'return=minimal',
+    ])->post($this->supabaseUrl, [
+        'name' => $request->folder_name,
+        'path' => $newPath,
+        'type' => 'folder',
+        'size' => 0,
+        'uploaded_by' => $uploadedBy,
+    ]);
+
+    if ($response->successful()) {
+        return redirect()->back()->with('success', 'Subfolder berhasil dibuat.');
+    } else {
+        return redirect()->back()->with('error', 'Gagal membuat subfolder.');
+    }
+}
+
 }
