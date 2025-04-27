@@ -57,40 +57,34 @@ class FileController extends Controller
 }
 
 
-    public function index()
-    {
-        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-        $headers = [
-            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-            'apikey'        => env('SUPABASE_API_KEY'),
-        ];
+public function index()
+{
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+    ])->get($this->supabaseUrl);
 
-        try {
-            $response = Http::withHeaders($headers)
-                ->get("$supabaseUrl/rest/v1/archives?select=*");
+    $files = $response->json();
 
-            if (!$response->successful()) {
-                throw new \Exception('Supabase API error: ' . $response->body());
-            }
+    // Filter hanya yang ada langsung di dalam "uploads"
+    $filteredFiles = array_filter($files, function ($file) {
+        $path = $file['path'] ?? '';
 
-            $archives = $response->json();
+        // Hanya ambil yang berada LANGSUNG di uploads/ (tidak ada / lagi setelah uploads/xxx)
+        if (Str::startsWith($path, 'uploads/')) {
+            $remainingPath = Str::after($path, 'uploads/');
 
-            // Tambahkan url untuk setiap file
-            $supabaseStorageUrl = 'https://jnsxbikmccdbxfxbqpso.supabase.co/storage/v1/object/public/storage/';
-
-            foreach ($archives as &$file) {
-                if (($file['type'] ?? '') !== 'folder') {
-                    $file['url'] = $supabaseStorageUrl . $file['path'];
-                } else {
-                    $file['url'] = '#';
-                }
-            }
-
-            return view('archive.pages.all-files', ['files' => $archives]);
-        } catch (\Exception $e) {
-            return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
+            // Kalau tidak ada "/" lagi setelah uploads/xxx
+            return !Str::contains($remainingPath, '/');
         }
-    }
-    // FileController.php
+
+        return false;
+    });
+
+    return view('all-files', [
+        'archives' => $filteredFiles
+    ]);
+}
+
    
 }
