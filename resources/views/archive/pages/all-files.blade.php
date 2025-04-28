@@ -172,9 +172,7 @@ foreach ($files as $file) {
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end gap-3">
                                 @if(isset($file['type']) && $file['type'] === 'folder')
-                                <a href="{{ route('folders.open', ['any' => str_replace('uploads/', '', $file['path'])]) }}" class="text-blue-600 hover:text-blue-800 transition-colors" title="Open">
-
-
+                                <a href="{{ route('folders.open', ['folderName' => basename($file['path'])]) }}" class="text-blue-600 hover:text-blue-800 transition-colors" title="Open">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-8-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
