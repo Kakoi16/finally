@@ -35,5 +35,34 @@ class ArchiveController extends Controller
             return response()->view('errors.custom', ['message' => $e->getMessage()], 500);
         }
     }
-    
+    public function openFolder($any)
+{
+    $path = 'uploads/' . $any; // Sesuaikan path penyimpananmu
+    $fullPath = storage_path('app/public/' . $path);
+
+    if (!file_exists($fullPath) || !is_dir($fullPath)) {
+        abort(404);
+    }
+
+    $files = [];
+    foreach (scandir($fullPath) as $file) {
+        if ($file === '.' || $file === '..') {
+            continue;
+        }
+
+        $files[] = [
+            'name' => $file,
+            'path' => $path . '/' . $file,
+            'type' => is_dir($fullPath . '/' . $file) ? 'folder' : 'file',
+            'size' => filesize($fullPath . '/' . $file),
+            'created_at' => date('Y-m-d H:i:s', filectime($fullPath . '/' . $file)),
+            'url' => asset('storage/' . $path . '/' . $file),
+        ];
+    }
+
+    $currentFolder = basename($path);
+
+    return view('archive.pages.all-files', compact('files', 'currentFolder'));
+}
+
 }
