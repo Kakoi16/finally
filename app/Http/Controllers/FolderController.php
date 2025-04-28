@@ -116,29 +116,43 @@ class FolderController extends Controller
 }
 public function showAnyFolder($any)
 {
-    $path = storage_path('app/folders/' . $any);
+    $supabasePath = 'uploads/' . $any;
 
-    if (!file_exists($path)) {
-        abort(404);
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'Content-Type' => 'application/json',
+    ])->get($this->supabaseUrl . '?path=like.' . $supabasePath . '/%');
+
+    if ($response->successful()) {
+        $files = $response->json();
+    } else {
+        $files = [];
     }
+
+    // Path folder saat ini
+    $currentFolder = $supabasePath;
+
+    // FILTER supaya hanya file/folder langsung di bawah folder ini (bukan di subfolder lebih dalam)
+    $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
+        $path = $file['path'] ?? '';
+
+        if (Str::startsWith($path, $currentFolder . '/')) {
+            $remainingPath = Str::after($path, $currentFolder . '/');
+
+            // Harus langsung, tidak mengandung "/" lagi
+            return !Str::contains($remainingPath, '/');
+        }
+
+        return false;
+    });
 
     $segments = explode('/', $any);
     $folderName = end($segments);
 
-    $files = [];
-
-    foreach (scandir($path) as $file) {
-        if ($file != '.' && $file != '..') {
-            $files[] = [
-                'name' => $file,
-                'type' => is_dir($path . '/' . $file) ? 'folder' : 'file',
-            ];
-        }
-    }
-
-    return view('folder-detail', [
+    return view('archive.pages.folder-detail', [
         'folderName' => $folderName,
-        'files' => $files,
+        'files' => $filteredFiles,
     ]);
 }
 

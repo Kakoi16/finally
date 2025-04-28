@@ -52,7 +52,8 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
     // Folder
-    Route::get('/folders/{any}', [FolderController::class, 'showAnyFolder'])->where('any', '.*');
+    Route::get('/folder/{any}', [FolderController::class, 'showAnyFolder'])->where('any', '.*');
+
 
 Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');
 
