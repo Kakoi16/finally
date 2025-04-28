@@ -58,6 +58,10 @@ Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class
 Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
 
     Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
+    Route::get('/archive/{folderPath}', [ArchiveController::class, 'showFolder'])
+    ->where('folderPath', '.*')
+    ->name('archive.showFolder');
+
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
 });
 
