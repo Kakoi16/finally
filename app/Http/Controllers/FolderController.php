@@ -116,6 +116,9 @@ class FolderController extends Controller
 }
 public function showAnyFolder($any)
 {
+    // Decode URL agar "%20" jadi spasi
+    $any = urldecode($any);
+
     $supabasePath = 'uploads/' . $any;
 
     $response = Http::withHeaders([
@@ -153,6 +156,7 @@ public function showAnyFolder($any)
     return view('archive.pages.folder-detail', [
         'folderName' => $folderName,
         'files' => $filteredFiles,
+        'fullPath' => $any // penting kalau mau navigasi ke subfolder lagi
     ]);
 }
 
