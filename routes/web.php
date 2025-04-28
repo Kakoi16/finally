@@ -52,17 +52,17 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
     // Folder
-    Route::get('/folders/{parentFolder}/{subFolder}', [FolderController::class, 'showSubfolder'])->name('folders.subfolder');
+    Route::get('/folders/{any}', [FolderController::class, 'showAnyFolder'])->where('any', '.*');
 
-    Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');
+Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');
 
-    // File Upload
-    Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
+// File Upload
+Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
 
     Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
     Route::get('/archive/{folderPath}', [ArchiveController::class, 'showFolder'])
-        ->where('folderPath', '.*')
-        ->name('archive.showFolder');
+    ->where('folderPath', '.*')
+    ->name('archive.showFolder');
 
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
 });

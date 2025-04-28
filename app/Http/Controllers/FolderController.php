@@ -114,5 +114,32 @@ class FolderController extends Controller
         return redirect()->back()->with('error', 'Gagal membuat subfolder.');
     }
 }
+public function showAnyFolder($any)
+{
+    $path = storage_path('app/folders/' . $any);
+
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    $segments = explode('/', $any);
+    $folderName = end($segments);
+
+    $files = [];
+
+    foreach (scandir($path) as $file) {
+        if ($file != '.' && $file != '..') {
+            $files[] = [
+                'name' => $file,
+                'type' => is_dir($path . '/' . $file) ? 'folder' : 'file',
+            ];
+        }
+    }
+
+    return view('folder-detail', [
+        'folderName' => $folderName,
+        'files' => $files,
+    ]);
+}
 
 }
