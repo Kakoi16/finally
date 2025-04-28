@@ -1,44 +1,5 @@
     @extends('layouts.app')
 
-    @section('content')
-<div class="container mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">Folder: {{ $folderName }}</h1>
-
-    <div class="mb-6">
-        <a href="{{ url()->previous() }}" class="text-blue-500 hover:underline">&larr; Kembali</a>
-    </div>
-
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        @forelse($files as $file)
-            @if($file['type'] == 'folder')
-                <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                    <a href="{{ url('/folders/' . trim(request()->path('folders/'), '/') . '/' . $file['name']) }}">
-                        <div class="flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h4l2-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
-                            </svg>
-                            <span class="font-semibold">{{ $file['name'] }}</span>
-                        </div>
-                    </a>
-                </div>
-            @else
-                <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                    <div class="flex items-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        <span>{{ $file['name'] }}</span>
-                    </div>
-                </div>
-            @endif
-        @empty
-            <div class="col-span-4 text-center text-gray-500">
-                Tidak ada file atau folder di sini.
-            </div>
-        @endforelse
-    </div>
-</div>
-
     @section('custom-sidebar')
         <!-- Enhanced Sidebar -->
         <aside class="w-72 bg-white p-6 rounded-xl shadow-sm border border-gray-100 mr-6">
