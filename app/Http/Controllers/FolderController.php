@@ -116,9 +116,6 @@ class FolderController extends Controller
 }
 public function showAnyFolder($any)
 {
-    // Decode URL agar "%20" jadi spasi
-    $any = urldecode($any);
-
     $supabasePath = 'uploads/' . $any;
 
     $response = Http::withHeaders([
@@ -136,27 +133,27 @@ public function showAnyFolder($any)
     // Path folder saat ini
     $currentFolder = $supabasePath;
 
-    // FILTER supaya hanya file/folder langsung di bawah folder ini (bukan di subfolder lebih dalam)
     $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
         $path = $file['path'] ?? '';
 
         if (Str::startsWith($path, $currentFolder . '/')) {
             $remainingPath = Str::after($path, $currentFolder . '/');
 
-            // Harus langsung, tidak mengandung "/" lagi
+            // Langsung di dalam folder ini (tidak lebih dalam)
             return !Str::contains($remainingPath, '/');
         }
 
         return false;
     });
 
+    // Ambil nama folder terakhir
     $segments = explode('/', $any);
-    $folderName = end($segments);
+    $folderName = urldecode(end($segments)); // <-- penting! decode nama folder jika ada %20
 
     return view('archive.pages.folder-detail', [
         'folderName' => $folderName,
+        'folderPath' => $any, // kirim path lengkap kalau perlu buat breadcumb
         'files' => $filteredFiles,
-        'fullPath' => $any // penting kalau mau navigasi ke subfolder lagi
     ]);
 }
 

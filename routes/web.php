@@ -49,24 +49,15 @@ Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upl
 Route::post('/folders/create', [FileController::class, 'createFolder'])->name('folders.create');
 
 // routes/folders
-// routes/web.php
-// routes/web.php
-
+// TANGKAP semua subfolder berlapis
 Route::middleware(['admin.only'])->group(function () {
-    // Create Folder
-    Route::post('/folders/create', [FolderController::class, 'createFolder'])->name('folders.create');
+    Route::get('/folders/{any}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.open');
+
     Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');
 
-    // File Upload ke Folder
     Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
 
-    // LIHAT folder dan subfolder
-    Route::get('/folders/{any}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.show');
-
-    // Archive
-    Route::get('/archive/{folderPath}', [ArchiveController::class, 'showFolder'])
-        ->where('folderPath', '.*')
-        ->name('archive.showFolder');
+    Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
 });
 
 
