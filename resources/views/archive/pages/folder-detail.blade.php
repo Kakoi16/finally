@@ -103,11 +103,11 @@
         <!-- Breadcrumbs -->
         <nav>
     <ol class="breadcrumb">
-        <li><a href="{{ route('folders.showAny', ['any' => '']) }}">Home</a></li>
+    <a href="{{ route('archive') }}">Home</a>
+
         @foreach ($breadcrumbs as $crumb)
             <li>
-                <a href="{{ route('folders.showAny', ['any' => urlencode($crumb['path'])]) }}">
-                    {{ $crumb['name'] }}
+                <a href="{{ route('folders.open', ['folderName' => $crumb['path']]) }}">                    {{ $crumb['name'] }}
                 </a>
             </li>
         @endforeach
