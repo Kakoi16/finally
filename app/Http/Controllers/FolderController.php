@@ -46,43 +46,50 @@ class FolderController extends Controller
     }
 
     public function show($folderName)
-    {
-        // Query ke Supabase atau database untuk mendapatkan data file dalam folder
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
-        ])->get($this->supabaseUrl . '?path=like.uploads/' . $folderName . '/%');
-    
-        if ($response->successful()) {
-            $files = $response->json();
-        } else {
-            $files = [];
-        }
-    
-        // Path folder saat ini
-        $currentFolder = 'uploads/' . $folderName;
-    
-        // FILTER supaya hanya tampil file/folder di dalam folder ini saja (bukan subfolder/subfile lebih dalam)
-        $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
-            $path = $file['path'] ?? '';
-    
-            // Harus mulai dengan current folder
-            if (Str::startsWith($path, $currentFolder . '/')) {
-                $remainingPath = Str::after($path, $currentFolder . '/');
-    
-                // Pastikan tidak ada "/" lagi (artinya langsung di dalam folder ini, bukan subfolder)
-                return !Str::contains($remainingPath, '/');
-            }
-    
-            return false;
-        });
-    
-        return view('archive.pages.folder-detail', [
-            'folderName' => $folderName,
-            'files' => $filteredFiles
-        ]);
+{
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'Content-Type' => 'application/json',
+    ])->get($this->supabaseUrl . '?path=like.uploads/' . $folderName . '/%');
+
+    if ($response->successful()) {
+        $files = $response->json();
+    } else {
+        $files = [];
     }
+
+    $currentFolder = 'uploads/' . $folderName;
+
+    $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
+        $path = $file['path'] ?? '';
+        if (Str::startsWith($path, $currentFolder . '/')) {
+            $remainingPath = Str::after($path, $currentFolder . '/');
+            return !Str::contains($remainingPath, '/');
+        }
+        return false;
+    });
+
+    // Generate breadcrumbs (seperti di showAnyFolder)
+    $segments = explode('/', $folderName);
+    $breadcrumbs = [];
+    $pathSoFar = '';
+
+    foreach ($segments as $segment) {
+        $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
+        $breadcrumbs[] = [
+            'name' => urldecode($segment),
+            'path' => $pathSoFar,
+        ];
+    }
+
+    return view('archive.pages.folder-detail', [
+        'folderName' => $folderName,
+        'files' => $filteredFiles,
+        'breadcrumbs' => $breadcrumbs,
+    ]);
+}
+
     
     
     public function createSubfolder(Request $request, $parentFolder)
