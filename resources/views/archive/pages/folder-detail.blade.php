@@ -101,20 +101,19 @@
         </div>
 
         <!-- Breadcrumbs -->
-        <nav class="flex mb-8 items-center" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-2 text-sm">
-                <li>
-                    <a href="/archive" class="text-blue-600 hover:text-blue-800 hover:underline flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                        Archive
-                    </a>
-                </li>
-                <li class="text-gray-400">/</li>
-                <li class="text-gray-600 font-medium">{{ $folderName }}</li>
-            </ol>
-        </nav>
+        <nav>
+    <ol class="breadcrumb">
+        <li><a href="{{ route('folders.showAny', ['any' => '']) }}">Home</a></li>
+        @foreach ($breadcrumbs as $crumb)
+            <li>
+                <a href="{{ route('folders.showAny', ['any' => urlencode($crumb['path'])]) }}">
+                    {{ $crumb['name'] }}
+                </a>
+            </li>
+        @endforeach
+    </ol>
+</nav>
+
 
         <!-- Files Table -->
         <div class="mt-6">

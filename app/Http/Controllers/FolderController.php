@@ -116,6 +116,7 @@ class FolderController extends Controller
 }
 public function showAnyFolder($any)
 {
+    // Path sesuai struktur di Supabase
     $supabasePath = 'uploads/' . $any;
 
     $response = Http::withHeaders([
@@ -133,28 +134,48 @@ public function showAnyFolder($any)
     // Path folder saat ini
     $currentFolder = $supabasePath;
 
+    // FILTER hanya file/folder LANGSUNG di folder saat ini (bukan yang lebih dalam)
     $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
         $path = $file['path'] ?? '';
 
         if (Str::startsWith($path, $currentFolder . '/')) {
             $remainingPath = Str::after($path, $currentFolder . '/');
 
-            // Langsung di dalam folder ini (tidak lebih dalam)
+            // Jika sisa path tidak mengandung "/", artinya ini langsung di dalam currentFolder
             return !Str::contains($remainingPath, '/');
         }
 
         return false;
     });
 
-    // Ambil nama folder terakhir
+    // Untuk breadcrumb, ambil daftar semua segment folder
     $segments = explode('/', $any);
-    $folderName = urldecode(end($segments)); // <-- penting! decode nama folder jika ada %20
+    $breadcrumbs = [];
+    $pathSoFar = '';
+
+    foreach ($segments as $segment) {
+        if ($pathSoFar === '') {
+            $pathSoFar = $segment;
+        } else {
+            $pathSoFar .= '/' . $segment;
+        }
+
+        $breadcrumbs[] = [
+            'name' => urldecode($segment),
+            'path' => $pathSoFar,
+        ];
+    }
+
+    // Nama folder terakhir
+    $folderName = urldecode(end($segments));
 
     return view('archive.pages.folder-detail', [
         'folderName' => $folderName,
-        'folderPath' => $any, // kirim path lengkap kalau perlu buat breadcumb
+        'folderPath' => $any,
         'files' => $filteredFiles,
+        'breadcrumbs' => $breadcrumbs,
     ]);
 }
+
 
 }
