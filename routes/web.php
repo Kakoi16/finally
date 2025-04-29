@@ -57,9 +57,7 @@ Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class
 // File Upload
 Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
 
-    Route::get('/folders/{any}', [FolderController::class, 'showAnyFolder'])
-    ->where('any', '.*')
-    ->name('folders.open');
+    Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
 });
 
