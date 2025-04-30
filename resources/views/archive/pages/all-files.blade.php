@@ -86,7 +86,7 @@ foreach ($files as $file) {
             </form>
 
             <!-- Create Folder Button -->
-            <button onclick="toggleCreateFolderForm()" type="button" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shadow-sm">
+            <button onclick="toggleCreateFolderForm()" type="button" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                 </svg>
@@ -96,7 +96,7 @@ foreach ($files as $file) {
     </div>
 
     <!-- Create Folder Form (Hidden Initially) -->
-    <div id="create-folder-form" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 animate-fade-in">
+    <div id="create-folder-form" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hidden animate-fade-in">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Create New Folder</h2>
         <form action="{{ route('folders.create') }}" method="POST" class="space-y-4">
             @csrf
