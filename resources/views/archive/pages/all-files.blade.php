@@ -96,7 +96,7 @@ foreach ($files as $file) {
     </div>
 
     <!-- Create Folder Form (Hidden Initially) -->
-    <div id="create-folder-form" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hidden animate-fade-in">
+    <div id="create-folder-form" class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 animate-fade-in">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Create New Folder</h2>
         <form action="{{ route('folders.create') }}" method="POST" class="space-y-4">
             @csrf
