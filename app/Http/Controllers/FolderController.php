@@ -16,7 +16,8 @@ class FolderController extends Controller
         $this->supabaseUrl = env('SUPABASE_URL') . '/rest/v1/archives';
         $this->supabaseKey = env('SUPABASE_API_KEY');
     }
-    // Method untuk create folder
+
+    // Membuat folder utama
     public function createFolder(Request $request)
     {
         $request->validate([
@@ -32,7 +33,7 @@ class FolderController extends Controller
             'Prefer' => 'return=minimal',
         ])->post($this->supabaseUrl, [
             'name' => $request->folder_name,
-            'path' => 'uploads/' . Str::slug($request->folder_name),
+            'path' => Str::slug($request->folder_name),
             'type' => 'folder',
             'size' => 0,
             'uploaded_by' => $uploadedBy,
@@ -45,145 +46,121 @@ class FolderController extends Controller
         }
     }
 
+    // Menampilkan isi folder pertama
     public function show($folderName)
-{
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-        'Content-Type' => 'application/json',
-    ])->get($this->supabaseUrl . '?path=like.uploads/' . $folderName . '/%');
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->get($this->supabaseUrl . '?path=like.' . $folderName . '/%');
 
-    if ($response->successful()) {
-        $files = $response->json();
-    } else {
-        $files = [];
-    }
+        $files = $response->successful() ? $response->json() : [];
 
-    $currentFolder = 'uploads/' . $folderName;
+        $currentFolder = $folderName;
 
-    $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
-        $path = $file['path'] ?? '';
-        if (Str::startsWith($path, $currentFolder . '/')) {
-            $remainingPath = Str::after($path, $currentFolder . '/');
-            return !Str::contains($remainingPath, '/');
-        }
-        return false;
-    });
+        $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
+            $path = $file['path'] ?? '';
+            if (Str::startsWith($path, $currentFolder . '/')) {
+                $remainingPath = Str::after($path, $currentFolder . '/');
+                return !Str::contains($remainingPath, '/');
+            }
+            return false;
+        });
 
-    // Generate breadcrumbs (seperti di showAnyFolder)
-    $segments = explode('/', $folderName);
-    $breadcrumbs = [];
-    $pathSoFar = '';
+        $segments = explode('/', $folderName);
+        $breadcrumbs = [];
+        $pathSoFar = '';
 
-    foreach ($segments as $segment) {
-        $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
-        $breadcrumbs[] = [
-            'name' => urldecode($segment),
-            'path' => $pathSoFar,
-        ];
-    }
-
-    return view('archive.pages.folder-detail', [
-        'folderName' => $folderName,
-        'files' => $filteredFiles,
-        'breadcrumbs' => $breadcrumbs,
-    ]);
-}
-
-    
-    
-public function createSubfolder(Request $request, $path)
-{
-    $request->validate([
-        'folder_name' => 'required|string|max:255',
-    ]);
-
-    $uploadedBy = auth()->user()->id ?? null;
-
-    $newPath = 'uploads/' . trim($path, '/') . '/' . Str::slug($request->folder_name);
-
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-        'Content-Type' => 'application/json',
-        'Prefer' => 'return=minimal',
-    ])->post($this->supabaseUrl, [
-        'name' => $request->folder_name,
-        'path' => $newPath,
-        'type' => 'folder',
-        'size' => 0,
-        'uploaded_by' => $uploadedBy,
-    ]);
-
-    if ($response->successful()) {
-        return redirect()->back()->with('success', 'Subfolder berhasil dibuat.');
-    } else {
-        return redirect()->back()->with('error', 'Gagal membuat subfolder.');
-    }
-}
-
-public function showAnyFolder($any)
-{
-    // Path sesuai struktur di Supabase
-    $supabasePath = 'uploads/' . $any;
-
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-        'Content-Type' => 'application/json',
-    ])->get($this->supabaseUrl . '?path=like.' . $supabasePath . '/%');
-
-    if ($response->successful()) {
-        $files = $response->json();
-    } else {
-        $files = [];
-    }
-
-    // Path folder saat ini
-    $currentFolder = $supabasePath;
-
-    // FILTER hanya file/folder LANGSUNG di folder saat ini (bukan yang lebih dalam)
-    $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
-        $path = $file['path'] ?? '';
-
-        if (Str::startsWith($path, $currentFolder . '/')) {
-            $remainingPath = Str::after($path, $currentFolder . '/');
-
-            // Jika sisa path tidak mengandung "/", artinya ini langsung di dalam currentFolder
-            return !Str::contains($remainingPath, '/');
+        foreach ($segments as $segment) {
+            $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
+            $breadcrumbs[] = [
+                'name' => urldecode($segment),
+                'path' => $pathSoFar,
+            ];
         }
 
-        return false;
-    });
+        return view('archive.pages.folder-detail', [
+            'folderName' => $folderName,
+            'files' => $filteredFiles,
+            'breadcrumbs' => $breadcrumbs,
+        ]);
+    }
 
-    // Untuk breadcrumb, ambil daftar semua segment folder
-    $segments = explode('/', $any);
-    $breadcrumbs = [];
-    $pathSoFar = '';
+    // Membuat subfolder dari folder tertentu
+    public function createSubfolder(Request $request, $path)
+    {
+        $request->validate([
+            'folder_name' => 'required|string|max:255',
+        ]);
 
-    foreach ($segments as $segment) {
-        if ($pathSoFar === '') {
-            $pathSoFar = $segment;
+        $uploadedBy = auth()->user()->id ?? null;
+
+        $newPath = trim($path, '/') . '/' . Str::slug($request->folder_name);
+
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+            'Prefer' => 'return=minimal',
+        ])->post($this->supabaseUrl, [
+            'name' => $request->folder_name,
+            'path' => $newPath,
+            'type' => 'folder',
+            'size' => 0,
+            'uploaded_by' => $uploadedBy,
+        ]);
+
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'Subfolder berhasil dibuat.');
         } else {
-            $pathSoFar .= '/' . $segment;
+            return redirect()->back()->with('error', 'Gagal membuat subfolder.');
         }
-
-        $breadcrumbs[] = [
-            'name' => urldecode($segment),
-            'path' => $pathSoFar,
-        ];
     }
 
-    // Nama folder terakhir
-    $folderName = urldecode(end($segments));
+    // Menampilkan isi folder manapun
+    public function showAnyFolder($any)
+    {
+        $supabasePath = $any;
 
-    return view('archive.pages.folder-detail', [
-        'folderName' => $folderName,
-        'folderPath' => $any,
-        'files' => $filteredFiles,
-        'breadcrumbs' => $breadcrumbs,
-    ]);
-}
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->get($this->supabaseUrl . '?path=like.' . $supabasePath . '/%');
 
+        $files = $response->successful() ? $response->json() : [];
 
+        $currentFolder = $supabasePath;
+
+        $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
+            $path = $file['path'] ?? '';
+            if (Str::startsWith($path, $currentFolder . '/')) {
+                $remainingPath = Str::after($path, $currentFolder . '/');
+                return !Str::contains($remainingPath, '/');
+            }
+            return false;
+        });
+
+        $segments = explode('/', $any);
+        $breadcrumbs = [];
+        $pathSoFar = '';
+
+        foreach ($segments as $segment) {
+            $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
+            $breadcrumbs[] = [
+                'name' => urldecode($segment),
+                'path' => $pathSoFar,
+            ];
+        }
+
+        $folderName = urldecode(end($segments));
+
+        return view('archive.pages.folder-detail', [
+            'folderName' => $folderName,
+            'folderPath' => $any,
+            'files' => $filteredFiles,
+            'breadcrumbs' => $breadcrumbs,
+        ]);
+    }
 }
