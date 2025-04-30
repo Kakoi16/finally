@@ -17,7 +17,6 @@ class FolderController extends Controller
         $this->supabaseKey = env('SUPABASE_API_KEY');
     }
 
-    // Membuat folder utama
     public function createFolder(Request $request)
     {
         $request->validate([
@@ -35,24 +34,19 @@ class FolderController extends Controller
             'name' => $request->folder_name,
             'path' => Str::slug($request->folder_name),
             'type' => 'folder',
-            'size' => 0,
             'uploaded_by' => $uploadedBy,
         ]);
 
-        if ($response->successful()) {
-            return redirect()->back()->with('success', 'Folder berhasil dibuat.');
-        } else {
-            return redirect()->back()->with('error', 'Gagal membuat folder.');
-        }
+        return $response->successful()
+            ? redirect()->back()->with('success', 'Folder berhasil dibuat.')
+            : redirect()->back()->with('error', 'Gagal membuat folder.');
     }
 
-    // Menampilkan isi folder pertama
     public function show($folderName)
     {
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
         ])->get($this->supabaseUrl . '?path=like.' . $folderName . '/%');
 
         $files = $response->successful() ? $response->json() : [];
@@ -87,7 +81,6 @@ class FolderController extends Controller
         ]);
     }
 
-    // Membuat subfolder dari folder tertentu
     public function createSubfolder(Request $request, $path)
     {
         $request->validate([
@@ -95,7 +88,6 @@ class FolderController extends Controller
         ]);
 
         $uploadedBy = auth()->user()->id ?? null;
-
         $newPath = trim($path, '/') . '/' . Str::slug($request->folder_name);
 
         $response = Http::withHeaders([
@@ -107,18 +99,14 @@ class FolderController extends Controller
             'name' => $request->folder_name,
             'path' => $newPath,
             'type' => 'folder',
-            'size' => 0,
             'uploaded_by' => $uploadedBy,
         ]);
 
-        if ($response->successful()) {
-            return redirect()->back()->with('success', 'Subfolder berhasil dibuat.');
-        } else {
-            return redirect()->back()->with('error', 'Gagal membuat subfolder.');
-        }
+        return $response->successful()
+            ? redirect()->back()->with('success', 'Subfolder berhasil dibuat.')
+            : redirect()->back()->with('error', 'Gagal membuat subfolder.');
     }
 
-    // Menampilkan isi folder manapun
     public function showAnyFolder($any)
     {
         $supabasePath = $any;
@@ -126,7 +114,6 @@ class FolderController extends Controller
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
         ])->get($this->supabaseUrl . '?path=like.' . $supabasePath . '/%');
 
         $files = $response->successful() ? $response->json() : [];
