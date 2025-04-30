@@ -61,22 +61,21 @@
         </div>
 
         <!-- Folder Actions -->
-        <div class="space-y-1.5">
-    <!-- Rename Folder -->
-    <a href="#" onclick="renameFolder('{{ $folderName }}')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium border border-gray-100">
+       <!-- Tombol Aksi -->
+<div class="space-y-1.5">
+    <button onclick="toggleRenameMode()" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium border border-gray-100">
         <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </svg>
         Rename Folder
-    </a>
+    </button>
 
-    <!-- Delete Folder -->
-    <a href="#" onclick="deleteFolder('{{ $folderName }}')" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors text-sm font-medium border border-gray-100">
+    <button onclick="deleteSelectedFolders()" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors text-sm font-medium border border-gray-100">
         <svg class="w-5 h-5 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
         Delete Folder
-    </a>
+    </button>
 </div>
 
     </div>
@@ -150,6 +149,9 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 @if($file['type'] === 'folder')
+
+                                <input type="checkbox" name="selected_folders[]" value="{{ $file['path'] }}" class="mr-3 folder-checkbox rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                                
                                 <!-- Folder Icon -->
                                 <div class="bg-yellow-50 p-1.5 rounded-md mr-3 border border-yellow-100">
                                     <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

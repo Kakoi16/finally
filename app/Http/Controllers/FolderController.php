@@ -150,4 +150,30 @@ class FolderController extends Controller
             'breadcrumbs' => $breadcrumbs,
         ]);
     }
+    public function rename(Request $request, $id)
+{
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'Content-Type' => 'application/json',
+    ])->patch($this->supabaseUrl . '?id=eq.' . $id, [
+        'name' => $request->name,
+    ]);
+
+    return response()->json(['success' => $response->successful()]);
+}
+
+public function bulkDelete(Request $request)
+{
+    $ids = $request->ids;
+
+    $query = implode(',', array_map(fn($id) => '"' . $id . '"', $ids));
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+    ])->delete($this->supabaseUrl . '?id=in.(' . $query . ')');
+
+    return response()->json(['success' => $response->successful()]);
+}
+
 }

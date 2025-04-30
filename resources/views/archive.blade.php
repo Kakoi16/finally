@@ -42,49 +42,78 @@
 
 @push('scripts')
 <script>
-function renameFolder(currentFolder) {
-    const newName = prompt("Masukkan nama baru untuk folder:", currentFolder);
-    if (!newName || newName === currentFolder) return;
+    function toggleRenameMode() {
+    const checkboxes = document.querySelectorAll('.folder-checkbox');
+    checkboxes.forEach(cb => cb.classList.toggle('hidden'));
 
-    fetch(`/folders/rename`, {
-        method: 'PATCH',
+    const visibleCheckboxes = [...checkboxes].filter(cb => !cb.classList.contains('hidden'));
+
+    if (visibleCheckboxes.length === 0) {
+        // mode rename aktif, tampilkan prompt untuk rename
+        const selected = [...checkboxes].filter(cb => cb.checked);
+        if (selected.length === 0) {
+            alert('Pilih folder yang ingin di-rename.');
+            return;
+        }
+
+        selected.forEach(cb => {
+            const currentName = cb.dataset.name;
+            const newName = prompt(`Rename folder "${currentName}" ke:`);
+            if (newName && newName !== currentName) {
+                renameFolder(cb.value, newName);
+            }
+        });
+    }
+}
+
+function renameFolder(folderId, newName) {
+    fetch(`/rename-folder/${folderId}`, {
+        method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
-        body: JSON.stringify({
-            current: currentFolder,
-            new: newName
-        })
+        body: JSON.stringify({ name: newName })
     })
-    .then(res => {
-        if (res.ok) {
-            alert("Folder berhasil diubah.");
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
             location.reload();
         } else {
-            alert("Gagal mengganti nama folder.");
+            alert('Gagal rename folder.');
         }
     });
 }
 
-function deleteFolder(folderName) {
-    if (!confirm(`Yakin ingin menghapus folder "${folderName}"? Semua file di dalamnya juga akan hilang.`)) return;
+function deleteSelectedFolders() {
+    const selected = [...document.querySelectorAll('.folder-checkbox:checked')];
+    if (selected.length === 0) {
+        alert('Pilih folder yang ingin dihapus.');
+        return;
+    }
 
-    fetch(`/folders/${encodeURIComponent(folderName)}`, {
-        method: 'DELETE',
+    if (!confirm('Yakin ingin menghapus folder terpilih?')) return;
+
+    const ids = selected.map(cb => cb.value);
+
+    fetch('/delete-folders', {
+        method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
+        },
+        body: JSON.stringify({ ids })
     })
-    .then(res => {
-        if (res.ok) {
-            alert("Folder berhasil dihapus.");
-            window.location.href = '/archives';
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
         } else {
-            alert("Gagal menghapus folder.");
+            alert('Gagal menghapus folder.');
         }
     });
 }
+
    document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.open-folder').forEach(icon => {
             icon.addEventListener('click', function (e) {
