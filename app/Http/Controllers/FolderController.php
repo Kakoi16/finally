@@ -32,7 +32,7 @@ class FolderController extends Controller
             'Prefer' => 'return=minimal',
         ])->post($this->supabaseUrl, [
             'name' => $request->folder_name,
-            'path' => 'uploads/' . Str::slug($request->folder_name),
+            'path' => '/' . Str::slug($request->folder_name),
             'type' => 'folder',
             'size' => 0,
             'uploaded_by' => $uploadedBy,
@@ -59,7 +59,7 @@ class FolderController extends Controller
         $files = [];
     }
 
-    $currentFolder = 'uploads/' . $folderName;
+    $currentFolder = '/' . $folderName;
 
     $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
         $path = $file['path'] ?? '';
@@ -100,7 +100,7 @@ public function createSubfolder(Request $request, $path)
 
     $uploadedBy = auth()->user()->id ?? null;
 
-    $newPath = 'uploads/' . trim($path, '/') . '/' . Str::slug($request->folder_name);
+    $newPath = '/' . trim($path, '/') . '/' . Str::slug($request->folder_name);
 
     $response = Http::withHeaders([
         'apikey' => $this->supabaseKey,
@@ -125,7 +125,7 @@ public function createSubfolder(Request $request, $path)
 public function showAnyFolder($any)
 {
     // Path sesuai struktur di Supabase
-    $supabasePath = 'uploads/' . $any;
+    $supabasePath = '/' . $any;
 
     $response = Http::withHeaders([
         'apikey' => $this->supabaseKey,
