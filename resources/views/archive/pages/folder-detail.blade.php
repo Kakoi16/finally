@@ -23,7 +23,7 @@
                 </svg>
                 Create Subfolder
             </h3>
-            <form method="POST" action="{{ route('folders.createSubfolder', $folderName) }}" class="space-y-3">
+            <form method="POST" action="{{ route('folders.subfolder.create', ['path' => $folderPath]) }}" class="space-y-3">
                 @csrf
                 <div>
                     <input type="text" name="folder_name" placeholder="Enter subfolder name"
@@ -239,11 +239,11 @@
             </table>
         </div>
         @else
-        <form action="{{ route('folders.subfolder.create', ['path' => $folderPath]) }}" method="POST" class="flex items-center space-x-2 mt-4">
-    @csrf
-    <input type="text" name="folder_name" placeholder="Nama subfolder" required class="border rounded px-3 py-1">
-    <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Tambah Subfolder</button>
-</form>
+        <!-- <form action="{{ route('folders.subfolder.create', ['path' => $folderPath]) }}" method="POST" class="flex items-center space-x-2 mt-4">
+            @csrf
+            <input type="text" name="folder_name" placeholder="Nama subfolder" required class="border rounded px-3 py-1">
+            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Tambah Subfolder</button>
+        </form> -->
 
         <div class="text-center py-16 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
             <svg class="mx-auto h-14 w-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
