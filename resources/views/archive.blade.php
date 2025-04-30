@@ -42,6 +42,49 @@
 
 @push('scripts')
 <script>
+function renameFolder(currentFolder) {
+    const newName = prompt("Masukkan nama baru untuk folder:", currentFolder);
+    if (!newName || newName === currentFolder) return;
+
+    fetch(`/folders/rename`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        },
+        body: JSON.stringify({
+            current: currentFolder,
+            new: newName
+        })
+    })
+    .then(res => {
+        if (res.ok) {
+            alert("Folder berhasil diubah.");
+            location.reload();
+        } else {
+            alert("Gagal mengganti nama folder.");
+        }
+    });
+}
+
+function deleteFolder(folderName) {
+    if (!confirm(`Yakin ingin menghapus folder "${folderName}"? Semua file di dalamnya juga akan hilang.`)) return;
+
+    fetch(`/folders/${encodeURIComponent(folderName)}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            alert("Folder berhasil dihapus.");
+            window.location.href = '/archives';
+        } else {
+            alert("Gagal menghapus folder.");
+        }
+    });
+}
    document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.open-folder').forEach(icon => {
             icon.addEventListener('click', function (e) {
