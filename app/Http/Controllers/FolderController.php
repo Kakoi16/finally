@@ -92,7 +92,7 @@ class FolderController extends Controller
 
     
     
-    public function createSubfolder(Request $request, $parentFolder)
+public function createSubfolder(Request $request, $path)
 {
     $request->validate([
         'folder_name' => 'required|string|max:255',
@@ -100,7 +100,7 @@ class FolderController extends Controller
 
     $uploadedBy = auth()->user()->id ?? null;
 
-    $newPath = 'uploads/' . $parentFolder . '/' . Str::slug($request->folder_name);
+    $newPath = 'uploads/' . trim($path, '/') . '/' . Str::slug($request->folder_name);
 
     $response = Http::withHeaders([
         'apikey' => $this->supabaseKey,
@@ -121,6 +121,7 @@ class FolderController extends Controller
         return redirect()->back()->with('error', 'Gagal membuat subfolder.');
     }
 }
+
 public function showAnyFolder($any)
 {
     // Path sesuai struktur di Supabase
