@@ -64,6 +64,13 @@
                 </svg>
                 Bulk Actions
             </h3>
+            <button id="rename-button" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50" disabled>
+    Rename Folder
+</button>
+<!-- Delete Button -->
+<button id="delete-button" class="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 disabled:opacity-50" disabled>
+    Delete Selected
+</button>
             <div class="space-y-3">
               <!-- Bulk Rename Form -->
 <form method="POST" action="{{ route('folders.bulk.rename') }}">
@@ -93,3 +100,33 @@
         </div>
     </div>
 </aside>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const renameButton = document.getElementById('rename-button');
+        const deleteButton = document.getElementById('delete-button');
+        const selectAll = document.getElementById('select-all');
+
+        function updateActionButtons() {
+            const checkedItems = document.querySelectorAll('.item-checkbox:checked');
+            const hasSelection = checkedItems.length > 0;
+
+            // Aktifkan/hilangkan tombol
+            deleteButton.disabled = !hasSelection;
+            renameButton.disabled = checkedItems.length !== 1; // hanya aktif jika 1 folder dipilih
+        }
+
+        // Event pada setiap checkbox
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateActionButtons);
+        });
+
+        // Event pada Select All
+        if (selectAll) {
+            selectAll.addEventListener('change', () => {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                updateActionButtons();
+            });
+        }
+    });
+</script>
