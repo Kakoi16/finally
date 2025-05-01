@@ -54,29 +54,27 @@
                         </svg>
                     </div>
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 bg-blue-600 text-white rounded px-4 py-2.5 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
                     Upload File
                 </button>
             </form>
         </div>
 
-        <!-- Folder Actionas -->
-       <!-- Tombol Aksi -->
-       <div class="space-y-1.5">
-             <a href="#" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium border border-gray-100">
-                 <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                 </svg>
-                 Rename Folder
-             </a>
-             <a href="#" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors text-sm font-medium border border-gray-100">
-                 <svg class="w-5 h-5 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                 </svg>
-                 Delete Folder
-             </a>
-         </div>
-
+        <!-- Folder Actions -->
+        <div class="space-y-1.5">
+            <a href="#" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium border border-gray-100">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Rename Folder
+            </a>
+            <a href="#" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors text-sm font-medium border border-gray-100">
+                <svg class="w-5 h-5 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete Folder
+            </a>
+        </div>
     </div>
 </aside>
 @endsection
@@ -85,88 +83,94 @@
 <div class="p-8 bg-white rounded-xl shadow-sm border border-gray-100">
     <!-- Folder Header -->
     <div class="flex items-start mb-6" x-data="{ editing: false, folderName: '{{ $folderName }}', originalName: '{{ $folderName }}' }">
-    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mr-4">
-        <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-        </svg>
-    </div>
-    <div>
-        <div class="flex items-center space-x-2">
-            <!-- Tampilan Nama Folder -->
-            <template x-if="!editing">
-                <h1 class="text-2xl font-bold text-gray-800" x-text="folderName"></h1>
-            </template>
-
-            <!-- Input Rename -->
-            <template x-if="editing">
-                <input type="text" x-model="folderName"
-                       class="text-2xl font-bold text-gray-800 border rounded px-2 py-1 focus:outline-none focus:ring"
-                       @keydown.enter="renameFolder"
-                       @click.away="editing = false; folderName = originalName">
-            </template>
-
-            <!-- Tombol Edit -->
-            <button @click="editing = true" class="text-gray-500 hover:text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6H9v-2z"/>
-                </svg>
-            </button>
+        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mr-4">
+            <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
         </div>
-        <p class="text-gray-500 text-sm mt-1">
-            @if(count($files) > 0)
-                {{ count($files) }} {{ count($files) === 1 ? 'item' : 'items' }}
-            @else
-                Empty folder
-            @endif
-        </p>
-    </div>
-    <input type="hidden" name="id" value="{{ $folderId }}">
+        <div class="flex-1">
+            <div class="flex items-center space-x-2">
+                <!-- Folder Name Display -->
+                <template x-if="!editing">
+                    <h1 class="text-2xl font-bold text-gray-800" x-text="folderName"></h1>
+                </template>
 
-    <!-- JS Alpine Action -->
-    <script>
-        function renameFolder() {
-            if (!'{{ $folderId }}') {
-    alert("Folder ID tidak tersedia!");
-    return;
-}
+                <!-- Rename Input -->
+                <template x-if="editing">
+                    <input type="text" x-model="folderName"
+                        class="text-2xl font-bold text-gray-800 border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300"
+                        @keydown.enter="renameFolder"
+                        @blur="editing = false; folderName = originalName">
+                </template>
 
-            fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ name: document.querySelector('[x-model=folderName]').value })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Alpine.store('folder').editing = false;
-                } else {
-                    alert("Rename gagal.");
+                <!-- Edit Button -->
+                <button @click="editing = true" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                </button>
+            </div>
+            <p class="text-gray-500 text-sm mt-1">
+                @if(count($files) > 0)
+                    {{ count($files) }} {{ count($files) === 1 ? 'item' : 'items' }}
+                @else
+                    Empty folder
+                @endif
+            </p>
+        </div>
+        <input type="hidden" name="id" value="{{ $folderId }}">
+
+        <script>
+            function renameFolder() {
+                if (!'{{ $folderId }}') {
+                    alert("Folder ID not available!");
+                    return;
                 }
-            });
-        }
-    </script>
-</div>
 
+                fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ name: this.folderName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.originalName = this.folderName;
+                        this.editing = false;
+                    } else {
+                        alert("Failed to rename folder.");
+                        this.folderName = this.originalName;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.folderName = this.originalName;
+                });
+            }
+        </script>
+    </div>
 
     <!-- Breadcrumbs -->
-    <nav>
-        <ol class="breadcrumb">
-            <a href="{{ route('archive') }}">Home</a>
-
-            @foreach ($breadcrumbs as $crumb)
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-600">
             <li>
-                <a href="{{ route('folders.open', ['folderName' => $crumb['path']]) }}"> {{ $crumb['name'] }}
+                <a href="{{ route('archive') }}" class="hover:text-gray-900 transition-colors">Home</a>
+            </li>
+            @foreach ($breadcrumbs as $crumb)
+            <li class="flex items-center">
+                <svg class="w-4 h-4 mx-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                <a href="{{ route('folders.open', ['folderName' => $crumb['path']]) }}" class="hover:text-gray-900 transition-colors">
+                    {{ $crumb['name'] }}
                 </a>
             </li>
             @endforeach
         </ol>
     </nav>
-
 
     <!-- Files Table -->
     <div class="mt-6">
@@ -199,7 +203,6 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 @if($file['type'] === 'folder')
-
                                 <input type="checkbox" name="selected_folders[]" value="{{ $file['path'] }}" class="mr-3 folder-checkbox rounded text-blue-600 border-gray-300 focus:ring-blue-500">
                                 
                                 <!-- Folder Icon -->
@@ -216,29 +219,29 @@
                                 $iconPath = '';
 
                                 switch(strtolower($fileExtension)) {
-                                case 'pdf':
-                                $iconColor = 'text-red-500';
-                                $iconPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
-                                break;
-                                case 'doc':
-                                case 'docx':
-                                $iconColor = 'text-blue-500';
-                                $iconPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
-                                break;
-                                case 'xls':
-                                case 'xlsx':
-                                $iconColor = 'text-green-500';
-                                $iconPath = 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
-                                break;
-                                case 'jpg':
-                                case 'jpeg':
-                                case 'png':
-                                case 'gif':
-                                $iconColor = 'text-purple-500';
-                                $iconPath = 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z';
-                                break;
-                                default:
-                                $iconPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
+                                    case 'pdf':
+                                        $iconColor = 'text-red-500';
+                                        $iconPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
+                                        break;
+                                    case 'doc':
+                                    case 'docx':
+                                        $iconColor = 'text-blue-500';
+                                        $iconPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
+                                        break;
+                                    case 'xls':
+                                    case 'xlsx':
+                                        $iconColor = 'text-green-500';
+                                        $iconPath = 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
+                                        break;
+                                    case 'jpg':
+                                    case 'jpeg':
+                                    case 'png':
+                                    case 'gif':
+                                        $iconColor = 'text-purple-500';
+                                        $iconPath = 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z';
+                                        break;
+                                    default:
+                                        $iconPath = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z';
                                 }
                                 @endphp
                                 <div class="bg-gray-50 p-1.5 rounded-md mr-3 border border-gray-100">
@@ -266,9 +269,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
                                     </svg>
                                 </a>
-
-
-                                <div class="subfolders" id="subfolders-{{ $folderPath }}"></div>
                                 @else
                                 <a href="#" class="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors" title="View">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,12 +295,6 @@
             </table>
         </div>
         @else
-        <!-- <form action="{{ route('folders.subfolder.create', ['path' => $folderPath]) }}" method="POST" class="flex items-center space-x-2 mt-4">
-            @csrf
-            <input type="text" name="folder_name" placeholder="Nama subfolder" required class="border rounded px-3 py-1">
-            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Tambah Subfolder</button>
-        </form> -->
-
         <div class="text-center py-16 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
             <svg class="mx-auto h-14 w-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
