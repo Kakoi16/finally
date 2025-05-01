@@ -63,7 +63,12 @@ class FolderController extends Controller
     });
 
     // Ambil data folder utama (path persis)
-    $folder = collect($files)->firstWhere('path', $currentFolder);
+    $folder = Http::withHeaders([
+    'apikey' => $this->supabaseKey,
+    'Authorization' => 'Bearer ' . $this->supabaseKey,
+])->get($this->supabaseUrl . '?path=eq.' . $currentFolder)->json();
+
+$folder = $folder[0] ?? null;
 
     $segments = explode('/', $folderName);
     $breadcrumbs = [];
@@ -135,7 +140,12 @@ class FolderController extends Controller
     });
 
     // Ambil data folder utama (path persis)
-    $folder = collect($files)->firstWhere('path', $currentFolder);
+    $folder = Http::withHeaders([
+    'apikey' => $this->supabaseKey,
+    'Authorization' => 'Bearer ' . $this->supabaseKey,
+])->get($this->supabaseUrl . '?path=eq.' . $currentFolder)->json();
+
+$folder = $folder[0] ?? null;
 
     $segments = explode('/', $any);
     $breadcrumbs = [];

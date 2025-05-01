@@ -127,6 +127,11 @@
     <!-- JS Alpine Action -->
     <script>
         function renameFolder() {
+            if (!'{{ $folderId }}') {
+    alert("Folder ID tidak tersedia!");
+    return;
+}
+
             fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
                 method: 'PATCH',
                 headers: {
