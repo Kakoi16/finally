@@ -295,4 +295,5 @@ class FolderController extends Controller
             ? redirect()->route('archive')->with('success', 'Folder dan isinya berhasil dihapus.')
             : redirect()->back()->with('error', 'Gagal menghapus folder.');
     }
+    
 }
