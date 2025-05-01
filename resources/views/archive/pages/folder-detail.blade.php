@@ -1,34 +1,35 @@
 @extends('layouts.app')
 
 @section('custom-sidebar')
-    @include('archive.components.action-cards')
+@include('components.action-cards')
+
 @endsection
 
 @section('content')
 <div class="p-8 bg-white rounded-xl shadow-sm border border-gray-100">
-    @include('archive.components.folder-header')
-    @include('archive.components.breadcrumbs')
+    @include('components.folder-header')
+    @include('components.breadcrumbs')
 
     @if(count($files) > 0)
-        @include('archive.components.files-table')
+        @include('components.files-table')
     @else
-        @include('archive.components.empty-state')
+        @include('components.empty-state')
     @endif
 </div>
 
-@include('archive.modals.rename-folder')
-@include('archive.modals.delete-folder')
-@include('archive.modals.rename-item')
-@include('archive.modals.delete-item')
-@include('archive.modals.bulk-delete')
-@include('archive.modals.bulk-rename')
+@include('modals.rename-folder')
+@include('modals.delete-folder')
+@include('modals.rename-item')
+@include('modals.delete-item')
+@include('modals.bulk-delete')
+@include('modals.bulk-rename')
 
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/archive.js') }}"></script>
+<script src="{{ asset('js/js') }}"></script>
 @endsection
 
 @section('styles')
-<link href="{{ asset('css/archive.css') }}" rel="stylesheet">
+<link href="{{ asset('css/css') }}" rel="stylesheet">
 @endsection
