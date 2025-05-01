@@ -140,28 +140,22 @@
         });
 
         function updateRenameTextarea() {
-    let lines = [];
+            let lines = [];
 
-    checkboxes.forEach(cb => {
-        if (cb.checked) {
-            const row = cb.closest('tr');
-            const oldPath = cb.value;
-            const currentName = row?.dataset.name;
-            const type = row?.dataset.type; // 'folder' atau 'file'
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const row = cb.closest('tr');
+                    const oldPath = cb.value;
+                    const currentName = row?.dataset.name;
 
-            if (oldPath && currentName && type) {
-                if (type === 'folder') {
-                    lines.push(`📁 Folder: ${currentName}\n   - Lokasi: ${oldPath}`);
-                } else {
-                    lines.push(`📄 File: ${currentName}\n   - Lokasi: ${oldPath}`);
+                    if (oldPath && currentName) {
+                        lines.push(`${oldPath}|${currentName}`);
+                    }
                 }
-            }
+            });
+
+            textarea.value = lines.join('\n');
         }
-    });
-
-    textarea.value = lines.join('\n\n');
-}
-
 
         // Optional: if there's a "select all" checkbox
         const selectAll = document.getElementById('select-all');
