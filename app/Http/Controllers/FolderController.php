@@ -43,43 +43,48 @@ class FolderController extends Controller
     }
 
     public function show($folderName)
-    {
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-        ])->get($this->supabaseUrl . '?path=like.' . $folderName . '/%');
+{
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+    ])->get($this->supabaseUrl . '?path=like.' . $folderName . '/%');
 
-        $files = $response->successful() ? $response->json() : [];
+    $files = $response->successful() ? $response->json() : [];
 
-        $currentFolder = $folderName;
+    $currentFolder = $folderName;
 
-        $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
-            $path = $file['path'] ?? '';
-            if (Str::startsWith($path, $currentFolder . '/')) {
-                $remainingPath = Str::after($path, $currentFolder . '/');
-                return !Str::contains($remainingPath, '/');
-            }
-            return false;
-        });
-
-        $segments = explode('/', $folderName);
-        $breadcrumbs = [];
-        $pathSoFar = '';
-
-        foreach ($segments as $segment) {
-            $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
-            $breadcrumbs[] = [
-                'name' => urldecode($segment),
-                'path' => $pathSoFar,
-            ];
+    $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
+        $path = $file['path'] ?? '';
+        if (Str::startsWith($path, $currentFolder . '/')) {
+            $remainingPath = Str::after($path, $currentFolder . '/');
+            return !Str::contains($remainingPath, '/');
         }
+        return false;
+    });
 
-        return view('archive.pages.folder-detail', [
-            'folderName' => $folderName,
-            'files' => $filteredFiles,
-            'breadcrumbs' => $breadcrumbs,
-        ]);
+    // Ambil data folder utama (path persis)
+    $folder = collect($files)->firstWhere('path', $currentFolder);
+
+    $segments = explode('/', $folderName);
+    $breadcrumbs = [];
+    $pathSoFar = '';
+
+    foreach ($segments as $segment) {
+        $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
+        $breadcrumbs[] = [
+            'name' => urldecode($segment),
+            'path' => $pathSoFar,
+        ];
     }
+
+    return view('archive.pages.folder-detail', [
+        'folderId' => $folder['id'] ?? null,
+        'folderName' => $folderName,
+        'files' => $filteredFiles,
+        'breadcrumbs' => $breadcrumbs,
+    ]);
+}
+
 
     public function createSubfolder(Request $request, $path)
     {
@@ -108,48 +113,53 @@ class FolderController extends Controller
     }
 
     public function showAnyFolder($any)
-    {
-        $supabasePath = $any;
+{
+    $supabasePath = $any;
 
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-        ])->get($this->supabaseUrl . '?path=like.' . $supabasePath . '/%');
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+    ])->get($this->supabaseUrl . '?path=like.' . $supabasePath . '/%');
 
-        $files = $response->successful() ? $response->json() : [];
+    $files = $response->successful() ? $response->json() : [];
 
-        $currentFolder = $supabasePath;
+    $currentFolder = $supabasePath;
 
-        $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
-            $path = $file['path'] ?? '';
-            if (Str::startsWith($path, $currentFolder . '/')) {
-                $remainingPath = Str::after($path, $currentFolder . '/');
-                return !Str::contains($remainingPath, '/');
-            }
-            return false;
-        });
-
-        $segments = explode('/', $any);
-        $breadcrumbs = [];
-        $pathSoFar = '';
-
-        foreach ($segments as $segment) {
-            $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
-            $breadcrumbs[] = [
-                'name' => urldecode($segment),
-                'path' => $pathSoFar,
-            ];
+    $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
+        $path = $file['path'] ?? '';
+        if (Str::startsWith($path, $currentFolder . '/')) {
+            $remainingPath = Str::after($path, $currentFolder . '/');
+            return !Str::contains($remainingPath, '/');
         }
+        return false;
+    });
 
-        $folderName = urldecode(end($segments));
+    // Ambil data folder utama (path persis)
+    $folder = collect($files)->firstWhere('path', $currentFolder);
 
-        return view('archive.pages.folder-detail', [
-            'folderName' => $folderName,
-            'folderPath' => $any,
-            'files' => $filteredFiles,
-            'breadcrumbs' => $breadcrumbs,
-        ]);
+    $segments = explode('/', $any);
+    $breadcrumbs = [];
+    $pathSoFar = '';
+
+    foreach ($segments as $segment) {
+        $pathSoFar = $pathSoFar === '' ? $segment : $pathSoFar . '/' . $segment;
+        $breadcrumbs[] = [
+            'name' => urldecode($segment),
+            'path' => $pathSoFar,
+        ];
     }
+
+    $folderName = urldecode(end($segments));
+
+    return view('archive.pages.folder-detail', [
+        'folderId' => $folder['id'] ?? null,
+        'folderName' => $folderName,
+        'folderPath' => $any,
+        'files' => $filteredFiles,
+        'breadcrumbs' => $breadcrumbs,
+    ]);
+}
+
     public function rename(Request $request, $id)
 {
     $response = Http::withHeaders([
