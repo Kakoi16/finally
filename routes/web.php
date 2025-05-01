@@ -70,7 +70,7 @@ Route::middleware(['admin.only'])->group(function () {
     // web.php
 Route::put('/folders/{id}/rename', [FolderController::class, 'rename']);
 Route::delete('/folders/{id}', [FolderController::class, 'destroy']);
-Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete']);
+Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete'] )->name('folders.bulk.delete');
 Route::post('/folders/bulk-rename', [FolderController::class, 'bulkRename'])->name('folders.bulk.rename');
 
 });
