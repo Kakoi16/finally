@@ -129,3 +129,41 @@
         </table>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const textarea = document.getElementById('bulk-renames');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateRenameTextarea);
+        });
+
+        function updateRenameTextarea() {
+            let lines = [];
+
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    const row = cb.closest('tr');
+                    const oldPath = cb.value;
+                    const currentName = row?.dataset.name;
+
+                    if (oldPath && currentName) {
+                        lines.push(`${oldPath}|${currentName}`);
+                    }
+                }
+            });
+
+            textarea.value = lines.join('\n');
+        }
+
+        // Optional: if there's a "select all" checkbox
+        const selectAll = document.getElementById('select-all');
+        if (selectAll) {
+            selectAll.addEventListener('change', () => {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                updateRenameTextarea();
+            });
+        }
+    });
+</script>
