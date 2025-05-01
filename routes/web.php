@@ -54,17 +54,7 @@ Route::middleware(['admin.only'])->group(function () {
     Route::post('/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
     ->where('path', '.*')
     ->name('folders.subfolder.create');
-    
-    Route::post('/folder/rename', [RenameFolderController::class, 'rename']);
-Route::post('/folder/delete', [DeleteFolderController::class, 'delete']);
 
-Route::post('/item/rename', [RenameItemController::class, 'rename']);
-Route::post('/item/delete', [DeleteItemController::class, 'delete']);
-
-Route::post('/items/bulk-rename', [BulkRenameController::class, 'rename']);
-Route::post('/items/bulk-delete', [BulkDeleteController::class, 'delete']);
-
-    
     // Folder
     Route::get('/folders/{any?}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.showAny');
 
