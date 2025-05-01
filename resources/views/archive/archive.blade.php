@@ -35,65 +35,7 @@
 
 @push('scripts')
 <script>
-   function folderEditor() {
-    return {
-        editing: false,
-        folderName: '{{ $folderName }}',
-        originalName: '{{ $folderName }}',
-        renameFolder() {
-            fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ name: this.folderName })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    this.originalName = this.folderName;
-                    this.editing = false;
-                } else {
-                    alert("Failed to rename.");
-                    this.folderName = this.originalName;
-                }
-            }).catch(err => {
-                alert("Server error.");
-                this.folderName = this.originalName;
-            });
-        }
-    }
-}
-            function renameFolder() {
-                if (!'{{ $folderId }}') {
-                    alert("Folder ID not available!");
-                    return;
-                }
 
-                fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ name: this.folderName })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        this.originalName = this.folderName;
-                        this.editing = false;
-                    } else {
-                        alert("Failed to rename folder.");
-                        this.folderName = this.originalName;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    this.folderName = this.originalName;
-                });
-            }
 document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
