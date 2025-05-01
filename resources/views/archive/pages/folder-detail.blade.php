@@ -17,12 +17,12 @@
     @endif
 </div>
 
-@include('modals.rename-folder')
-@include('modals.delete-folder')
-@include('modals.rename-item')
-@include('modals.delete-item')
-@include('modals.bulk-delete')
-@include('modals.bulk-rename')
+@include('archive.modals.rename-folder')
+@include('archive.modals.delete-folder')
+@include('archive.modals.rename-item')
+@include('archive.modals.delete-item')
+@include('archive.modals.bulk-delete')
+@include('archive.modals.bulk-rename')
 
 @endsection
 
