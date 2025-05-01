@@ -1,4 +1,5 @@
 <!-- Files Table -->
+ 
 <div class="mt-6">
     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
         <h2 class="text-lg font-semibold text-gray-800">Contents</h2>
@@ -140,22 +141,26 @@
         });
 
         function updateRenameTextarea() {
-            let lines = [];
+    let lines = [];
 
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    const row = cb.closest('tr');
-                    const oldPath = cb.value;
-                    const currentName = row?.dataset.name;
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            const row = cb.closest('tr');
+            const type = row?.dataset.type;
+            const name = row?.dataset.name;
+            const path = cb.value;
 
-                    if (oldPath && currentName) {
-                        lines.push(`${oldPath}|${currentName}`);
-                    }
-                }
-            });
-
-            textarea.value = lines.join('\n');
+            if (type === 'folder') {
+                lines.push(`📁 Folder: ${name}\n   - Lokasi: ${path}`);
+            } else {
+                lines.push(`📄 File: ${name}\n   - Lokasi: ${path}`);
+            }
         }
+    });
+
+    textarea.value = lines.join('\n\n');
+}
+
 
         // Optional: if there's a "select all" checkbox
         const selectAll = document.getElementById('select-all');
