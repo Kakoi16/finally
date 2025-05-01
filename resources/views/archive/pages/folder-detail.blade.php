@@ -60,7 +60,7 @@
             </form>
         </div>
 
-        <!-- Folder Actions -->
+        <!-- Folder Actionas -->
        <!-- Tombol Aksi -->
        <div class="space-y-1.5">
              <a href="#" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium border border-gray-100">
