@@ -25,7 +25,7 @@
 @include('archive.modals.bulk-rename')
 
 @endsection
-<!--  -->
+<!-- js -->
 @section('scripts')
     <script src="{{ asset('asset/js/archive.js') }}"></script>
 @endsection
