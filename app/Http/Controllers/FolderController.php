@@ -152,64 +152,61 @@ class FolderController extends Controller
     }
     public function rename(Request $request, $id)
     {
-        $this->validate($request, [
+        $request->validate([
             'new_name' => 'required|string',
         ]);
-    
-        // Ambil folder lama
-        $folder = Http::withToken(env('SUPABASE_API_KEY'))
-            ->get(env('SUPABASE_URL') . "/rest/v1/archives?id=eq.$id&type=eq.folder")
+
+        $folder = Http::withToken($this->supabaseKey)
+            ->get($this->supabaseUrl . "?id=eq.$id&type=eq.folder")
             ->json()[0] ?? null;
-    
+
         if (!$folder) {
-            return response()->json(['success' => false, 'message' => 'Folder not found']);
+            return response()->json(['success' => false, 'message' => 'Folder not found'], 404);
         }
-    
+
         $oldPath = $folder['path'];
         $pathParts = explode('/', $oldPath);
-        array_pop($pathParts); // hapus nama lama
-        $newPath = implode('/', $pathParts) . '/' . $request->new_name;
-    
-        // Update semua yang path-nya dimulai dengan oldPath
-        $children = Http::withToken(env('SUPABASE_API_KEY'))
-            ->get(env('SUPABASE_URL') . "/rest/v1/archives?path=ilike.$oldPath%")
+        array_pop($pathParts);
+        $newPath = implode('/', $pathParts) . '/' . Str::slug($request->new_name);
+
+        $children = Http::withToken($this->supabaseKey)
+            ->get($this->supabaseUrl . "?path=ilike.$oldPath%")
             ->json();
-    
+
         foreach ($children as $child) {
             $updatedPath = preg_replace("#^" . preg_quote($oldPath) . "#", $newPath, $child['path']);
-    
-            Http::withToken(env('SUPABASE_API_KEY'))
-                ->patch(env('SUPABASE_URL') . "/rest/v1/archives?id=eq.{$child['id']}", [
+
+            Http::withToken($this->supabaseKey)
+                ->patch($this->supabaseUrl . "?id=eq.{$child['id']}", [
                     'path' => $updatedPath,
-                    'name' => ($child['id'] === $id) ? $request->new_name : $child['name'], // ganti name hanya untuk folder utama
+                    'name' => ($child['id'] === $id) ? $request->new_name : $child['name'],
                 ]);
         }
-    
+
         return response()->json(['success' => true, 'message' => 'Folder renamed successfully']);
     }
     
     public function destroy($id)
     {
-        $folder = Http::withToken(env('SUPABASE_API_KEY'))
-            ->get(env('SUPABASE_URL') . "/rest/v1/archives?id=eq.$id&type=eq.folder")
+        $folder = Http::withToken($this->supabaseKey)
+            ->get($this->supabaseUrl . "?id=eq.$id&type=eq.folder")
             ->json()[0] ?? null;
-    
+
         if (!$folder) {
-            return response()->json(['success' => false, 'message' => 'Folder not found']);
+            return response()->json(['success' => false, 'message' => 'Folder not found'], 404);
         }
-    
+
         $pathPrefix = $folder['path'];
-    
-        // Ambil semua item yang path-nya dimulai dengan path folder
-        $children = Http::withToken(env('SUPABASE_API_KEY'))
-            ->get(env('SUPABASE_URL') . "/rest/v1/archives?path=ilike.$pathPrefix%")
+
+        $children = Http::withToken($this->supabaseKey)
+            ->get($this->supabaseUrl . "?path=ilike.$pathPrefix%")
             ->json();
-    
+
         foreach ($children as $item) {
-            Http::withToken(env('SUPABASE_API_KEY'))
-                ->delete(env('SUPABASE_URL') . "/rest/v1/archives?id=eq.{$item['id']}");
+            Http::withToken($this->supabaseKey)
+                ->delete($this->supabaseUrl . "?id=eq.{$item['id']}");
         }
-    
+
         return response()->json(['success' => true, 'message' => 'Folder and contents deleted']);
     }
     
