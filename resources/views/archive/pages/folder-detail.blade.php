@@ -127,7 +127,7 @@
     <!-- JS Alpine Action -->
     <script>
         function renameFolder() {
-            fetch(`{{ route('folder.rename', ['id' => request('id')]) }}`, {
+            fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
