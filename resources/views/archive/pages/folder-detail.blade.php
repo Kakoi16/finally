@@ -60,36 +60,21 @@
             </form>
         </div>
 
-        <!-- Folder Management Card -->
+        <!-- Bulk Actions Card -->
         <div class="bg-purple-50/50 p-4 rounded-lg border border-purple-100">
             <h3 class="text-sm font-semibold text-purple-800 mb-3 flex items-center">
                 <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
-                Folder Management
+                Bulk Actions
             </h3>
             <div class="space-y-3">
-                <!-- Rename Folder Form -->
-                <form method="POST" action="{{ route('folders.rename', ['path' => $folderPath]) }}" class="space-y-2">
-                    @csrf
-                    @method('PUT')
-                    <div>
-                        <input type="text" name="new_name" placeholder="New folder name" 
-                            class="text-sm border border-purple-200 bg-white p-2.5 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300 transition">
-                    </div>
-                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
-                        Rename Folder
-                    </button>
-                </form>
-                
-                <!-- Delete Folder Form -->
-                <form method="POST" action="{{ route('folders.delete', ['path' => $folderPath]) }}" onsubmit="return confirm('Are you sure you want to delete this folder and all its contents?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
-                        Delete Folder
-                    </button>
-                </form>
+                <button id="bulk-rename-btn" class="w-full bg-purple-100 hover:bg-purple-200 text-purple-800 px-4 py-2.5 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
+                    Rename Selected
+                </button>
+                <button id="bulk-delete-btn" class="w-full bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2.5 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
+                    Delete Selected
+                </button>
             </div>
         </div>
     </div>
@@ -105,8 +90,15 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
         </div>
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">{{ $folderName }}</h1>
+        <div class="flex-1">
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold text-gray-800" id="folder-name-display">{{ $folderName }}</h1>
+                <button id="rename-folder-btn" class="ml-2 text-gray-400 hover:text-gray-600 transition-colors" title="Rename folder">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                </button>
+            </div>
             <p class="text-gray-500 text-sm mt-1">
                 @if(count($files) > 0)
                 {{ count($files) }} {{ count($files) === 1 ? 'item' : 'items' }}
@@ -114,6 +106,14 @@
                 Empty folder
                 @endif
             </p>
+        </div>
+        <div>
+            <button id="delete-folder-btn" class="flex items-center text-sm text-red-600 hover:text-red-800 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors border border-red-200">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete Folder
+            </button>
         </div>
     </div>
 
@@ -130,7 +130,6 @@
             @endforeach
         </ol>
     </nav>
-
 
     <!-- Files Table -->
     <div class="mt-6">
@@ -151,6 +150,9 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <input type="checkbox" id="select-all" class="rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                        </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Modified</th>
@@ -159,13 +161,13 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($files as $file)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr class="hover:bg-gray-50 transition-colors" data-id="{{ $file['path'] }}" data-type="{{ $file['type'] }}" data-name="{{ $file['name'] }}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" name="selected_items[]" value="{{ $file['path'] }}" class="item-checkbox rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 @if($file['type'] === 'folder')
-
-                                <input type="checkbox" name="selected_folders[]" value="{{ $file['path'] }}" class="mr-3 folder-checkbox rounded text-blue-600 border-gray-300 focus:ring-blue-500">
-                                
                                 <!-- Folder Icon -->
                                 <div class="bg-yellow-50 p-1.5 rounded-md mr-3 border border-yellow-100">
                                     <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,28 +232,11 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
                                     </svg>
                                 </a>
-                                
-                                <!-- Rename Folder Action -->
-                                <button onclick="showRenameModal('{{ $file['path'] }}', '{{ $file['name'] }}')" 
-                                    class="text-purple-600 hover:text-purple-800 p-1 rounded hover:bg-purple-50 transition-colors"
-                                    title="Rename">
+                                <button class="rename-item-btn text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-50 transition-colors" title="Rename">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </button>
-                                
-                                <!-- Delete Folder Action -->
-                                <form method="POST" action="{{ route('folders.delete', ['path' => $file['path']]) }}" onsubmit="return confirm('Are you sure you want to delete this folder and all its contents?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors" title="Delete">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </form>
-                                
-                                <div class="subfolders" id="subfolders-{{ $folderPath }}"></div>
                                 @else
                                 <a href="#" class="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors" title="View">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,11 +250,11 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                     </svg>
                                 </a>
-                                <a href="#" class="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors" title="Delete">
+                                <button class="delete-item-btn text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors" title="Delete">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                     </svg>
-                                </a>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -304,45 +289,447 @@
 </div>
 
 <!-- Rename Folder Modal -->
-<div id="renameModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+<div id="rename-folder-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-gray-800">Rename Folder</h3>
-            <button onclick="hideRenameModal()" class="text-gray-400 hover:text-gray-500">
+            <button id="close-rename-folder-modal" class="text-gray-400 hover:text-gray-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
-        <form id="renameForm" method="POST" action="">
-            @csrf
-            @method('PUT')
-            <div class="mb-4">
-                <label for="new_name" class="block text-sm font-medium text-gray-700 mb-1">New Name</label>
-                <input type="text" name="new_name" id="new_name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="mb-4">
+            <label for="new-folder-name" class="block text-sm font-medium text-gray-700 mb-1">New Folder Name</label>
+            <input type="text" id="new-folder-name" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex justify-end space-x-3">
+            <button id="cancel-rename-folder" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button id="confirm-rename-folder" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Rename</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Folder Modal -->
+<div id="delete-folder-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Delete Folder</h3>
+            <button id="close-delete-folder-modal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="mb-4">
+            <p class="text-gray-600">Are you sure you want to delete this folder and all its contents? This action cannot be undone.</p>
+        </div>
+        <div class="flex justify-end space-x-3">
+            <button id="cancel-delete-folder" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button id="confirm-delete-folder" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Rename Item Modal -->
+<div id="rename-item-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Rename Item</h3>
+            <button id="close-rename-item-modal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="mb-4">
+            <label for="new-item-name" class="block text-sm font-medium text-gray-700 mb-1">New Name</label>
+            <input type="text" id="new-item-name" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+        <div class="flex justify-end space-x-3">
+            <button id="cancel-rename-item" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button id="confirm-rename-item" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Rename</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Item Modal -->
+<div id="delete-item-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Delete Item</h3>
+            <button id="close-delete-item-modal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="mb-4">
+            <p class="text-gray-600">Are you sure you want to delete this item? This action cannot be undone.</p>
+        </div>
+        <div class="flex justify-end space-x-3">
+            <button id="cancel-delete-item" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button id="confirm-delete-item" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Delete Modal -->
+<div id="bulk-delete-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Delete Selected Items</h3>
+            <button id="close-bulk-delete-modal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="mb-4">
+            <p class="text-gray-600">Are you sure you want to delete the selected items? This action cannot be undone.</p>
+        </div>
+        <div class="flex justify-end space-x-3">
+            <button id="cancel-bulk-delete" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button id="confirm-bulk-delete" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Rename Modal -->
+<div id="bulk-rename-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Rename Selected Items</h3>
+            <button id="close-bulk-rename-modal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="mb-4">
+            <label for="bulk-rename-pattern" class="block text-sm font-medium text-gray-700 mb-1">Naming Pattern</label>
+            <select id="bulk-rename-pattern" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-2">
+                <option value="prefix">Add Prefix</option>
+                <option value="suffix">Add Suffix</option>
+                <option value="replace">Find and Replace</option>
+                <option value="custom">Custom Pattern</option>
+            </select>
+            <div id="prefix-options" class="rename-option">
+                <input type="text" id="prefix-text" placeholder="Enter prefix" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
             </div>
-            <div class="flex justify-end space-x-3">
-                <button type="button" onclick="hideRenameModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
-                    Rename
-                </button>
+            <div id="suffix-options" class="rename-option hidden">
+                <input type="text" id="suffix-text" placeholder="Enter suffix" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
             </div>
-        </form>
+            <div id="replace-options" class="rename-option hidden">
+                <input type="text" id="find-text" placeholder="Find text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+                <input type="text" id="replace-with" placeholder="Replace with" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+            </div>
+            <div id="custom-options" class="rename-option hidden">
+                <input type="text" id="custom-pattern" placeholder="Custom pattern (use {n} for number)" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2">
+            </div>
+        </div>
+        <div class="flex justify-end space-x-3">
+            <button id="cancel-bulk-rename" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
+            <button id="confirm-bulk-rename" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">Rename</button>
+        </div>
     </div>
 </div>
 
 <script>
-    function showRenameModal(folderPath, currentName) {
-        const form = document.getElementById('renameForm');
-        form.action = `/folders/${encodeURIComponent(folderPath)}/rename`;
-        document.getElementById('new_name').value = currentName;
-        document.getElementById('renameModal').classList.remove('hidden');
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    // Folder rename functionality
+    const renameFolderBtn = document.getElementById('rename-folder-btn');
+    const renameFolderModal = document.getElementById('rename-folder-modal');
+    const closeRenameFolderModal = document.getElementById('close-rename-folder-modal');
+    const cancelRenameFolder = document.getElementById('cancel-rename-folder');
+    const confirmRenameFolder = document.getElementById('confirm-rename-folder');
+    const newFolderNameInput = document.getElementById('new-folder-name');
+    const folderNameDisplay = document.getElementById('folder-name-display');
     
-    function hideRenameModal() {
-        document.getElementById('renameModal').classList.add('hidden');
-    }
+    renameFolderBtn.addEventListener('click', () => {
+        newFolderNameInput.value = folderNameDisplay.textContent;
+        renameFolderModal.classList.remove('hidden');
+    });
+    
+    [closeRenameFolderModal, cancelRenameFolder].forEach(btn => {
+        btn.addEventListener('click', () => {
+            renameFolderModal.classList.add('hidden');
+        });
+    });
+    
+    confirmRenameFolder.addEventListener('click', () => {
+        const newName = newFolderNameInput.value.trim();
+        if (newName) {
+            folderNameDisplay.textContent = newName;
+            renameFolderModal.classList.add('hidden');
+            // Here you would typically make an AJAX call to update the folder name on the server
+            alert(`Folder renamed to: ${newName}`);
+        }
+    });
+    
+    // Folder delete functionality
+    const deleteFolderBtn = document.getElementById('delete-folder-btn');
+    const deleteFolderModal = document.getElementById('delete-folder-modal');
+    const closeDeleteFolderModal = document.getElementById('close-delete-folder-modal');
+    const cancelDeleteFolder = document.getElementById('cancel-delete-folder');
+    const confirmDeleteFolder = document.getElementById('confirm-delete-folder');
+    
+    deleteFolderBtn.addEventListener('click', () => {
+        deleteFolderModal.classList.remove('hidden');
+    });
+    
+    [closeDeleteFolderModal, cancelDeleteFolder].forEach(btn => {
+        btn.addEventListener('click', () => {
+            deleteFolderModal.classList.add('hidden');
+        });
+    });
+    
+    confirmDeleteFolder.addEventListener('click', () => {
+        deleteFolderModal.classList.add('hidden');
+        // Here you would typically make an AJAX call to delete the folder on the server
+        alert('Folder deleted!');
+        // In a real app, you would redirect or refresh the page
+    });
+    
+    // Item rename functionality
+    const renameItemModal = document.getElementById('rename-item-modal');
+    const closeRenameItemModal = document.getElementById('close-rename-item-modal');
+    const cancelRenameItem = document.getElementById('cancel-rename-item');
+    const confirmRenameItem = document.getElementById('confirm-rename-item');
+    const newItemNameInput = document.getElementById('new-item-name');
+    let currentItemToRename = null;
+    
+    document.querySelectorAll('.rename-item-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const row = e.closest('tr');
+            currentItemToRename = row;
+            const currentName = row.getAttribute('data-name');
+            newItemNameInput.value = currentName;
+            renameItemModal.classList.remove('hidden');
+        });
+    });
+    
+    [closeRenameItemModal, cancelRenameItem].forEach(btn => {
+        btn.addEventListener('click', () => {
+            renameItemModal.classList.add('hidden');
+        });
+    });
+    
+    confirmRenameItem.addEventListener('click', () => {
+        const newName = newItemNameInput.value.trim();
+        if (newName && currentItemToRename) {
+            // Update the displayed name
+            const nameCell = currentItemToRename.querySelector('td:nth-child(2) span');
+            if (nameCell) {
+                nameCell.textContent = newName;
+            }
+            renameItemModal.classList.add('hidden');
+            // Here you would typically make an AJAX call to update the item name on the server
+            alert(`Item renamed to: ${newName}`);
+        }
+    });
+    
+    // Item delete functionality
+    const deleteItemModal = document.getElementById('delete-item-modal');
+    const closeDeleteItemModal = document.getElementById('close-delete-item-modal');
+    const cancelDeleteItem = document.getElementById('cancel-delete-item');
+    const confirmDeleteItem = document.getElementById('confirm-delete-item');
+    let currentItemToDelete = null;
+    
+    document.querySelectorAll('.delete-item-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            currentItemToDelete = e.closest('tr');
+            deleteItemModal.classList.remove('hidden');
+        });
+    });
+    
+    [closeDeleteItemModal, cancelDeleteItem].forEach(btn => {
+        btn.addEventListener('click', () => {
+            deleteItemModal.classList.add('hidden');
+        });
+    });
+    
+    confirmDeleteItem.addEventListener('click', () => {
+        if (currentItemToDelete) {
+            // Remove the row from the table
+            currentItemToDelete.remove();
+            deleteItemModal.classList.add('hidden');
+            // Here you would typically make an AJAX call to delete the item on the server
+            alert('Item deleted!');
+        }
+    });
+    
+    // Bulk actions functionality
+    const selectAllCheckbox = document.getElementById('select-all');
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+    const bulkRenameBtn = document.getElementById('bulk-rename-btn');
+    const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+    const bulkRenameModal = document.getElementById('bulk-rename-modal');
+    const bulkDeleteModal = document.getElementById('bulk-delete-modal');
+    const closeBulkRenameModal = document.getElementById('close-bulk-rename-modal');
+    const closeBulkDeleteModal = document.getElementById('close-bulk-delete-modal');
+    const cancelBulkRename = document.getElementById('cancel-bulk-rename');
+    const cancelBulkDelete = document.getElementById('cancel-bulk-delete');
+    const confirmBulkRename = document.getElementById('confirm-bulk-rename');
+    const confirmBulkDelete = document.getElementById('confirm-bulk-delete');
+    const bulkRenamePattern = document.getElementById('bulk-rename-pattern');
+    const renameOptions = document.querySelectorAll('.rename-option');
+    
+    // Select all checkbox functionality
+    selectAllCheckbox.addEventListener('change', (e) => {
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+    
+    // Update select all checkbox when individual checkboxes change
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+            selectAllCheckbox.checked = allChecked;
+        });
+    });
+    
+    // Bulk rename
+    bulkRenameBtn.addEventListener('click', () => {
+        const selectedCount = document.querySelectorAll('.item-checkbox:checked').length;
+        if (selectedCount > 0) {
+            bulkRenameModal.classList.remove('hidden');
+        } else {
+            alert('Please select at least one item to rename');
+        }
+    });
+    
+    [closeBulkRenameModal, cancelBulkRename].forEach(btn => {
+        btn.addEventListener('click', () => {
+            bulkRenameModal.classList.add('hidden');
+        });
+    });
+    
+    // Show different rename options based on selection
+    bulkRenamePattern.addEventListener('change', (e) => {
+        renameOptions.forEach(option => {
+            option.classList.add('hidden');
+        });
+        document.getElementById(`${e.target.value}-options`).classList.remove('hidden');
+    });
+    
+    confirmBulkRename.addEventListener('click', () => {
+        const selectedPattern = bulkRenamePattern.value;
+        const selectedItems = document.querySelectorAll('.item-checkbox:checked');
+        
+        selectedItems.forEach((checkbox, index) => {
+            const row = checkbox.closest('tr');
+            const currentName = row.getAttribute('data-name');
+            let newName = currentName;
+            
+            switch(selectedPattern) {
+                case 'prefix':
+                    const prefix = document.getElementById('prefix-text').value;
+                    newName = prefix + currentName;
+                    break;
+                case 'suffix':
+                    const suffix = document.getElementById('suffix-text').value;
+                    const ext = currentName.includes('.') ? currentName.split('.').pop() : '';
+                    if (ext) {
+                        const baseName = currentName.substring(0, currentName.lastIndexOf('.'));
+                        newName = baseName + suffix + '.' + ext;
+                    } else {
+                        newName = currentName + suffix;
+                    }
+                    break;
+                case 'replace':
+                    const findText = document.getElementById('find-text').value;
+                    const replaceWith = document.getElementById('replace-with').value;
+                    newName = currentName.replace(new RegExp(findText, 'g'), replaceWith);
+                    break;
+                case 'custom':
+                    const customPattern = document.getElementById('custom-pattern').value;
+                    newName = customPattern.replace('{n}', index + 1);
+                    break;
+            }
+            
+            // Update the displayed name
+            const nameCell = row.querySelector('td:nth-child(2) span');
+            if (nameCell) {
+                nameCell.textContent = newName;
+            }
+        });
+        
+        bulkRenameModal.classList.add('hidden');
+        // Here you would typically make an AJAX call to update the items on the server
+        alert(`${selectedItems.length} items renamed!`);
+    });
+    
+    // Bulk delete
+    bulkDeleteBtn.addEventListener('click', () => {
+        const selectedCount = document.querySelectorAll('.item-checkbox:checked').length;
+        if (selectedCount > 0) {
+            bulkDeleteModal.classList.remove('hidden');
+        } else {
+            alert('Please select at least one item to delete');
+        }
+    });
+    
+    [closeBulkDeleteModal, cancelBulkDelete].forEach(btn => {
+        btn.addEventListener('click', () => {
+            bulkDeleteModal.classList.add('hidden');
+        });
+    });
+    
+    confirmBulkDelete.addEventListener('click', () => {
+        const selectedItems = document.querySelectorAll('.item-checkbox:checked');
+        selectedItems.forEach(checkbox => {
+            const row = checkbox.closest('tr');
+            row.remove();
+        });
+        
+        bulkDeleteModal.classList.add('hidden');
+        // Here you would typically make an AJAX call to delete the items on the server
+        alert(`${selectedItems.length} items deleted!`);
+    });
+});
 </script>
+
+<style>
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    list-style: none;
+    background-color: transparent;
+    border-radius: 0.375rem;
+}
+
+.breadcrumb a {
+    color: #4b5563;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: #1f2937;
+}
+
+.breadcrumb li:not(:first-child)::before {
+    content: "/";
+    padding: 0 0.5rem;
+    color: #9ca3af;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Modal animations */
+[class*="-modal"] {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 @endsection
