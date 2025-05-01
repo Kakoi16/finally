@@ -66,30 +66,12 @@ Route::middleware(['admin.only'])->group(function () {
 
     Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
+    
+    // web.php
+Route::put('/folders/{id}/rename', [FolderController::class, 'rename']);
+Route::delete('/folders/{id}', [FolderController::class, 'destroy']);
+Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete']);
 
-    Route::post('/folders/{folderPath}/rename', [FolderController::class, 'renameFolder'])
-    ->where('folderPath', '.*')
-    ->name('folders.rename');
-    
-Route::post('/folders/{folderPath}/delete', [FolderController::class, 'deleteFolder'])
-    ->where('folderPath', '.*')
-    ->name('folders.delete');
-    
-// Item operations
-Route::post('/items/{itemPath}/rename', [FileController::class, 'renameItem'])
-    ->where('itemPath', '.*')
-    ->name('items.rename');
-    
-Route::post('/items/{itemPath}/delete', [FileController::class, 'deleteItem'])
-    ->where('itemPath', '.*')
-    ->name('items.delete');
-    
-// Bulk operations
-Route::post('/items/bulk-rename', [FileController::class, 'bulkRename'])
-    ->name('items.bulkRename');
-    
-Route::post('/items/bulk-delete', [FolderController::class, 'bulkDelete'])
-    ->name('items.bulkDelete');
 });
 
 

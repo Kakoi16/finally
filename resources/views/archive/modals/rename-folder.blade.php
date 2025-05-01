@@ -9,9 +9,11 @@
                 </svg>
             </button>
         </div>
+        
         <div class="mb-4">
             <label for="new-folder-name" class="block text-sm font-medium text-gray-700 mb-1">New Folder Name</label>
             <input type="text" id="new-folder-name" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <input type="hidden" id="rename-folder-id">
         </div>
         <div class="flex justify-end space-x-3">
             <button id="cancel-rename-folder" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">Cancel</button>
@@ -19,3 +21,24 @@
         </div>
     </div>
 </div>
+<script>
+document.getElementById('confirm-rename-folder').addEventListener('click', function () {
+    const newName = document.getElementById('new-folder-name').value;
+    const folderId = document.getElementById('rename-folder-id').value;
+
+    fetch(`/folders/${folderId}/rename`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ name: newName })
+    }).then(res => res.json())
+      .then(response => {
+          alert(response.message);
+      }).catch(err => {
+          alert('ada yang salah');
+      });
+});
+
+</script>

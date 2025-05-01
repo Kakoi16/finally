@@ -150,19 +150,63 @@ class FolderController extends Controller
             'breadcrumbs' => $breadcrumbs,
         ]);
     }
+    public function bulkRename(Request $request)
+{
+    $request->validate([
+        'renames' => 'required|string'
+    ]);
+
+    $lines = explode("\n", trim($request->renames));
+    $successCount = 0;
+
+    foreach ($lines as $line) {
+        [$oldPath, $newName] = explode('|', $line);
+        $oldPath = trim($oldPath);
+        $newName = trim($newName);
+
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->get($this->supabaseUrl . '?path=eq.' . $oldPath);
+
+        if (!$response->successful() || empty($response->json())) {
+            continue;
+        }
+
+        $item = $response->json()[0];
+        $newPath = dirname($oldPath) . '/' . Str::slug($newName);
+
+        $updateResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
+            'name' => $newName,
+            'path' => $newPath,
+        ]);
+
+        if ($updateResponse->successful()) {
+            $successCount++;
+        }
+    }
+
+    return redirect()->back()->with('success', "$successCount item berhasil di-rename.");
+}
+
     public function bulkDelete(Request $request)
     {
         $request->validate([
-            'selected_items' => 'required|array',
-            'selected_items.*' => 'string',
+            'selected_items' => 'required|string'
         ]);
 
-        $paths = $request->selected_items;
+        $paths = explode("\n", trim($request->input('selected_items'))); // explode manual dari textarea
+        $paths = array_map('trim', $paths);
         
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
         ])->delete($this->supabaseUrl . '?path=in.(' . implode(',', $paths) . ')');
+        
 
         return $response->successful()
             ? redirect()->back()->with('success', 'Item terpilih berhasil dihapus.')
@@ -198,14 +242,25 @@ class FolderController extends Controller
         ]);
 
         // Update all files/folders inside this folder
-        $updateChildrenResponse = Http::withHeaders([
+        $childrenResponse = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
-        ])->patch($this->supabaseUrl, [
-            'path' => Str::replaceFirst($folderPath, $newPath, 'path'),
-        ])->where('path', 'like', $folderPath . '/%');
-
+        ])->get($this->supabaseUrl . '?path=like.' . $folderPath . '/%');
+        
+        if ($childrenResponse->successful()) {
+            foreach ($childrenResponse->json() as $child) {
+                $newChildPath = Str::replaceFirst($folderPath, $newPath, $child['path']);
+        
+                Http::withHeaders([
+                    'apikey' => $this->supabaseKey,
+                    'Authorization' => 'Bearer ' . $this->supabaseKey,
+                    'Content-Type' => 'application/json',
+                ])->patch($this->supabaseUrl . '?id=eq.' . $child['id'], [
+                    'path' => $newChildPath,
+                ]);
+            }
+        }
+        
         return $updateResponse->successful()
             ? redirect()->route('folders.showAny', ['any' => $newPath])->with('success', 'Folder berhasil diubah nama.')
             : redirect()->back()->with('error', 'Gagal mengubah nama folder.');

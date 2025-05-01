@@ -8,6 +8,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
+            <input type="hidden" id="delete-folder-id">
         </div>
         <div class="mb-4">
             <p class="text-gray-600">Are you sure you want to delete this folder and all its contents? This action cannot be undone.</p>
@@ -18,3 +19,21 @@
         </div>
     </div>
 </div>
+<script>
+document.getElementById('confirm-delete-folder').addEventListener('click', function () {
+    const folderId = document.getElementById('delete-folder-id').value;
+
+    fetch(`/folders/${folderId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(res => res.json())
+      .then(response => {
+          alert(response.message);
+      }).catch(err => {
+          alert('ada yang salah');
+      });
+});
+
+</script>

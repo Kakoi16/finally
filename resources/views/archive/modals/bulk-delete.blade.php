@@ -10,6 +10,7 @@
             </button>
         </div>
         <div class="mb-4">
+        <input type="hidden" id="bulk-delete-ids">
             <p class="text-gray-600">Are you sure you want to delete the selected items? This action cannot be undone.</p>
         </div>
         <div class="flex justify-end space-x-3">
@@ -18,3 +19,23 @@
         </div>
     </div>
 </div>
+<script>
+document.getElementById('confirm-bulk-delete').addEventListener('click', function () {
+    const ids = JSON.parse(document.getElementById('bulk-delete-ids').value); // bentuk array
+
+    fetch(`/folders/bulk-delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ ids: ids })
+    }).then(res => res.json())
+      .then(response => {
+         console.log(response);
+      }).catch(err => {
+          alert('ada yang salah');
+      });
+});
+
+</script>
