@@ -1,4 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // CSRF Token untuk AJAX
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    
+    // Fungsi untuk menampilkan notifikasi
+    function showNotification(message, isSuccess = true) {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-4 py-2 rounded-md shadow-md ${
+            isSuccess ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+        }`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Fungsi untuk menangani error AJAX
+    function handleAjaxError(error) {
+        console.error('Error:', error);
+        showNotification('Terjadi kesalahan. Silakan coba lagi.', false);
+    }
+
     // Folder rename functionality
     const renameFolderBtn = document.getElementById('rename-folder-btn');
     const renameFolderModal = document.getElementById('rename-folder-modal');
@@ -8,26 +31,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const newFolderNameInput = document.getElementById('new-folder-name');
     const folderNameDisplay = document.getElementById('folder-name-display');
 
-    renameFolderBtn.addEventListener('click', () => {
-        newFolderNameInput.value = folderNameDisplay.textContent;
-        renameFolderModal.classList.remove('hidden');
-    });
-
-    [closeRenameFolderModal, cancelRenameFolder].forEach(btn => {
-        btn.addEventListener('click', () => {
-            renameFolderModal.classList.add('hidden');
+    if (renameFolderBtn) {
+        renameFolderBtn.addEventListener('click', () => {
+            newFolderNameInput.value = folderNameDisplay.textContent;
+            renameFolderModal.classList.remove('hidden');
         });
-    });
 
-    confirmRenameFolder.addEventListener('click', () => {
-        const newName = newFolderNameInput.value.trim();
-        if (newName) {
-            folderNameDisplay.textContent = newName;
-            renameFolderModal.classList.add('hidden');
-            // Here you would typically make an AJAX call to update the folder name on the server
-            alert(`Folder renamed to: ${newName}`);
-        }
-    });
+        [closeRenameFolderModal, cancelRenameFolder].forEach(btn => {
+            btn.addEventListener('click', () => {
+                renameFolderModal.classList.add('hidden');
+            });
+        });
+
+        confirmRenameFolder.addEventListener('click', () => {
+            const newName = newFolderNameInput.value.trim();
+            if (newName) {
+                fetch(`/folders/${encodeURIComponent('{{ $folderPath }}')}/rename`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ new_name: newName })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        showNotification(data.message || 'Gagal mengubah nama folder', false);
+                    }
+                })
+                .catch(handleAjaxError);
+            }
+        });
+    }
 
     // Folder delete functionality
     const deleteFolderBtn = document.getElementById('delete-folder-btn');
@@ -36,22 +80,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelDeleteFolder = document.getElementById('cancel-delete-folder');
     const confirmDeleteFolder = document.getElementById('confirm-delete-folder');
 
-    deleteFolderBtn.addEventListener('click', () => {
-        deleteFolderModal.classList.remove('hidden');
-    });
-
-    [closeDeleteFolderModal, cancelDeleteFolder].forEach(btn => {
-        btn.addEventListener('click', () => {
-            deleteFolderModal.classList.add('hidden');
+    if (deleteFolderBtn) {
+        deleteFolderBtn.addEventListener('click', () => {
+            deleteFolderModal.classList.remove('hidden');
         });
-    });
 
-    confirmDeleteFolder.addEventListener('click', () => {
-        deleteFolderModal.classList.add('hidden');
-        // Here you would typically make an AJAX call to delete the folder on the server
-        alert('Folder deleted!');
-        // In a real app, you would redirect or refresh the page
-    });
+        [closeDeleteFolderModal, cancelDeleteFolder].forEach(btn => {
+            btn.addEventListener('click', () => {
+                deleteFolderModal.classList.add('hidden');
+            });
+        });
+
+        confirmDeleteFolder.addEventListener('click', () => {
+            fetch(`/folders/${encodeURIComponent('{{ $folderPath }}')}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/archive';
+                } else {
+                    showNotification(data.message || 'Gagal menghapus folder', false);
+                }
+            })
+            .catch(handleAjaxError);
+        });
+    }
 
     // Item rename functionality
     const renameItemModal = document.getElementById('rename-item-modal');
@@ -77,19 +141,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    confirmRenameItem.addEventListener('click', () => {
-        const newName = newItemNameInput.value.trim();
-        if (newName && currentItemToRename) {
-            // Update the displayed name
-            const nameCell = currentItemToRename.querySelector('td:nth-child(2) span');
-            if (nameCell) {
-                nameCell.textContent = newName;
+    if (confirmRenameItem) {
+        confirmRenameItem.addEventListener('click', () => {
+            const newName = newItemNameInput.value.trim();
+            if (newName && currentItemToRename) {
+                const itemPath = currentItemToRename.getAttribute('data-id');
+                
+                fetch(`/items/${encodeURIComponent(itemPath)}/rename`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ new_name: newName })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        showNotification(data.message || 'Gagal mengubah nama item', false);
+                    }
+                })
+                .catch(handleAjaxError);
             }
-            renameItemModal.classList.add('hidden');
-            // Here you would typically make an AJAX call to update the item name on the server
-            alert(`Item renamed to: ${newName}`);
-        }
-    });
+        });
+    }
 
     // Item delete functionality
     const deleteItemModal = document.getElementById('delete-item-modal');
@@ -111,15 +194,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    confirmDeleteItem.addEventListener('click', () => {
-        if (currentItemToDelete) {
-            // Remove the row from the table
-            currentItemToDelete.remove();
-            deleteItemModal.classList.add('hidden');
-            // Here you would typically make an AJAX call to delete the item on the server
-            alert('Item deleted!');
-        }
-    });
+    if (confirmDeleteItem) {
+        confirmDeleteItem.addEventListener('click', () => {
+            if (currentItemToDelete) {
+                const itemPath = currentItemToDelete.getAttribute('data-id');
+                
+                fetch(`/items/${encodeURIComponent(itemPath)}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        showNotification(data.message || 'Gagal menghapus item', false);
+                    deleteItemModal.classList.add('hidden');
+                    currentItemToDelete = null;
+                    }
+                })
+                .catch(handleAjaxError);
+            }
+        });
+    }
 
     // Bulk actions functionality
     const selectAllCheckbox = document.getElementById('select-all');
@@ -138,116 +244,145 @@ document.addEventListener('DOMContentLoaded', function() {
     const renameOptions = document.querySelectorAll('.rename-option');
 
     // Select all checkbox functionality
-    selectAllCheckbox.addEventListener('change', (e) => {
-        itemCheckboxes.forEach(checkbox => {
-            checkbox.checked = e.target.checked;
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', (e) => {
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+            });
         });
-    });
 
-    // Update select all checkbox when individual checkboxes change
-    itemCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', () => {
-            const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
-            selectAllCheckbox.checked = allChecked;
+        // Update select all checkbox when individual checkboxes change
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                selectAllCheckbox.checked = allChecked;
+            });
         });
-    });
+    }
 
     // Bulk rename
-    bulkRenameBtn.addEventListener('click', () => {
-        const selectedCount = document.querySelectorAll('.item-checkbox:checked').length;
-        if (selectedCount > 0) {
-            bulkRenameModal.classList.remove('hidden');
-        } else {
-            alert('Please select at least one item to rename');
+    if (bulkRenameBtn) {
+        bulkRenameBtn.addEventListener('click', () => {
+            const selectedCount = document.querySelectorAll('.item-checkbox:checked').length;
+            if (selectedCount > 0) {
+                bulkRenameModal.classList.remove('hidden');
+            } else {
+                showNotification('Pilih setidaknya satu item untuk diubah nama', false);
+            }
+        });
+
+        [closeBulkRenameModal, cancelBulkRename].forEach(btn => {
+            btn.addEventListener('click', () => {
+                bulkRenameModal.classList.add('hidden');
+            });
+        });
+
+        // Show different rename options based on selection
+        if (bulkRenamePattern) {
+            bulkRenamePattern.addEventListener('change', (e) => {
+                renameOptions.forEach(option => {
+                    option.classList.add('hidden');
+                });
+                document.getElementById(`${e.target.value}-options`).classList.remove('hidden');
+            });
         }
-    });
 
-    [closeBulkRenameModal, cancelBulkRename].forEach(btn => {
-        btn.addEventListener('click', () => {
-            bulkRenameModal.classList.add('hidden');
-        });
-    });
+        if (confirmBulkRename) {
+            confirmBulkRename.addEventListener('click', () => {
+                const selectedItems = Array.from(document.querySelectorAll('.item-checkbox:checked'))
+                    .map(checkbox => checkbox.value);
+                const pattern = document.getElementById('bulk-rename-pattern').value;
+                const value = document.getElementById(`${pattern}-text`)?.value || '';
+                const replaceWith = document.getElementById('replace-with')?.value || '';
+                
+                if (selectedItems.length === 0) {
+                    showNotification('Pilih setidaknya satu item untuk diubah nama', false);
+                    return;
+                }
 
-    // Show different rename options based on selection
-    bulkRenamePattern.addEventListener('change', (e) => {
-        renameOptions.forEach(option => {
-            option.classList.add('hidden');
-        });
-        document.getElementById(`${e.target.value}-options`).classList.remove('hidden');
-    });
-
-    confirmBulkRename.addEventListener('click', () => {
-        const selectedPattern = bulkRenamePattern.value;
-        const selectedItems = document.querySelectorAll('.item-checkbox:checked');
-
-        selectedItems.forEach((checkbox, index) => {
-            const row = checkbox.closest('tr');
-            const currentName = row.getAttribute('data-name');
-            let newName = currentName;
-
-            switch (selectedPattern) {
-                case 'prefix':
-                    const prefix = document.getElementById('prefix-text').value;
-                    newName = prefix + currentName;
-                    break;
-                case 'suffix':
-                    const suffix = document.getElementById('suffix-text').value;
-                    const ext = currentName.includes('.') ? currentName.split('.').pop() : '';
-                    if (ext) {
-                        const baseName = currentName.substring(0, currentName.lastIndexOf('.'));
-                        newName = baseName + suffix + '.' + ext;
-                    } else {
-                        newName = currentName + suffix;
+                fetch('/items/bulk-rename', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        selected_items: selectedItems,
+                        rename_pattern: pattern,
+                        rename_value: value,
+                        replace_with: replaceWith
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-                    break;
-                case 'replace':
-                    const findText = document.getElementById('find-text').value;
-                    const replaceWith = document.getElementById('replace-with').value;
-                    newName = currentName.replace(new RegExp(findText, 'g'), replaceWith);
-                    break;
-                case 'custom':
-                    const customPattern = document.getElementById('custom-pattern').value;
-                    newName = customPattern.replace('{n}', index + 1);
-                    break;
-            }
-
-            // Update the displayed name
-            const nameCell = row.querySelector('td:nth-child(2) span');
-            if (nameCell) {
-                nameCell.textContent = newName;
-            }
-        });
-
-        bulkRenameModal.classList.add('hidden');
-        // Here you would typically make an AJAX call to update the items on the server
-        alert(`${selectedItems.length} items renamed!`);
-    });
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        showNotification(data.message || 'Gagal mengubah nama item', false);
+                    }
+                })
+                .catch(handleAjaxError);
+            });
+        }
+    }
 
     // Bulk delete
-    bulkDeleteBtn.addEventListener('click', () => {
-        const selectedCount = document.querySelectorAll('.item-checkbox:checked').length;
-        if (selectedCount > 0) {
-            bulkDeleteModal.classList.remove('hidden');
-        } else {
-            alert('Please select at least one item to delete');
+    if (bulkDeleteBtn) {
+        bulkDeleteBtn.addEventListener('click', () => {
+            const selectedCount = document.querySelectorAll('.item-checkbox:checked').length;
+            if (selectedCount > 0) {
+                bulkDeleteModal.classList.remove('hidden');
+            } else {
+                showNotification('Pilih setidaknya satu item untuk dihapus', false);
+            }
+        });
+
+        [closeBulkDeleteModal, cancelBulkDelete].forEach(btn => {
+            btn.addEventListener('click', () => {
+                bulkDeleteModal.classList.add('hidden');
+            });
+        });
+
+        if (confirmBulkDelete) {
+            confirmBulkDelete.addEventListener('click', () => {
+                const selectedItems = Array.from(document.querySelectorAll('.item-checkbox:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                if (selectedItems.length === 0) {
+                    showNotification('Pilih setidaknya satu item untuk dihapus', false);
+                    return;
+                }
+
+                fetch('/items/bulk-delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ selected_items: selectedItems })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        showNotification(data.message || 'Gagal menghapus item', false);
+                    }
+                })
+                .catch(handleAjaxError);
+            });
         }
-    });
-
-    [closeBulkDeleteModal, cancelBulkDelete].forEach(btn => {
-        btn.addEventListener('click', () => {
-            bulkDeleteModal.classList.add('hidden');
-        });
-    });
-
-    confirmBulkDelete.addEventListener('click', () => {
-        const selectedItems = document.querySelectorAll('.item-checkbox:checked');
-        selectedItems.forEach(checkbox => {
-            const row = checkbox.closest('tr');
-            row.remove();
-        });
-
-        bulkDeleteModal.classList.add('hidden');
-        // Here you would typically make an AJAX call to delete the items on the server
-        alert(`${selectedItems.length} items deleted!`);
-    });
+    }
 });
