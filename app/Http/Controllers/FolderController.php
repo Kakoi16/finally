@@ -160,7 +160,14 @@ class FolderController extends Controller
     $successCount = 0;
 
     foreach ($lines as $line) {
-        [$oldPath, $newName] = explode('|', $line);
+        $parts = explode('|', $line);
+
+        // Cek apakah format valid
+        if (count($parts) < 2) {
+            continue; // Lewati baris yang tidak valid
+        }
+
+        [$oldPath, $newName] = $parts;
         $oldPath = trim($oldPath);
         $newName = trim($newName);
 
@@ -192,6 +199,7 @@ class FolderController extends Controller
 
     return redirect()->back()->with('success', "$successCount item berhasil di-rename.");
 }
+
 
     public function bulkDelete(Request $request)
     {
