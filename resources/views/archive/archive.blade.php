@@ -35,78 +35,65 @@
 
 @push('scripts')
 <script>
-    function toggleRenameMode() {
-    const checkboxes = document.querySelectorAll('.folder-checkbox');
-    checkboxes.forEach(cb => cb.classList.toggle('hidden'));
-
-    const visibleCheckboxes = [...checkboxes].filter(cb => !cb.classList.contains('hidden'));
-
-    if (visibleCheckboxes.length === 0) {
-        // mode rename aktif, tampilkan prompt untuk rename
-        const selected = [...checkboxes].filter(cb => cb.checked);
-        if (selected.length === 0) {
-            alert('Pilih folder yang ingin di-rename.');
-            return;
+   function folderEditor() {
+    return {
+        editing: false,
+        folderName: '{{ $folderName }}',
+        originalName: '{{ $folderName }}',
+        renameFolder() {
+            fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ name: this.folderName })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    this.originalName = this.folderName;
+                    this.editing = false;
+                } else {
+                    alert("Failed to rename.");
+                    this.folderName = this.originalName;
+                }
+            }).catch(err => {
+                alert("Server error.");
+                this.folderName = this.originalName;
+            });
         }
+    }
+}
+            function renameFolder() {
+                if (!'{{ $folderId }}') {
+                    alert("Folder ID not available!");
+                    return;
+                }
 
-        selected.forEach(cb => {
-            const currentName = cb.dataset.name;
-            const newName = prompt(`Rename folder "${currentName}" ke:`);
-            if (newName && newName !== currentName) {
-                renameFolder(cb.value, newName);
+                fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ name: this.folderName })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.originalName = this.folderName;
+                        this.editing = false;
+                    } else {
+                        alert("Failed to rename folder.");
+                        this.folderName = this.originalName;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.folderName = this.originalName;
+                });
             }
-        });
-    }
-}
-
-function renameFolder(folderId, newName) {
-    fetch(`/rename-folder/${folderId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ name: newName })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('Gagal rename folder.');
-        }
-    });
-}
-
-function deleteSelectedFolders() {
-    const selected = [...document.querySelectorAll('.folder-checkbox:checked')];
-    if (selected.length === 0) {
-        alert('Pilih folder yang ingin dihapus.');
-        return;
-    }
-
-    if (!confirm('Yakin ingin menghapus folder terpilih?')) return;
-
-    const ids = selected.map(cb => cb.value);
-
-    fetch('/delete-folders', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ ids })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert('Gagal menghapus folder.');
-        }
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
