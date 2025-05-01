@@ -88,7 +88,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
         </div>
-        <div class="flex-1">
+        
+        <div  x-data="folderEditor()" class="flex-1">
             <div class="flex items-center space-x-2">
                 <!-- Folder Name Display -->
                 <template x-if="!editing">
@@ -121,6 +122,36 @@
         <input type="hidden" name="id" value="{{ $folderId }}">
 
         <script>
+            function folderEditor() {
+    return {
+        editing: false,
+        folderName: '{{ $folderName }}',
+        originalName: '{{ $folderName }}',
+        renameFolder() {
+            fetch(`{{ route('folder.rename', ['id' => $folderId]) }}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ name: this.folderName })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    this.originalName = this.folderName;
+                    this.editing = false;
+                } else {
+                    alert("Failed to rename.");
+                    this.folderName = this.originalName;
+                }
+            }).catch(err => {
+                alert("Server error.");
+                this.folderName = this.originalName;
+            });
+        }
+    }
+}
             function renameFolder() {
                 if (!'{{ $folderId }}') {
                     alert("Folder ID not available!");
