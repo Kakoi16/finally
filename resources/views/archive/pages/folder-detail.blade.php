@@ -60,23 +60,38 @@
             </form>
         </div>
 
-        <!-- Folder Actions -->
-       <!-- Tombol Aksi -->
-       <div class="space-y-1.5">
-             <a href="#" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium border border-gray-100">
-                 <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                 </svg>
-                 Rename Folder
-             </a>
-             <a href="#" class="flex items-center px-4 py-2.5 rounded-lg hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors text-sm font-medium border border-gray-100">
-                 <svg class="w-5 h-5 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                 </svg>
-                 Delete Folder
-             </a>
-         </div>
-
+        <!-- Folder Management Card -->
+        <div class="bg-purple-50/50 p-4 rounded-lg border border-purple-100">
+            <h3 class="text-sm font-semibold text-purple-800 mb-3 flex items-center">
+                <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                </svg>
+                Folder Management
+            </h3>
+            <div class="space-y-3">
+                <!-- Rename Folder Form -->
+                <form method="POST" action="{{ route('folders.rename', ['path' => $folderPath]) }}" class="space-y-2">
+                    @csrf
+                    @method('PUT')
+                    <div>
+                        <input type="text" name="new_name" placeholder="New folder name" 
+                            class="text-sm border border-purple-200 bg-white p-2.5 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-300 transition">
+                    </div>
+                    <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
+                        Rename Folder
+                    </button>
+                </form>
+                
+                <!-- Delete Folder Form -->
+                <form method="POST" action="{{ route('folders.delete', ['path' => $folderPath]) }}" onsubmit="return confirm('Are you sure you want to delete this folder and all its contents?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200 text-sm font-medium flex items-center justify-center shadow-sm">
+                        Delete Folder
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </aside>
 @endsection
@@ -215,8 +230,27 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
                                     </svg>
                                 </a>
-
-
+                                
+                                <!-- Rename Folder Action -->
+                                <button onclick="showRenameModal('{{ $file['path'] }}', '{{ $file['name'] }}')" 
+                                    class="text-purple-600 hover:text-purple-800 p-1 rounded hover:bg-purple-50 transition-colors"
+                                    title="Rename">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </button>
+                                
+                                <!-- Delete Folder Action -->
+                                <form method="POST" action="{{ route('folders.delete', ['path' => $file['path']]) }}" onsubmit="return confirm('Are you sure you want to delete this folder and all its contents?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50 transition-colors" title="Delete">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                                
                                 <div class="subfolders" id="subfolders-{{ $folderPath }}"></div>
                                 @else
                                 <a href="#" class="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50 transition-colors" title="View">
@@ -244,12 +278,6 @@
             </table>
         </div>
         @else
-        <!-- <form action="{{ route('folders.subfolder.create', ['path' => $folderPath]) }}" method="POST" class="flex items-center space-x-2 mt-4">
-            @csrf
-            <input type="text" name="folder_name" placeholder="Nama subfolder" required class="border rounded px-3 py-1">
-            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">Tambah Subfolder</button>
-        </form> -->
-
         <div class="text-center py-16 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
             <svg class="mx-auto h-14 w-14 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
@@ -274,4 +302,47 @@
         @endif
     </div>
 </div>
+
+<!-- Rename Folder Modal -->
+<div id="renameModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Rename Folder</h3>
+            <button onclick="hideRenameModal()" class="text-gray-400 hover:text-gray-500">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <form id="renameForm" method="POST" action="">
+            @csrf
+            @method('PUT')
+            <div class="mb-4">
+                <label for="new_name" class="block text-sm font-medium text-gray-700 mb-1">New Name</label>
+                <input type="text" name="new_name" id="new_name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="hideRenameModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">
+                    Rename
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showRenameModal(folderPath, currentName) {
+        const form = document.getElementById('renameForm');
+        form.action = `/folders/${encodeURIComponent(folderPath)}/rename`;
+        document.getElementById('new_name').value = currentName;
+        document.getElementById('renameModal').classList.remove('hidden');
+    }
+    
+    function hideRenameModal() {
+        document.getElementById('renameModal').classList.add('hidden');
+    }
+</script>
 @endsection
