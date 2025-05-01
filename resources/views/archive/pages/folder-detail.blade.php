@@ -84,23 +84,69 @@
 @section('content')
 <div class="p-8 bg-white rounded-xl shadow-sm border border-gray-100">
     <!-- Folder Header -->
-    <div class="flex items-start mb-6">
-        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mr-4">
-            <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-            </svg>
-        </div>
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">{{ $folderName }}</h1>
-            <p class="text-gray-500 text-sm mt-1">
-                @if(count($files) > 0)
-                {{ count($files) }} {{ count($files) === 1 ? 'item' : 'items' }}
-                @else
-                Empty folder
-                @endif
-            </p>
-        </div>
+    <div class="flex items-start mb-6" x-data="{ editing: false, folderName: '{{ $folderName }}', originalName: '{{ $folderName }}' }">
+    <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100 mr-4">
+        <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+        </svg>
     </div>
+    <div>
+        <div class="flex items-center space-x-2">
+            <!-- Tampilan Nama Folder -->
+            <template x-if="!editing">
+                <h1 class="text-2xl font-bold text-gray-800" x-text="folderName"></h1>
+            </template>
+
+            <!-- Input Rename -->
+            <template x-if="editing">
+                <input type="text" x-model="folderName"
+                       class="text-2xl font-bold text-gray-800 border rounded px-2 py-1 focus:outline-none focus:ring"
+                       @keydown.enter="renameFolder"
+                       @click.away="editing = false; folderName = originalName">
+            </template>
+
+            <!-- Tombol Edit -->
+            <button @click="editing = true" class="text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6m2 2l-6 6H9v-2z"/>
+                </svg>
+            </button>
+        </div>
+        <p class="text-gray-500 text-sm mt-1">
+            @if(count($files) > 0)
+                {{ count($files) }} {{ count($files) === 1 ? 'item' : 'items' }}
+            @else
+                Empty folder
+            @endif
+        </p>
+    </div>
+    <input type="hidden" name="id" value="{{ $folderId }}">
+
+    <!-- JS Alpine Action -->
+    <script>
+        function renameFolder() {
+            fetch(`{{ route('folder.rename', ['id' => request('id')]) }}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ name: document.querySelector('[x-model=folderName]').value })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Alpine.store('folder').editing = false;
+                } else {
+                    alert("Rename gagal.");
+                }
+            });
+        }
+    </script>
+</div>
+
 
     <!-- Breadcrumbs -->
     <nav>
