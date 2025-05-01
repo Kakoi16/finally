@@ -63,13 +63,13 @@ class FileController extends Controller
 
         $files = $response->json();
 
-        $currentFolder = trim($folderName ?? '', '/');
+        $currentFolder = trim($folderName ?? '', '/'); // kosong jika root
 
         $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
             $path = $file['path'] ?? '';
 
             if ($currentFolder === '') {
-                return !Str::contains($path, '/');
+                return !Str::contains($path, '/'); // hanya root-level
             }
 
             if (Str::startsWith($path, $currentFolder . '/')) {
@@ -84,66 +84,5 @@ class FileController extends Controller
             'archives' => $filteredFiles,
             'currentFolder' => $folderName,
         ]);
-    }
-
-    // Rename beberapa file sekaligus (via JSON)
-    public function renameSelected(Request $request)
-    {
-        $this->validate($request, [
-            'files' => 'required|array',
-            'files.*.id' => 'required|uuid',
-            'files.*.new_name' => 'required|string',
-        ]);
-
-        $results = [];
-
-        foreach ($request->files as $file) {
-            $current = Http::withToken($this->supabaseKey)
-                ->get($this->supabaseUrl . "?id=eq.{$file['id']}")
-                ->json()[0] ?? null;
-
-            if (!$current) {
-                $results[] = ['id' => $file['id'], 'success' => false, 'reason' => 'File not found'];
-                continue;
-            }
-
-            $newPath = preg_replace('/[^\/]+$/', $file['new_name'], $current['path']);
-
-            $response = Http::withToken($this->supabaseKey)
-                ->patch($this->supabaseUrl . "?id=eq.{$file['id']}", [
-                    'name' => $file['new_name'],
-                    'path' => $newPath
-                ]);
-
-            $results[] = [
-                'id' => $file['id'],
-                'success' => $response->successful(),
-            ];
-        }
-
-        return response()->json(['results' => $results]);
-    }
-
-    // Delete beberapa file sekaligus (via JSON)
-    public function deleteSelected(Request $request)
-    {
-        $this->validate($request, [
-            'ids' => 'required|array',
-            'ids.*' => 'required|uuid',
-        ]);
-
-        $results = [];
-
-        foreach ($request->ids as $id) {
-            $response = Http::withToken($this->supabaseKey)
-                ->delete($this->supabaseUrl . "?id=eq.$id");
-
-            $results[] = [
-                'id' => $id,
-                'success' => $response->successful(),
-            ];
-        }
-
-        return response()->json(['results' => $results]);
     }
 }
