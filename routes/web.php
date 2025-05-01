@@ -51,15 +51,15 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 // routes/folders
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
-    // File management
-Route::patch('/file/{id}/rename', [FileController::class, 'rename'])->name('file.rename');
-Route::post('/delete-files', [FileController::class, 'delete'])->name('file.delete');
-
     Route::post('/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
     ->where('path', '.*')
     ->name('folders.subfolder.create');
-    Route::patch('/folder/{id}/rename', [FolderController::class, 'rename'])->name('folder.rename');
-    Route::post('/delete-folders', [FolderController::class, 'bulkDelete']);
+    Route::post('/files/rename-selected', [FileController::class, 'renameSelected'])->name('files.renameSelected');
+Route::post('/files/delete-selected', [FileController::class, 'deleteSelected'])->name('files.deleteSelected');
+
+Route::put('/folders/{id}/rename', [FolderController::class, 'rename'])->name('folders.rename');
+Route::delete('/folders/{id}', [FolderController::class, 'destroy'])->name('folders.delete');
+
     
     // Folder
     Route::get('/folders/{any?}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.showAny');

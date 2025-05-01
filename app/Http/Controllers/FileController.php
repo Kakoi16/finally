@@ -85,39 +85,64 @@ class FileController extends Controller
             'currentFolder' => $folderName,
         ]);
     }
-
-    public function rename(Request $request, $id)
+    
+    public function renameSelected(Request $request)
 {
-    $request->validate([
-        'name' => 'required|string|max:255',
+    $this->validate($request, [
+        'files' => 'required|array',
+        'files.*.id' => 'required|uuid',
+        'files.*.new_name' => 'required|string',
     ]);
 
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-        'Content-Type' => 'application/json',
-    ])->patch($this->supabaseUrl . '?id=eq.' . $id, [
-        'name' => $request->name,
-    ]);
+    $results = [];
 
-    return response()->json(['success' => $response->successful()]);
+    foreach ($request->files as $file) {
+        // Get current file
+        $current = Http::withToken(env('SUPABASE_API_KEY'))
+            ->get(env('SUPABASE_URL') . "/rest/v1/archives?id=eq.{$file['id']}")
+            ->json()[0] ?? null;
+
+        if (!$current) {
+            $results[] = ['id' => $file['id'], 'success' => false, 'reason' => 'File not found'];
+            continue;
+        }
+
+        $newPath = preg_replace('/[^\/]+$/', $file['new_name'], $current['path']); // ganti nama terakhir
+
+        $response = Http::withToken(env('SUPABASE_API_KEY'))
+            ->patch(env('SUPABASE_URL') . "/rest/v1/archives?id=eq.{$file['id']}", [
+                'name' => $file['new_name'],
+                'path' => $newPath
+            ]);
+
+        $results[] = [
+            'id' => $file['id'],
+            'success' => $response->successful(),
+        ];
+    }
+
+    return response()->json(['results' => $results]);
 }
-
-public function delete(Request $request)
+public function deleteSelected(Request $request)
 {
-    $request->validate([
+    $this->validate($request, [
         'ids' => 'required|array',
+        'ids.*' => 'required|uuid',
     ]);
 
-    $ids = $request->ids;
-    $query = implode(',', array_map(fn($id) => '"' . $id . '"', $ids));
+    $results = [];
 
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-    ])->delete($this->supabaseUrl . '?id=in.(' . $query . ')');
+    foreach ($request->ids as $id) {
+        $response = Http::withToken(env('SUPABASE_API_KEY'))
+            ->delete(env('SUPABASE_URL') . "/rest/v1/archives?id=eq.$id");
 
-    return response()->json(['success' => $response->successful()]);
+        $results[] = [
+            'id' => $id,
+            'success' => $response->successful(),
+        ];
+    }
+
+    return response()->json(['results' => $results]);
 }
 
 }
