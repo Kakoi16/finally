@@ -51,6 +51,10 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 // routes/folders
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
+    // File management
+Route::patch('/file/{id}/rename', [FileController::class, 'rename'])->name('file.rename');
+Route::post('/delete-files', [FileController::class, 'delete'])->name('file.delete');
+
     Route::post('/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
     ->where('path', '.*')
     ->name('folders.subfolder.create');
