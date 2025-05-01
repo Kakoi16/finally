@@ -27,9 +27,9 @@
 @endsection
 
 @section('scripts')
-<script src="{{ asset('js/js') }}"></script>
+    <script src="{{ asset('asset/js/archive.js') }}"></script>
 @endsection
 
 @section('styles')
-<link href="{{ asset('css/css') }}" rel="stylesheet">
+    <link href="{{ asset('asset/css/archive.css') }}" rel="stylesheet">
 @endsection
