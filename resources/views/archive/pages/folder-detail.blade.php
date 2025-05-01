@@ -8,7 +8,7 @@
 <div class="p-8 bg-white rounded-xl shadow-sm border border-gray-100">
     @include('archive.components.folder-header')
     @include('archive.components.breadcrumbs')
-    
+
     @if(count($files) > 0)
         @include('archive.components.files-table')
     @else
