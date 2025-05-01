@@ -150,5 +150,86 @@ class FolderController extends Controller
             'breadcrumbs' => $breadcrumbs,
         ]);
     }
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'selected_items' => 'required|array',
+            'selected_items.*' => 'string',
+        ]);
 
+        $paths = $request->selected_items;
+        
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=in.(' . implode(',', $paths) . ')');
+
+        return $response->successful()
+            ? redirect()->back()->with('success', 'Item terpilih berhasil dihapus.')
+            : redirect()->back()->with('error', 'Gagal menghapus item terpilih.');
+    }
+    public function renameFolder(Request $request, $folderPath)
+    {
+        $request->validate([
+            'new_name' => 'required|string|max:255',
+        ]);
+
+        // Get the folder to rename
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->get($this->supabaseUrl . '?path=eq.' . $folderPath);
+
+        if (!$response->successful() || empty($response->json())) {
+            return redirect()->back()->with('error', 'Folder tidak ditemukan.');
+        }
+
+        $folder = $response->json()[0];
+        $newPath = dirname($folderPath) . '/' . Str::slug($request->new_name);
+
+        // Update the folder
+        $updateResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl . '?id=eq.' . $folder['id'], [
+            'name' => $request->new_name,
+            'path' => $newPath,
+        ]);
+
+        // Update all files/folders inside this folder
+        $updateChildrenResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl, [
+            'path' => Str::replaceFirst($folderPath, $newPath, 'path'),
+        ])->where('path', 'like', $folderPath . '/%');
+
+        return $updateResponse->successful()
+            ? redirect()->route('folders.showAny', ['any' => $newPath])->with('success', 'Folder berhasil diubah nama.')
+            : redirect()->back()->with('error', 'Gagal mengubah nama folder.');
+    }
+
+    /**
+     * Delete a folder and its contents
+     */
+    public function deleteFolder(Request $request, $folderPath)
+    {
+        // First delete all contents of the folder
+        $deleteContentsResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=like.' . $folderPath . '/%');
+
+        // Then delete the folder itself
+        $deleteFolderResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=eq.' . $folderPath);
+
+        return $deleteFolderResponse->successful()
+            ? redirect()->route('archive')->with('success', 'Folder dan isinya berhasil dihapus.')
+            : redirect()->back()->with('error', 'Gagal menghapus folder.');
+    }
 }

@@ -85,4 +85,126 @@ class FileController extends Controller
             'currentFolder' => $folderName,
         ]);
     }
+
+    public function bulkRename(Request $request)
+    {
+        $request->validate([
+            'selected_items' => 'required|array',
+            'selected_items.*' => 'string',
+            'rename_pattern' => 'required|string',
+            'rename_value' => 'required|string',
+        ]);
+
+        $items = $request->selected_items;
+        $pattern = $request->rename_pattern;
+        $value = $request->rename_value;
+        
+        foreach ($items as $index => $itemPath) {
+            // Get the item
+            $response = Http::withHeaders([
+                'apikey' => $this->supabaseKey,
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+            ])->get($this->supabaseUrl . '?path=eq.' . $itemPath);
+
+            if ($response->successful() && !empty($response->json())) {
+                $item = $response->json()[0];
+                $oldName = $item['name'];
+                $extension = pathinfo($oldName, PATHINFO_EXTENSION);
+                $baseName = pathinfo($oldName, PATHINFO_FILENAME);
+                
+                // Apply rename pattern
+                switch ($pattern) {
+                    case 'prefix':
+                        $newName = $value . $oldName;
+                        break;
+                    case 'suffix':
+                        $newName = $extension 
+                            ? $baseName . $value . '.' . $extension
+                            : $oldName . $value;
+                        break;
+                    case 'replace':
+                        $newName = str_replace($value, $request->replace_with, $oldName);
+                        break;
+                    case 'custom':
+                        $newName = str_replace('{n}', $index + 1, $value);
+                        if ($extension) {
+                            $newName .= '.' . $extension;
+                        }
+                        break;
+                    default:
+                        $newName = $oldName;
+                }
+                
+                $newPath = dirname($itemPath) . '/' . $newName;
+                
+                // Update the item
+                Http::withHeaders([
+                    'apikey' => $this->supabaseKey,
+                    'Authorization' => 'Bearer ' . $this->supabaseKey,
+                    'Content-Type' => 'application/json',
+                ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
+                    'name' => $newName,
+                    'path' => $newPath,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Item terpilih berhasil diubah nama.');
+    }
+    public function deleteItem(Request $request, $itemPath)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=eq.' . $itemPath);
+
+        return $response->successful()
+            ? redirect()->back()->with('success', 'Item berhasil dihapus.')
+            : redirect()->back()->with('error', 'Gagal menghapus item.');
+    }
+    public function renameItem(Request $request, $itemPath)
+    {
+        $request->validate([
+            'new_name' => 'required|string|max:255',
+        ]);
+
+        // Get the item to rename
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->get($this->supabaseUrl . '?path=eq.' . $itemPath);
+
+        if (!$response->successful() || empty($response->json())) {
+            return redirect()->back()->with('error', 'Item tidak ditemukan.');
+        }
+
+        $item = $response->json()[0];
+        $newName = $request->new_name;
+        $newPath = dirname($itemPath) . '/' . $newName;
+
+        // Update the item
+        $updateResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
+            'name' => $newName,
+            'path' => $newPath,
+        ]);
+
+        // If it's a folder, update all its contents
+        if ($item['type'] === 'folder') {
+            $updateChildrenResponse = Http::withHeaders([
+                'apikey' => $this->supabaseKey,
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+                'Content-Type' => 'application/json',
+            ])->patch($this->supabaseUrl, [
+                'path' => Str::replaceFirst($itemPath, $newPath, 'path'),
+            ])->where('path', 'like', $itemPath . '/%');
+        }
+
+        return $updateResponse->successful()
+            ? redirect()->back()->with('success', 'Item berhasil diubah nama.')
+            : redirect()->back()->with('error', 'Gagal mengubah nama item.');
+    }
 }

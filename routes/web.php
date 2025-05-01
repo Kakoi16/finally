@@ -52,20 +52,44 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
     Route::post('/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
-    ->where('path', '.*')
-    ->name('folders.subfolder.create');
+        ->where('path', '.*')
+        ->name('folders.subfolder.create');
 
     // Folder
     Route::get('/folders/{any?}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.showAny');
 
 
-Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');
+    Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');
 
-// File Upload
-Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
+    // File Upload
+    Route::post('/folders/{folderName}/upload', [FileController::class, 'upload'])->name('files.uploadToFolder');
 
     Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
+
+    Route::post('/folders/{folderPath}/rename', [FolderController::class, 'renameFolder'])
+    ->where('folderPath', '.*')
+    ->name('folders.rename');
+    
+Route::post('/folders/{folderPath}/delete', [FolderController::class, 'deleteFolder'])
+    ->where('folderPath', '.*')
+    ->name('folders.delete');
+    
+// Item operations
+Route::post('/items/{itemPath}/rename', [FileController::class, 'renameItem'])
+    ->where('itemPath', '.*')
+    ->name('items.rename');
+    
+Route::post('/items/{itemPath}/delete', [FileController::class, 'deleteItem'])
+    ->where('itemPath', '.*')
+    ->name('items.delete');
+    
+// Bulk operations
+Route::post('/items/bulk-rename', [FileController::class, 'bulkRename'])
+    ->name('items.bulkRename');
+    
+Route::post('/items/bulk-delete', [FolderController::class, 'bulkDelete'])
+    ->name('items.bulkDelete');
 });
 
 
@@ -74,3 +98,4 @@ Route::get('/files', [FileController::class, 'index'])->name('files.index');
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+
