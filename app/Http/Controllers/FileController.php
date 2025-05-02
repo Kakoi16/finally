@@ -18,20 +18,20 @@ class FileController extends Controller
     }
 
     // Upload file ke folder tertentu
-    public function upload(Request $request, $folderPath = null)
-{
-    $request->validate([
-        'file' => 'required|file',
-    ]);
+    public function upload(Request $request, $folderName = null)
+    {
+        $request->validate([
+            'file' => 'required|file',
+        ]);
 
     $file = $request->file('file');
     $uploadedBy = auth()->user()->id ?? null;
 
-    // Tentukan path penyimpanan
-    $cleanedPath = trim($folderPath ?? '', '/'); // hapus '/' di awal/akhir
-    $fullPath = $cleanedPath !== ''
-        ? $cleanedPath . '/' . $file->getClientOriginalName()
-        : $file->getClientOriginalName();
+        $path = '';
+        if ($folderName) {
+            $path .= trim($folderName, '/') . '/';
+        }
+        $path .= $file->getClientOriginalName();
 
     // Simpan metadata ke Supabase REST API
     $response = Http::withHeaders([
