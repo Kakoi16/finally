@@ -38,43 +38,43 @@
                 </a>
             </li>
             <li>
-    <a href="#" class="sidebar-menu flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100" data-page="register-page">
-        <i class="fas fa-user-plus w-5"></i>
-        <span>Daftar Karyawan</span>
-    </a>
-</li>
+                <a href="#" class="sidebar-menu flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100" data-page="register-page">
+                    <i class="fas fa-user-plus w-5"></i>
+                    <span>Daftar Karyawan</span>
+                </a>
+            </li>
 
         </ul>
     </nav>
 
     <div class="space-y-3">
-                <!-- Bulk Rename Foarm -->
-                <form method="POST" action="{{ route('folders.bulk.rename') }}">
-                    @csrf
-                    @isset($folderPath)
-    <input type="hidden" name="folderPath" value="{{ $folderPath }}">
-@endisset
+        <!-- Bulk Rename Foarm -->
+        <form method="POST" action="{{ route('folders.bulk.rename') }}">
+            @csrf
+            @isset($folderPath)
+            <input type="hidden" name="folderPath" value="{{ $folderPath }}">
+            @endisset
 
-                    <div class="space-y-2">
-                        <textarea id="bulk-renames" name="renames" rows="3" placeholder="old_path_1|new_name_1\nold_path_2|new_name_2" class="w-full text-sm border border-purple-300 p-2 rounded-lg"></textarea>
+            <div class="space-y-2">
+                <textarea id="bulk-renames" name="renames" rows="3" placeholder="old_path_1|new_name_1\nold_path_2|new_name_2" class="w-full text-sm border border-purple-300 p-2 rounded-lg"></textarea>
 
-                        <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center shadow-sm">
-                            Rename Selected
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Bulk Delete Form -->
-                <form method="POST" action="{{ route('folders.bulk.delete') }}">
-                    @csrf
-                    @method('DELETE')
-                    <div class="space-y-2 mt-3">
-                        <textarea name="selected_items[]" rows="3" placeholder="path/to/delete1\npath/to/delete2" class="w-full text-sm border border-red-300 p-2 rounded-lg"></textarea>
-                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center shadow-sm">
-                            Delete Selected
-                        </button>
-                    </div>
-                </form>
-
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center shadow-sm">
+                    Rename Selected
+                </button>
             </div>
+        </form>
+
+        <!-- Bulk Delete Form -->
+        <form method="POST" action="{{ route('folders.bulk.delete') }}">
+            @csrf
+            @method('DELETE')
+            <div class="space-y-2 mt-3">
+                <textarea name="selected_items[]" rows="3" placeholder="path/to/delete1\npath/to/delete2" class="w-full text-sm border border-red-300 p-2 rounded-lg"></textarea>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium flex items-center justify-center shadow-sm">
+                    Delete Selected
+                </button>
+            </div>
+        </form>
+
+    </div>
 </aside>
