@@ -51,7 +51,10 @@
                 <!-- Bulk Rename Form -->
                 <form method="POST" action="{{ route('folders.bulk.rename') }}">
                     @csrf
-                    <input type="hidden" name="folderPath" value="{{ $folderPath }}">
+                    @isset($folderPath)
+    <input type="hidden" name="folderPath" value="{{ $folderPath }}">
+@endisset
+
                     <div class="space-y-2">
                         <textarea id="bulk-renames" name="renames" rows="3" placeholder="old_path_1|new_name_1\nold_path_2|new_name_2" class="w-full text-sm border border-purple-300 p-2 rounded-lg"></textarea>
 
