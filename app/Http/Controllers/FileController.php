@@ -53,6 +53,23 @@ class FileController extends Controller
         }
     }
 
+    private function uploadToSupabaseStorage($file, $storagePath)
+{
+    $bucket = 'storage';
+
+    $fileContent = file_get_contents($file->getRealPath());
+
+    $uploadUrl = env('SUPABASE_URL') . "/storage/v1/object/$bucket/$storagePath";
+
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'apikey' => $this->supabaseKey,
+        'Content-Type' => $file->getMimeType(),
+    ])->put($uploadUrl, $fileContent);
+
+    return $response->successful();
+}
+
     // Menampilkan isi folder tertentu
     public function index(Request $request, $folderName = null)
     {
