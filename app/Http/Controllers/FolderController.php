@@ -160,7 +160,7 @@ class FolderController extends Controller
     $successCount = 0;
 
     foreach ($lines as $line) {
-        $parts = explode('-->', $line);
+        $parts = explode('➡️', $line);
 
         // Cek apakah format valid
         if (count($parts) < 2) {
