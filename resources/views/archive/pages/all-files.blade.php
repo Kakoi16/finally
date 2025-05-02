@@ -255,7 +255,30 @@ foreach ($files as $file) {
             document.getElementById('folder_name').focus();
         }
     }
-    document.getElementById('select-all')?.addEventListener('change', function (e) {
-        document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = e.target.checked);
+    document.addEventListener("DOMContentLoaded", function () {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        const selectAll = document.getElementById('select-all');
+        const textarea = document.getElementById('selected-items');
+
+        function updateTextarea() {
+            const selected = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value)
+                .join('\n');
+            textarea.value = selected;
+        }
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateTextarea);
+        });
+
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                checkboxes.forEach(cb => {
+                    cb.checked = selectAll.checked;
+                });
+                updateTextarea();
+            });
+        }
     });
 </script>
