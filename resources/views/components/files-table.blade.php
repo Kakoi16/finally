@@ -159,7 +159,7 @@
 }
 
 
-        // Optional: if there's a "select all" checkbox
+        // opsional pada cekbox
         const selectAll = document.getElementById('select-all');
         if (selectAll) {
             selectAll.addEventListener('change', () => {
