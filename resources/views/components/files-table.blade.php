@@ -141,22 +141,23 @@
         });
 
         function updateRenameTextarea() {
-            let lines = [];
+    let lines = [];
 
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    const row = cb.closest('tr');
-                    const oldPath = cb.value;
-                    const currentName = row?.dataset.name;
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            const row = cb.closest('tr');
+            const oldPath = cb.value;
+            const currentName = row?.dataset.name;
 
-                    if (oldPath && currentName) {
-                        lines.push(`${oldPath}|${currentName}`);
-                    }
-                }
-            });
-
-            textarea.value = lines.join('\n');
+            if (oldPath && currentName) {
+                lines.push(`${oldPath}-->${currentName}`);
+            }
         }
+    });
+
+    textarea.value = lines.join('\n');
+}
+
 
         // Optional: if there's a "select all" checkbox
         const selectAll = document.getElementById('select-all');
