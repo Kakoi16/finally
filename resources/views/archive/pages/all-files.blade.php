@@ -131,73 +131,73 @@ foreach ($files as $file) {
 
         @if(!empty($files) && count($files) > 0)
 <div class="overflow-x-auto rounded-lg border border-gray-200">
-    <table class="min-w-full divide-y divide-gray-200 text-sm">
+    <table class="min-w-full divide-y divide-gray-200 text-xs">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-4 py-2 w-8">
-                    <input type="checkbox" id="select-all" class="rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                <th class="w-8 pl-3 pr-1 py-2">
+                    <input type="checkbox" id="select-all" class="rounded text-blue-600 border-gray-300 focus:ring-blue-500 h-3.5 w-3.5">
                 </th>
-                <th scope="col" class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Type</th>
-                <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Modified</th>
-                <th scope="col" class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Size</th>
-                <th scope="col" class="px-2 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th scope="col" class="px-2 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th scope="col" class="px-1 py-2 text-left font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Type</th>
+                <th scope="col" class="px-1 py-2 text-left font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Modified</th>
+                <th scope="col" class="px-1 py-2 text-left font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Size</th>
+                <th scope="col" class="w-24 px-1 py-2 text-right font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
             @foreach($filteredFiles as $file)
             <tr class="hover:bg-gray-50 transition-colors" data-id="{{ $file['path'] }}" data-type="{{ $file['type'] }}" data-name="{{ $file['name'] }}">
-                <td class="px-4 py-2 w-8">
-                    <input type="checkbox" name="selected_items[]" value="{{ $file['path'] }}" class="item-checkbox rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                <td class="w-8 pl-3 pr-1 py-2">
+                    <input type="checkbox" name="selected_items[]" value="{{ $file['path'] }}" class="item-checkbox rounded text-blue-600 border-gray-300 focus:ring-blue-500 h-3.5 w-3.5">
                 </td>
-                <td class="px-4 py-2">
+                <td class="px-2 py-2">
                     <div class="flex items-center">
                         @if(isset($file['type']) && $file['type'] === 'folder')
-                        <svg class="flex-shrink-0 h-4 w-4 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="flex-shrink-0 h-3.5 w-3.5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
                         @else
-                        <svg class="flex-shrink-0 h-4 w-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="flex-shrink-0 h-3.5 w-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                         @endif
-                        <span class="ml-2 text-sm text-gray-900 truncate max-w-[120px] sm:max-w-xs">{{ $file['name'] }}</span>
+                        <span class="ml-1.5 text-gray-900 truncate max-w-[100px] sm:max-w-[160px]">{{ $file['name'] }}</span>
                     </div>
                 </td>
-                <td class="px-2 py-2 hidden sm:table-cell">
-                    <span class="px-1.5 py-0.5 text-xs rounded-full bg-gray-100 text-gray-800 capitalize">
+                <td class="px-1 py-2 hidden sm:table-cell">
+                    <span class="px-1 py-0.5 text-[0.65rem] rounded-full bg-gray-100 text-gray-800 capitalize">
                         {{ $file['type'] ?? 'file' }}
                     </span>
                 </td>
-                <td class="px-2 py-2 text-xs text-gray-500 hidden md:table-cell">
+                <td class="px-1 py-2 text-gray-500 hidden md:table-cell whitespace-nowrap">
                     {{ $file['created_at'] ?? 'N/A' }}
                 </td>
-                <td class="px-2 py-2 text-xs text-gray-500 hidden lg:table-cell">
+                <td class="px-1 py-2 text-gray-500 hidden lg:table-cell whitespace-nowrap">
                     {{ $file['size'] ?? 'N/A' }}
                 </td>
-                <td class="px-2 py-2 text-right">
-                    <div class="flex justify-end gap-2">
+                <td class="w-24 px-1 py-2 text-right">
+                    <div class="flex justify-end gap-1.5">
                         @if(isset($file['type']) && $file['type'] === 'folder')
                         <a href="{{ route('folders.open', ['folderName' => basename($file['path'])]) }}" class="text-blue-600 hover:text-blue-800 transition-colors" title="Open">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-8-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
                         </a>
                         @else
                         <a href="{{ $file['url'] ?? '#' }}" target="_blank" class="text-blue-600 hover:text-blue-800 transition-colors" title="View">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                             </svg>
                         </a>
                         @endif
                         <a href="#" class="text-gray-600 hover:text-gray-800 transition-colors" title="Download">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
                         </a>
                         <a href="#" class="text-red-600 hover:text-red-800 transition-colors" title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
                         </a>
