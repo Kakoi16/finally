@@ -181,7 +181,9 @@ class FolderController extends Controller
         }
 
         $item = $response->json()[0];
-        $newPath = dirname($oldPath) . '/' . Str::slug($newName);
+        $parentDir = dirname($oldPath);
+$parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
+$newPath = ltrim($parentDir . '/' . Str::slug($newName), '/');
 
         $updateResponse = Http::withHeaders([
             'apikey' => $this->supabaseKey,
@@ -237,7 +239,9 @@ class FolderController extends Controller
         }
 
         $folder = $response->json()[0];
-        $newPath = dirname($folderPath) . '/' . Str::slug($request->new_name);
+        $parentDir = dirname($folderPath);
+$parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
+$newPath = ltrim($parentDir . '/' . Str::slug($request->new_name), '/');
 
         // Update the folder
         $updateResponse = Http::withHeaders([
