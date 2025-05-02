@@ -157,7 +157,8 @@ class FileController extends Controller
                         $newName = $oldName;
                 }
                 
-                $newPath = dirname($itemPath) . '/' . $newName;
+                $parentDir = dirname($itemPath);
+                $newPath = ($parentDir === '.' ? '' : $parentDir . '/') . $newName;
                 
                 // Update the item
                 Http::withHeaders([
@@ -202,7 +203,9 @@ class FileController extends Controller
 
         $item = $response->json()[0];
         $newName = $request->new_name;
-        $newPath = dirname($itemPath) . '/' . $newName;
+        $parentDir = dirname($itemPath);
+        $newPath = ($parentDir === '.' ? '' : $parentDir . '/') . $newName;
+
 
         // Update the item
         $updateResponse = Http::withHeaders([
