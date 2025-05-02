@@ -253,29 +253,39 @@ foreach ($files as $file) {
             document.getElementById('folder_name').focus();
         }
     }
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const checkboxes = document.querySelectorAll('.item-checkbox');
-        const selectAll = document.getElementById('select-all');
-        const textarea = document.getElementById('selected-items');
+        const textarea = document.getElementById('bulk-renames');
 
-        function updateTextarea() {
-            const selected = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value)
-                .join('\n');
-            textarea.value = selected;
-        }
-
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', updateTextarea);
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateRenameTextarea);
         });
 
+        function updateRenameTextarea() {
+    let lines = [];
+
+    checkboxes.forEach(cb => {
+        if (cb.checked) {
+            const row = cb.closest('tr');
+            const oldPath = cb.value;
+            const currentName = row?.dataset.name;
+
+            if (oldPath && currentName) {
+                lines.push(`${oldPath}➡️${currentName}`);
+            }
+        }
+    });
+
+    textarea.value = lines.join('\n');
+}
+
+
+        // opsional pada cekbox
+        const selectAll = document.getElementById('select-all');
         if (selectAll) {
-            selectAll.addEventListener('change', function () {
-                checkboxes.forEach(cb => {
-                    cb.checked = selectAll.checked;
-                });
-                updateTextarea();
+            selectAll.addEventListener('change', () => {
+                checkboxes.forEach(cb => cb.checked = selectAll.checked);
+                updateRenameTextarea();
             });
         }
     });
