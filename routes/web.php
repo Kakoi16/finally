@@ -57,7 +57,7 @@ Route::middleware(['admin.only'])->group(function () {
         Route::post('/archive/upload/{folderPath?}', [FileController::class, 'upload'])
         ->where('folderPath', '.*')
         ->name('files.uploadToFolder');
-    
+        Route::post('/folders/{folderPath}/upload', [FileController::class, 'upload'])->where('folderPath', '.*');    
     // Folder
     Route::get('/folders/{any?}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.showAny');
 
