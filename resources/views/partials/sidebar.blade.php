@@ -48,7 +48,7 @@
     </nav>
 
     <div class="space-y-3">
-                <!-- Bulk Rename Form -->
+                <!-- Bulk Rename Foarm -->
                 <form method="POST" action="{{ route('folders.bulk.rename') }}">
                     @csrf
                     @isset($folderPath)
