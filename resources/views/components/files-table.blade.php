@@ -150,7 +150,9 @@
             const currentName = row?.dataset.name;
 
             if (oldPath && currentName) {
-                lines.push(`${oldPath}➡️${currentName}`);
+                lines.push(`${oldPath}
+                Ganti Disini ⤵️
+                ${currentName}`);
             }
         }
     });
