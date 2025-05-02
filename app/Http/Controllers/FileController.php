@@ -31,7 +31,7 @@ class FileController extends Controller
         if ($folderName) {
             $path .= trim($folderName, '/') . '/';
         }
-        $path .= $file->getClientOriginalName();
+        $path .= basename($file->getClientOriginalName());    
 
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
