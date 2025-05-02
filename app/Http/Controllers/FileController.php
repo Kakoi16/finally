@@ -18,40 +18,45 @@ class FileController extends Controller
     }
 
     // Upload file ke folder tertentu
-    public function upload(Request $request, $folderName = null)
-    {
-        $request->validate([
-            'file' => 'required|file',
-        ]);
+    public function upload(Request $request, $folderPath = null)
+{
+    $request->validate([
+        'file' => 'required|file',
+    ]);
 
-        $file = $request->file('file');
-        $uploadedBy = auth()->user()->id ?? null;
+    $file = $request->file('file');
+    $uploadedBy = auth()->user()->id ?? null;
 
-        $path = '';
-        if ($folderName) {
-            $path .= trim($folderName, '/') . '/';
-        }
-        $path .= $file->getClientOriginalName();
+    // Tentukan path penyimpanan
+    $cleanedPath = trim($folderPath ?? '', '/'); // hapus '/' di awal/akhir
+    $fullPath = $cleanedPath !== ''
+        ? $cleanedPath . '/' . $file->getClientOriginalName()
+        : $file->getClientOriginalName();
 
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
-            'Prefer' => 'return=minimal',
-        ])->post($this->supabaseUrl, [
-            'name' => $file->getClientOriginalName(),
-            'path' => $path,
-            'type' => $file->getClientMimeType(),
-            'size' => $file->getSize(),
-            'uploaded_by' => $uploadedBy,
-        ]);
+    // Simpan metadata ke Supabase REST API
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'Content-Type' => 'application/json',
+        'Prefer' => 'return=minimal',
+    ])->post($this->supabaseUrl, [
+        'name' => $file->getClientOriginalName(),
+        'path' => $fullPath,
+        'type' => $file->getClientMimeType(),
+        'size' => $file->getSize(),
+        'uploaded_by' => $uploadedBy,
+    ]);
 
-        if ($response->successful()) {
-            return redirect()->back()->with('success', 'File berhasil diupload.');
-        } else {
-            return redirect()->back()->with('error', 'Gagal upload file.');
-        }
+    // Upload file fisik ke Supabase Storage
+    $storageSuccess = $this->uploadToSupabaseStorage($file, $fullPath);
+
+    if ($response->successful() && $storageSuccess) {
+        return redirect()->back()->with('success', 'File berhasil diupload.');
+    } else {
+        return redirect()->back()->with('error', 'Gagal upload file.');
     }
+}
+
 
     private function uploadToSupabaseStorage($file, $storagePath)
 {

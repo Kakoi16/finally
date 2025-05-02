@@ -39,7 +39,8 @@
                 </svg>
                 Upload File
             </h3>
-            <form method="POST" action="{{ route('files.uploadToFolder', $folderName) }}" enctype="multipart/form-data" class="space-y-3">
+            <form method="POST" action="{{ route('files.uploadToFolder', $currentFolder) }}" enctype="multipart/form-data" class="space-y-3">
+
                 @csrf
                 <div class="relative">
     <input id="fileInput" type="file" name="file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="updateFileName(this)">
