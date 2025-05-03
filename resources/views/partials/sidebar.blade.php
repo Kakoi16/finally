@@ -1,4 +1,4 @@
-<aside id="sidebar" class="hidden md:flex md:flex-col w-full md:w-56 bg-white rounded-lg shadow-sm border border-gray-100 p-3 mb-4 md:mb-0 md:mr-4">
+<aside id="sidebar" class="hidden md:flex md:flex-col w-full md:w-64 bg-white rounded-lg shadow-sm border border-gray-100 p-3 mb-4 md:mb-0 md:mr-4">
     <!-- Navigation Menu -->
     <nav class="flex-1">
         <ul class="space-y-1">
