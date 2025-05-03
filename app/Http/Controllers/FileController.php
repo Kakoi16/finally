@@ -40,9 +40,9 @@ class FileController extends Controller
         'Content-Type' => 'application/json',
         'Prefer' => 'return=minimal',
     ])->post($this->supabaseUrl, [
-        'name' => $file->getClientOriginalName(),
+        'name' => mb_convert_encoding($file->getClientOriginalName(), 'UTF-8', 'auto'),
         'path' => $fullPath,
-        'type' => $file->getClientMimeType(),
+        'type' => mb_convert_encoding($file->getClientMimeType(), 'UTF-8', 'auto'),
         'size' => $file->getSize(),
         'uploaded_by' => $uploadedBy,
     ]);
