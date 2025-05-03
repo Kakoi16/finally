@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Http\Controllers;
@@ -17,73 +18,81 @@ class FileController extends Controller
         $this->supabaseKey = env('SUPABASE_API_KEY');
     }
 
-    // Upload file ke folder tertentu
+    // Upload file to specific folder
     public function upload(Request $request, $folderPath = null)
-{
-    $request->validate([
-        'file' => 'required|file',
-    ]);
+    {
+        $request->validate([
+            'file' => 'required|file',
+        ]);
 
-    $file = $request->file('file');
-    $uploadedBy = auth()->user()->id ?? null;
+        $file = $request->file('file');
+        $uploadedBy = auth()->user()->id ?? null;
 
-    // Tentukan path penyimpanan
-    $cleanedPath = trim($folderPath ?? '', '/');
-    $fullPath = $cleanedPath !== ''
-        ? $cleanedPath . '/' . $file->getClientOriginalName()
-        : $file->getClientOriginalName();
+        // Clean and prepare the path
+        $cleanedPath = trim($folderPath ?? '', '/');
+        $originalName = $this->sanitizeFilename($file->getClientOriginalName());
+        
+        $fullPath = $cleanedPath !== ''
+            ? $cleanedPath . '/' . $originalName
+            : $originalName;
 
-    // Perbaikan encoding karakter pada metadata
-    $originalName = $file->getClientOriginalName();
-    $mimeType = $file->getClientMimeType();
+        // Save metadata to Supabase REST API
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json; charset=utf-8',
+            'Prefer' => 'return=minimal',
+        ])->post($this->supabaseUrl, [
+            'name' => $originalName,
+            'path' => $fullPath,
+            'type' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+            'uploaded_by' => $uploadedBy,
+        ]);
 
-    $safeName = mb_convert_encoding($originalName, 'UTF-8', 'UTF-8');
-    $safeType = mb_convert_encoding($mimeType, 'UTF-8', 'UTF-8');
+        // Upload physical file to Supabase Storage
+        $storageSuccess = $this->uploadToSupabaseStorage($file, $fullPath);
 
-    // Simpan metadata ke Supabase REST API
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-        'Content-Type' => 'application/json',
-        'Prefer' => 'return=minimal',
-    ])->post($this->supabaseUrl, [
-        'name' => $safeName,
-        'path' => $fullPath,
-        'type' => $safeType,
-        'size' => $file->getSize(),
-        'uploaded_by' => $uploadedBy,
-    ]);
-
-    // Upload file fisik ke Supabase Storage
-    $storageSuccess = $this->uploadToSupabaseStorage($file, $fullPath);
-
-    if ($response->successful() && $storageSuccess) {
-        return redirect()->back()->with('success', 'File berhasil diupload.');
-    } else {
-        return redirect()->back()->with('error', 'Gagal upload file.');
+        if ($response->successful() && $storageSuccess) {
+            return redirect()->back()->with('success', 'File uploaded successfully.');
+        } else {
+            return redirect()->back()->with('error', 'Failed to upload file.');
+        }
     }
-}
 
+    private function sanitizeFilename($filename)
+    {
+        // Convert to UTF-8 and remove invalid characters
+        $filename = mb_convert_encoding($filename, 'UTF-8', 'UTF-8');
+        $filename = preg_replace('/[^\x20-\x7E]/u', '', $filename);
+        return $filename;
+    }
 
-private function uploadToSupabaseStorage($file, $storagePath)
-{
-    $bucket = 'storage';
+    private function uploadToSupabaseStorage($file, $storagePath)
+    {
+        $bucket = 'storage';
+        $fileContent = file_get_contents($file->getRealPath());
 
-    $fileContent = file_get_contents($file->getRealPath());
+        // URL encode the storage path to handle special characters
+        $encodedPath = implode('/', array_map('rawurlencode', explode('/', $storagePath)));
+        $uploadUrl = env('SUPABASE_URL') . "/storage/v1/object/$bucket/$encodedPath";
 
-    $uploadUrl = env('SUPABASE_URL') . "/storage/v1/object/$bucket/$storagePath";
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+                'apikey' => $this->supabaseKey,
+                'Content-Type' => $file->getMimeType(),
+            ])->withBody($fileContent, $file->getMimeType())
+              ->put($uploadUrl);
 
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-        'apikey' => $this->supabaseKey,
-        'Content-Type' => $file->getMimeType(),
-    ])->put($uploadUrl, $fileContent);
+            return $response->successful();
+        } catch (\Exception $e) {
+            logger()->error('Supabase upload error: ' . $e->getMessage());
+            return false;
+        }
+    }
 
-    return $response->successful();
-}
-
-
-    // Menampilkan isi folder tertentu
+    // Display folder contents
     public function index(Request $request, $folderName = null)
     {
         $response = Http::withHeaders([
@@ -91,15 +100,15 @@ private function uploadToSupabaseStorage($file, $storagePath)
             'Authorization' => 'Bearer ' . $this->supabaseKey,
         ])->get($this->supabaseUrl);
 
-        $files = $response->json();
+        $files = $response->json() ?? [];
 
-        $currentFolder = trim($folderName ?? '', '/'); // kosong jika root
+        $currentFolder = trim($folderName ?? '', '/');
 
         $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
             $path = $file['path'] ?? '';
 
             if ($currentFolder === '') {
-                return !Str::contains($path, '/'); // hanya root-level
+                return !Str::contains($path, '/');
             }
 
             if (Str::startsWith($path, $currentFolder . '/')) {
