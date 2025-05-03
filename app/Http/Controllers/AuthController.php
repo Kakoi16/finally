@@ -78,7 +78,9 @@ class AuthController extends Controller
         ];
 
         $saveToken = Http::withHeaders($headers)
-            ->post("$supabaseUrl/rest/v1/verification_tokens", $tokenData);
+    ->withHeaders(['Prefer' => 'return=representation'])
+    ->post("$supabaseUrl/rest/v1/verification_tokens", $tokenData);
+
 
         if (!$saveToken->successful()) {
             return response()->json(['success' => false, 'message' => 'Gagal menyimpan token verifikasi.'], 500);
@@ -88,9 +90,10 @@ class AuthController extends Controller
         $verificationUrl = route('verification.verify', ['token' => $token]);
 
         try {
-            Mail::raw("Klik link berikut untuk verifikasi email Anda: $verificationUrl", function ($message) use ($request) {
+            Mail::send('emails.verification', ['url' => $verificationUrl], function ($message) use ($request) {
                 $message->to($request->email)->subject('Verifikasi Email');
             });
+            
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal mengirim email: ' . $e->getMessage()], 500);
         }
@@ -101,35 +104,62 @@ class AuthController extends Controller
     public function verifyEmail($token)
     {
         $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-
+    
+        // Ambil token detail
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-        ])->get("$supabaseUrl/rest/v1/verification_tokens", [
-            'token' => $token,
-        ]);
-
+            'apikey'        => env('SUPABASE_API_KEY'),
+        ])->get("$supabaseUrl/rest/v1/verification_tokens?token=eq.$token");
+    
         if ($response->successful() && $response->json()) {
             $verificationData = $response->json()[0];
-
-            // Update user: email_verified_at
+    
+            // Update user email_verified_at
             $update = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'apikey'        => env('SUPABASE_API_KEY'),
             ])->patch("$supabaseUrl/rest/v1/" . env('SUPABASE_TABLE') . "?id=eq." . $verificationData['user_id'], [
                 'email_verified_at' => now()->toISOString(),
             ]);
-
+    
             if ($update->successful()) {
-                // Hapus token
-                Http::withHeaders([
+                // Ambil detail user untuk cek rolenya
+                $userResponse = Http::withHeaders([
                     'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                ])->delete("$supabaseUrl/rest/v1/verification_tokens?id=eq." . $verificationData['id']);
-
-                return redirect()->route('login')->with('success', 'Email berhasil diverifikasi.');
+                    'apikey'        => env('SUPABASE_API_KEY'),
+                ])->get("$supabaseUrl/rest/v1/" . env('SUPABASE_TABLE') . "?id=eq." . $verificationData['user_id']);
+    
+                if ($userResponse->successful() && $userResponse->json()) {
+                    $user = $userResponse->json()[0];
+    
+                    // Hapus token verifikasi
+                    Http::withHeaders([
+                        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                        'apikey'        => env('SUPABASE_API_KEY'),
+                    ])->delete("$supabaseUrl/rest/v1/verification_tokens?id=eq." . $verificationData['id']);
+    
+                    if ($user['role'] === 'karyawan') {
+                        // Kirim email ucapan terima kasih
+                        try {
+                            Mail::raw("Halo {$user['name']}, terima kasih telah memverifikasi email Anda!", function ($message) use ($user) {
+                                $message->to($user['email'])->subject('Verifikasi Berhasil');
+                            });
+                        } catch (\Exception $e) {
+                            return back()->withErrors(['error' => 'Email ucapan gagal dikirim: ' . $e->getMessage()]);
+                        }
+    
+                        return response()->view('auth.thankyou', ['name' => $user['name']]); // Tampilkan halaman khusus ucapan
+                    }
+    
+                    // Jika admin, redirect ke login
+                    return redirect()->route('login')->with('success', 'Email berhasil diverifikasi.');
+                }
             }
         }
-
+    
         return back()->withErrors(['error' => 'Link verifikasi tidak valid atau sudah digunakan.']);
     }
+    
 
     public function login(Request $request)
     {
