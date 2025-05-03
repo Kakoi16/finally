@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers;
@@ -28,15 +27,13 @@ class FileController extends Controller
         $file = $request->file('file');
         $uploadedBy = auth()->user()->id ?? null;
 
-        // Clean and prepare the path
         $cleanedPath = trim($folderPath ?? '', '/');
         $originalName = $this->sanitizeFilename($file->getClientOriginalName());
-        
+
         $fullPath = $cleanedPath !== ''
             ? $cleanedPath . '/' . $originalName
             : $originalName;
 
-        // Save metadata to Supabase REST API
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
@@ -50,7 +47,6 @@ class FileController extends Controller
             'uploaded_by' => $uploadedBy,
         ]);
 
-        // Upload physical file to Supabase Storage
         $storageSuccess = $this->uploadToSupabaseStorage($file, $fullPath);
 
         if ($response->successful() && $storageSuccess) {
@@ -62,10 +58,8 @@ class FileController extends Controller
 
     private function sanitizeFilename($filename)
     {
-        // Convert to UTF-8 and remove invalid characters
         $filename = mb_convert_encoding($filename, 'UTF-8', 'UTF-8');
-        $filename = preg_replace('/[^\x20-\x7E]/u', '', $filename);
-        return $filename;
+        return preg_replace('/[^\x20-\x7E]/u', '', $filename);
     }
 
     private function uploadToSupabaseStorage($file, $storagePath)
@@ -73,7 +67,6 @@ class FileController extends Controller
         $bucket = 'storage';
         $fileContent = file_get_contents($file->getRealPath());
 
-        // URL encode the storage path to handle special characters
         $encodedPath = implode('/', array_map('rawurlencode', explode('/', $storagePath)));
         $uploadUrl = env('SUPABASE_URL') . "/storage/v1/object/$bucket/$encodedPath";
 
@@ -92,7 +85,6 @@ class FileController extends Controller
         }
     }
 
-    // Display folder contents
     public function index(Request $request, $folderName = null)
     {
         $response = Http::withHeaders([
@@ -101,7 +93,6 @@ class FileController extends Controller
         ])->get($this->supabaseUrl);
 
         $files = $response->json() ?? [];
-
         $currentFolder = trim($folderName ?? '', '/');
 
         $filteredFiles = array_filter($files, function ($file) use ($currentFolder) {
@@ -137,9 +128,8 @@ class FileController extends Controller
         $items = $request->selected_items;
         $pattern = $request->rename_pattern;
         $value = $request->rename_value;
-        
+
         foreach ($items as $index => $itemPath) {
-            // Get the item
             $response = Http::withHeaders([
                 'apikey' => $this->supabaseKey,
                 'Authorization' => 'Bearer ' . $this->supabaseKey,
@@ -150,8 +140,7 @@ class FileController extends Controller
                 $oldName = $item['name'];
                 $extension = pathinfo($oldName, PATHINFO_EXTENSION);
                 $baseName = pathinfo($oldName, PATHINFO_FILENAME);
-                
-                // Apply rename pattern
+
                 switch ($pattern) {
                     case 'prefix':
                         $newName = $value . $oldName;
@@ -173,13 +162,11 @@ class FileController extends Controller
                     default:
                         $newName = $oldName;
                 }
-                
-                $parentDir = dirname($itemPath);
-$parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
-$newPath = ltrim($parentDir . '/' . $newName, '/');
 
-                
-                // Update the item
+                $parentDir = dirname($itemPath);
+                $parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
+                $newPath = ltrim($parentDir . '/' . $newName, '/');
+
                 Http::withHeaders([
                     'apikey' => $this->supabaseKey,
                     'Authorization' => 'Bearer ' . $this->supabaseKey,
