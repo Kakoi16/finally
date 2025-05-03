@@ -28,10 +28,17 @@ class FileController extends Controller
     $uploadedBy = auth()->user()->id ?? null;
 
     // Tentukan path penyimpanan
-    $cleanedPath = trim($folderPath ?? '', '/'); // hapus '/' di awal/akhir
+    $cleanedPath = trim($folderPath ?? '', '/');
     $fullPath = $cleanedPath !== ''
         ? $cleanedPath . '/' . $file->getClientOriginalName()
         : $file->getClientOriginalName();
+
+    // Perbaikan encoding karakter pada metadata
+    $originalName = $file->getClientOriginalName();
+    $mimeType = $file->getClientMimeType();
+
+    $safeName = mb_convert_encoding($originalName, 'UTF-8', 'UTF-8');
+    $safeType = mb_convert_encoding($mimeType, 'UTF-8', 'UTF-8');
 
     // Simpan metadata ke Supabase REST API
     $response = Http::withHeaders([
@@ -40,9 +47,9 @@ class FileController extends Controller
         'Content-Type' => 'application/json',
         'Prefer' => 'return=minimal',
     ])->post($this->supabaseUrl, [
-        'name' => mb_convert_encoding($file->getClientOriginalName(), 'UTF-8', 'auto'),
+        'name' => $safeName,
         'path' => $fullPath,
-        'type' => mb_convert_encoding($file->getClientMimeType(), 'UTF-8', 'auto'),
+        'type' => $safeType,
         'size' => $file->getSize(),
         'uploaded_by' => $uploadedBy,
     ]);
@@ -58,7 +65,7 @@ class FileController extends Controller
 }
 
 
-    private function uploadToSupabaseStorage($file, $storagePath)
+private function uploadToSupabaseStorage($file, $storagePath)
 {
     $bucket = 'storage';
 
@@ -74,6 +81,7 @@ class FileController extends Controller
 
     return $response->successful();
 }
+
 
     // Menampilkan isi folder tertentu
     public function index(Request $request, $folderName = null)
