@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
 
 
 class AuthController extends Controller
@@ -218,77 +217,44 @@ class AuthController extends Controller
         return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
     }
     
-    public function loginViaSupabase(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
-
-    if ($validator->fails()) {
+    public function loginKaryawan(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+    
+        // Ambil user dari Supabase berdasarkan email
+        $response = Http::withToken(env('SUPABASE_SERVICE_ROLE_KEY'))
+            ->get(env('SUPABASE_URL') . '/rest/v1/users', [
+                'email' => 'eq.' . $request->email,
+                'select' => '*',
+            ]);
+    
+        $user = $response->json()[0] ?? null;
+    
+        if (!$user) {
+            return response()->json(['message' => 'Email tidak ditemukan.'], 401);
+        }
+    
+        // Cek password dan role
+        if (!Hash::check($request->password, $user['password'])) {
+            return response()->json(['message' => 'Password salah.'], 401);
+        }
+    
+        if ($user['role'] !== 'karyawan') {
+            return response()->json(['message' => 'Hanya karyawan yang diperbolehkan login.'], 401);
+        }
+    
+        // Login berhasil
         return response()->json([
-            'message' => 'Validasi gagal.',
-            'errors' => $validator->errors(),
-        ], 422);
+            'message' => 'Login berhasil.',
+            'user' => [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'role' => $user['role'],
+            ],
+        ]);
     }
-
-    $email = $request->email;
-    $password = $request->password;
-
-    $supabaseUrl = env('SUPABASE_URL');
-    $anonKey = env('SUPABASE_API_KEY');
-    $serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
-    $userTable = env('SUPABASE_TABLE', 'users');
-
-    // Step 1: Login ke Supabase
-    $authResponse = Http::withHeaders([
-        'apikey' => $anonKey,
-        'Content-Type' => 'application/json',
-    ])->post("{$supabaseUrl}/auth/v1/token?grant_type=password", [
-        'email' => $email,
-        'password' => $password,
-    ]);
-
-    if (!$authResponse->successful()) {
-        return response()->json([
-            'message' => 'Email atau password salah.',
-        ], 401);
-    }
-
-    $authData = $authResponse->json();
-    $accessToken = $authData['access_token'];
-
-    // Step 2: Ambil data user dari auth
-    $userResponse = Http::withHeaders([
-        'Authorization' => "Bearer {$accessToken}",
-        'apikey' => $anonKey,
-    ])->get("{$supabaseUrl}/auth/v1/user");
-
-    $user = $userResponse->json();
-
-    if (!isset($user['email_confirmed_at']) || !$user['email_confirmed_at']) {
-        return response()->json([
-            'message' => 'Email belum diverifikasi.',
-        ], 403);
-    }
-
-    // Step 3: Ambil role dari tabel `users`
-    $roleResponse = Http::withHeaders([
-        'apikey' => $serviceRoleKey,
-        'Authorization' => "Bearer {$serviceRoleKey}",
-    ])->get("{$supabaseUrl}/rest/v1/{$userTable}?email=eq.{$email}&select=role");
-
-    if (!$roleResponse->successful() || empty($roleResponse->json())) {
-        return response()->json([
-            'message' => 'Role user tidak ditemukan.',
-        ], 404);
-    }
-
-    $role = $roleResponse->json()[0]['role'];
-
-    return response()->json([
-        'access_token' => $accessToken,
-        'role' => $role,
-    ]);
-}
 }

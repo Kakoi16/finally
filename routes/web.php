@@ -12,7 +12,7 @@ Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/login-via-supabase', [AuthController::class, 'loginViaSupabase']);
+    Route::post('/loginKaryawan', [AuthController::class, 'loginKaryawan']);
     
 
     
