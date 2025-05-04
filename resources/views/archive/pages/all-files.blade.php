@@ -307,15 +307,31 @@ foreach ($files as $file) {
     let paths = [];
 
     const fetchFolderContents = async (path) => {
+    let allPaths = [];
+
+    const fetchRecursive = async (prefix) => {
         try {
-            const response = await fetch(`/api/folder-contents?prefix=${encodeURIComponent(path)}`);
+            const response = await fetch(`/api/folder-contents?prefix=${encodeURIComponent(prefix)}`);
             const data = await response.json();
-            return data.paths || [];
+            const paths = data.paths || [];
+
+            for (const p of paths) {
+                allPaths.push(p);
+
+                // Cek apakah path ini adalah folder (dengan trailing slash)
+                if (p.endsWith('/')) {
+                    await fetchRecursive(p);
+                }
+            }
         } catch (error) {
             console.error('Gagal mengambil isi folder:', error);
-            return [];
         }
     };
+
+    await fetchRecursive(path + '/'); // pastikan ada trailing slash
+    return allPaths;
+};
+
 
     const processCheckboxes = async () => {
         for (const cb of checkboxes) {
