@@ -240,72 +240,31 @@ class FileController extends Controller
             : redirect()->back()->with('error', 'Gagal mengubah nama item.');
     }
     public function bulkDelete(Request $request)
-    {
-        $paths = explode("\n", $request->input('bulk-delete'));
-    
-        $supabaseUrl = env('SUPABASE_URL');
-        $supabaseKey = env('SUPABASE_API_KEY');
-        $bucket = 'storage'; // Ganti sesuai nama bucket kamu
-    
-        foreach ($paths as $path) {
-            $cleanPath = trim($path);
-    
-            if (!empty($cleanPath)) {
-                // Step 1: Ambil semua object dengan prefix tersebut
-                $listResponse = Http::withHeaders([
-                    'apikey' => $supabaseKey,
-                    'Authorization' => 'Bearer ' . $supabaseKey,
-                ])->get("{$supabaseUrl}/storage/v1/object/list/{$bucket}", [
-                    'prefix' => $cleanPath . '/',
-                    'limit' => 1000
-                ]);
-    
-                if ($listResponse->successful()) {
-                    $objects = $listResponse->json();
-    
-                    // Step 2: Hapus isi-isi folder
-                    foreach ($objects as $item) {
-                        $objectPath = $item['name'];
-    
-                        Http::withHeaders([
-                            'apikey' => $supabaseKey,
-                            'Authorization' => 'Bearer ' . $supabaseKey,
-                        ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/" . $objectPath);
-                    }
-                }
-    
-                // Step 3: Hapus folder itu sendiri
-                Http::withHeaders([
-                    'apikey' => $supabaseKey,
-                    'Authorization' => 'Bearer ' . $supabaseKey,
-                ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/" . $cleanPath);
+{
+    $paths = explode("\n", $request->input('bulk-delete'));
+
+    $supabaseUrl = env('SUPABASE_URL');
+    $serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
+    $table = 'archives';
+
+    foreach ($paths as $path) {
+        $cleanPath = trim($path);
+
+        if (!empty($cleanPath)) {
+            // Supabase REST API untuk hapus dengan filter path like
+            $response = Http::withHeaders([
+                'apikey' => $serviceRoleKey,
+                'Authorization' => 'Bearer ' . $serviceRoleKey,
+                'Content-Type' => 'application/json',
+                'Prefer' => 'return=representation', // opsional, untuk mendapatkan response data
+            ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=like.{$cleanPath}/%");
+
+            if (!$response->successful()) {
+                return back()->with('error', 'Gagal menghapus: ' . $cleanPath);
             }
         }
-    
-        return redirect()->back()->with('success', 'Item berhasil dihapus.');
-    }
-    public function getFolderContents(Request $request)
-{
-    $folderPath = $request->query('prefix');
-    $supabaseUrl = env('SUPABASE_URL');
-    $supabaseKey = env('SUPABASE_API_KEY');
-    $bucket = 'storage'; // sesuaikan dengan bucket kamu
-
-    $response = Http::withHeaders([
-        'apikey' => $supabaseKey,
-        'Authorization' => 'Bearer ' . $supabaseKey,
-    ])->get("{$supabaseUrl}/storage/v1/object/list/{$bucket}", [
-        'prefix' => $folderPath . '/',
-        'limit' => 1000,
-    ]);
-
-    if ($response->successful()) {
-        $items = $response->json();
-        $paths = collect($items)->pluck('name');
-        return response()->json(['paths' => $paths]);
     }
 
-    return response()->json(['paths' => []], 500);
+    return back()->with('success', 'Folder dan isinya berhasil dihapus dari Supabase (archives).');
 }
-
 }
