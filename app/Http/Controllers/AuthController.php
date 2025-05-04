@@ -216,60 +216,55 @@ class AuthController extends Controller
     {
         return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
     }
-public function loginViaSupabase(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
+    public function loginViaSupabase(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
-    $supabaseUrl = env('SUPABASE_URL');
 
-    // Auth via Supabase Auth REST
-    $response = Http::withHeaders([
-        'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
-        'Content-Type' => 'application/json',
-    ])->post("$supabaseUrl/auth/v1/token?grant_type=password", [
-        'email' => $credentials['email'],
-        'password' => $credentials['password'],
-    ]);
+        // Ambil URL Supabase dari .env
+        $supabaseUrl = env('SUPABASE_URL');
 
-    $responseBody = $response->json();
+        // Auth via Supabase Auth REST
+        $response = Http::withHeaders([
+            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+            'Content-Type' => 'application/json',
+        ])->post("$supabaseUrl/auth/v1/token?grant_type=password", [
+            'email' => $credentials['email'],
+            'password' => $credentials['password'],
+        ]);
 
-    if ($response->failed() || isset($responseBody['error'])) {
+        if ($response->failed()) {
+            return response()->json(['message' => 'Email atau password salah'], 401);
+        }
+
+        $user = $response->json('user');
+        $access_token = $response->json('access_token');
+
+        // Get user info from Supabase table
+        $userInfo = Http::withHeaders([
+            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+            'Authorization' => 'Bearer ' . $access_token,
+        ])->get("$supabaseUrl/rest/v1/users", [
+            'select' => 'role',
+            'email' => 'eq.' . $credentials['email'],
+        ]);
+
+        if ($userInfo->failed() || empty($userInfo[0]['role'])) {
+            return response()->json(['message' => 'Gagal mendapatkan role user'], 403);
+        }
+
+
+        if ($userInfo[0]['role'] !== 'karyawan') {
+            return response()->json(['message' => 'Akses hanya untuk karyawan'], 403);
+        }
+
         return response()->json([
-            'message' => $responseBody['error_description'] ?? 'Email atau password salah'
-        ], 401);
+            'message' => 'Login berhasil',
+            'access_token' => $access_token,
+            'user' => $user,
+        ]);
     }
-
-    $access_token = $responseBody['access_token'];
-    $user = $responseBody['user'];
-
-    // Get user info from Supabase table
-    $userInfo = Http::withHeaders([
-        'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
-        'Authorization' => 'Bearer ' . $access_token,
-    ])->get("$supabaseUrl/rest/v1/users", [
-        'select' => 'role',
-        'email' => 'eq.' . $credentials['email'],
-    ]);
-
-    $userInfoData = $userInfo->json();
-
-    if ($userInfo->failed() || empty($userInfoData) || empty($userInfoData[0]['role'])) {
-        return response()->json(['message' => 'Gagal mendapatkan role user'], 403);
-    }
-
-    if ($userInfoData[0]['role'] !== 'karyawan') {
-        return response()->json(['message' => 'Akses hanya untuk karyawan'], 403);
-    }
-
-    return response()->json([
-        'message' => 'Login berhasil',
-        'access_token' => $access_token,
-        'user' => $user,
-        'role' => $userInfoData[0]['role'],
-    ]);
-}
-
 }
