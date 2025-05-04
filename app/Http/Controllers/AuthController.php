@@ -226,10 +226,20 @@ class AuthController extends Controller
     
         // Ambil user dari Supabase berdasarkan email
         $response = Http::withToken(env('SUPABASE_SERVICE_ROLE_KEY'))
-            ->get(env('SUPABASE_URL') . '/rest/v1/users', [
-                'email' => 'eq.' . $request->email,
-                'select' => '*',
-            ]);
+        ->withHeaders([
+            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+        ])
+        ->get(env('SUPABASE_URL') . '/rest/v1/users', [
+            'select' => '*',
+            'email' => 'eq.' . $request->email,
+        ]);
+        if ($response->failed()) {
+            return response()->json([
+                'message' => 'Gagal koneksi ke Supabase.',
+                'error' => $response->body(),
+            ], 500);
+        }
+            
     
         $user = $response->json()[0] ?? null;
     
