@@ -7,6 +7,7 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
+use Faker\Core\File;
 use Illuminate\Http\Request;
 
 Route::middleware('guest')->group(function () {
@@ -61,6 +62,8 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
     Route::delete('/folders/bulk-delete', [FileController::class, 'bulkDelete'])->name('folders.bulk.delete');
+    Route::get('/api/folder-contents', [FileController::class, 'getFolderContents']);
+
     Route::post('/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
         ->where('path', '.*')
         ->name('folders.subfolder.create');
@@ -83,7 +86,7 @@ Route::middleware(['admin.only'])->group(function () {
     // web.php
 Route::put('/folders/{id}/rename', [FolderController::class, 'rename']);
 Route::delete('/folders/{id}', [FolderController::class, 'destroy']);
-Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete'] )->name('folders.bulk.delete');
+// Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete'] )->name('folders.bulk.delete');
 Route::post('/folders/bulk-rename', [FolderController::class, 'bulkRename'])->name('folders.bulk.rename');
 
 });

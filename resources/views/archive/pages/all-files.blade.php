@@ -304,18 +304,42 @@ foreach ($files as $file) {
     const selectAll = document.getElementById('select-all');
 
     function updateDeleteArea() {
-        let paths = [];
+    let paths = [];
 
-        checkboxes.forEach(cb => {
+    const fetchFolderContents = async (path) => {
+        try {
+            const response = await fetch(`/api/folder-contents?prefix=${encodeURIComponent(path)}`);
+            const data = await response.json();
+            return data.paths || [];
+        } catch (error) {
+            console.error('Gagal mengambil isi folder:', error);
+            return [];
+        }
+    };
+
+    const processCheckboxes = async () => {
+        for (const cb of checkboxes) {
             if (cb.checked) {
-                paths.push(cb.value); // langsung ambil path dari value checkbox
+                const itemPath = cb.value;
+                const itemType = cb.closest('tr').dataset.type;
+
+                paths.push(itemPath); // selalu tambahkan path utama
+
+                // jika folder, fetch isinya
+                if (itemType === 'folder') {
+                    const contents = await fetchFolderContents(itemPath);
+                    paths.push(...contents);
+                }
             }
-        });
+        }
 
         if (textareaDelete) {
             textareaDelete.value = paths.join('\n');
         }
-    }
+    };
+
+    processCheckboxes();
+}
 
     // checkbox masing-masing
     checkboxes.forEach(cb => {

@@ -284,5 +284,28 @@ class FileController extends Controller
     
         return redirect()->back()->with('success', 'Item berhasil dihapus.');
     }
-    
+    public function getFolderContents(Request $request)
+{
+    $folderPath = $request->query('prefix');
+    $supabaseUrl = env('SUPABASE_URL');
+    $supabaseKey = env('SUPABASE_API_KEY');
+    $bucket = 'storage'; // sesuaikan dengan bucket kamu
+
+    $response = Http::withHeaders([
+        'apikey' => $supabaseKey,
+        'Authorization' => 'Bearer ' . $supabaseKey,
+    ])->get("{$supabaseUrl}/storage/v1/object/list/{$bucket}", [
+        'prefix' => $folderPath . '/',
+        'limit' => 1000,
+    ]);
+
+    if ($response->successful()) {
+        $items = $response->json();
+        $paths = collect($items)->pluck('name');
+        return response()->json(['paths' => $paths]);
+    }
+
+    return response()->json(['paths' => []], 500);
+}
+
 }
