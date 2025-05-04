@@ -239,31 +239,50 @@ class FileController extends Controller
             ? redirect()->back()->with('success', 'Item berhasil diubah nama.')
             : redirect()->back()->with('error', 'Gagal mengubah nama item.');
     }
-    
     public function bulkDelete(Request $request)
     {
         $paths = explode("\n", $request->input('bulk-delete'));
     
-        $supabaseUrl = env('SUPABASE_URL'); // contoh: https://abcxyz.supabase.co
+        $supabaseUrl = env('SUPABASE_URL');
         $supabaseKey = env('SUPABASE_API_KEY');
-        $bucket = 'storage'; // ganti sesuai nama bucket kamu
+        $bucket = 'storage'; // Ganti sesuai nama bucket kamu
     
         foreach ($paths as $path) {
             $cleanPath = trim($path);
     
             if (!empty($cleanPath)) {
-                // Hapus object dari Supabase Storage
-                $deleteResponse = Http::withHeaders([
+                // Step 1: Ambil semua object dengan prefix tersebut
+                $listResponse = Http::withHeaders([
                     'apikey' => $supabaseKey,
                     'Authorization' => 'Bearer ' . $supabaseKey,
-                    'Content-Type' => 'application/json',
-                ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/" . $cleanPath);
+                ])->get("{$supabaseUrl}/storage/v1/object/list/{$bucket}", [
+                    'prefix' => $cleanPath . '/',
+                    'limit' => 1000
+                ]);
     
-                // Optional: log response jika ingin debugging
-                // \Log::info("Delete response for $cleanPath", ['status' => $deleteResponse->status(), 'body' => $deleteResponse->body()]);
+                if ($listResponse->successful()) {
+                    $objects = $listResponse->json();
+    
+                    // Step 2: Hapus isi-isi folder
+                    foreach ($objects as $item) {
+                        $objectPath = $item['name'];
+    
+                        Http::withHeaders([
+                            'apikey' => $supabaseKey,
+                            'Authorization' => 'Bearer ' . $supabaseKey,
+                        ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/" . $objectPath);
+                    }
+                }
+    
+                // Step 3: Hapus folder itu sendiri
+                Http::withHeaders([
+                    'apikey' => $supabaseKey,
+                    'Authorization' => 'Bearer ' . $supabaseKey,
+                ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/" . $cleanPath);
             }
         }
     
         return redirect()->back()->with('success', 'Item berhasil dihapus.');
     }
+    
 }
