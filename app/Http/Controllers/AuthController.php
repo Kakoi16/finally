@@ -216,43 +216,46 @@ class AuthController extends Controller
     {
         return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
     }
-    public function loginViaDatabase(Request $request)
+    
+  
+    public function loginViaSupabase(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
-    
+
         $supabaseUrl = env('SUPABASE_URL');
-    
+
         $response = Http::withHeaders([
             'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
         ])->get("$supabaseUrl/rest/v1/users", [
             'select' => '*',
             'email' => 'eq.' . $credentials['email'],
         ]);
-    
+
         if ($response->failed() || empty($response[0])) {
             return response()->json(['message' => 'Email atau password salah'], 401);
         }
-    
+
         $user = $response[0];
-    
+
         if (!Hash::check($credentials['password'], $user['password'])) {
             return response()->json(['message' => 'Email atau password salah'], 401);
         }
-    
+
         if ($user['role'] !== 'karyawan') {
             return response()->json(['message' => 'Akses hanya untuk karyawan'], 403);
         }
-    
-        $token = Str::random(60); // Atau buat token sesuai kebutuhan
-    
+
+        $token = Str::random(60); // Buat token dummy
+
         return response()->json([
             'message' => 'Login berhasil',
             'access_token' => $token,
             'user' => $user,
         ]);
     }
-    
+
+
 }
