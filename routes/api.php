@@ -21,4 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/login/admin', [AuthController::class, 'login']);
 Route::post('/login', [AuthController::class, 'loginViaSupabase']); // untuk karyawan
+Route::post('/login-v2', [AuthController::class, 'loginViaSupabase']);
 
