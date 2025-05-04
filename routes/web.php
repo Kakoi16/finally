@@ -7,6 +7,7 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
+use Illuminate\Http\Request;
 
 Route::middleware('guest')->group(function () {
     // Login
@@ -34,6 +35,11 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+Route::middleware(['cors'])->post('/loginKaryawan', function (Request $request) {
+    return response()->json(['message' => 'Tes CORS'])->header('Access-Control-Allow-Origin', '*');
+});
+
 
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth.session');
