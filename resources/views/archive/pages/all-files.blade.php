@@ -347,7 +347,7 @@ foreach ($files as $file) {
     processCheckboxes();
 }
 
-    // checkbox masing-masing
+    // checkbox maasing-masing
     checkboxes.forEach(cb => {
         cb.addEventListener('change', updateDeleteArea);
     });
