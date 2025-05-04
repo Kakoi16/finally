@@ -244,43 +244,23 @@ class FileController extends Controller
     {
         $paths = explode("\n", $request->input('bulk-delete'));
     
-        $supabaseUrl = env('SUPABASE_URL');
+        $supabaseUrl = env('SUPABASE_URL'); // contoh: https://abcxyz.supabase.co
         $supabaseKey = env('SUPABASE_API_KEY');
+        $bucket = 'storage'; // ganti sesuai nama bucket kamu
     
         foreach ($paths as $path) {
             $cleanPath = trim($path);
     
             if (!empty($cleanPath)) {
-                // Cek apakah path adalah folder
-                if (Str::endsWith($cleanPath, '/')) {
-                    // Hapus isi folder terlebih dahulu
-                    $response = Http::withHeaders([
-                        'apikey' => $supabaseKey,
-                        'Authorization' => 'Bearer ' . $supabaseKey,
-                    ])->get("$supabaseUrl/rest/v1/files?path=like.$cleanPath%");
+                // Hapus object dari Supabase Storage
+                $deleteResponse = Http::withHeaders([
+                    'apikey' => $supabaseKey,
+                    'Authorization' => 'Bearer ' . $supabaseKey,
+                    'Content-Type' => 'application/json',
+                ])->delete("{$supabaseUrl}/storage/v1/object/{$bucket}/" . $cleanPath);
     
-                    if ($response->successful()) {
-                        $files = $response->json();
-                        foreach ($files as $file) {
-                            Http::withHeaders([
-                                'apikey' => $supabaseKey,
-                                'Authorization' => 'Bearer ' . $supabaseKey,
-                            ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($file['path']));
-                        }
-                    }
-    
-                    // Terakhir hapus folder entry-nya
-                    Http::withHeaders([
-                        'apikey' => $supabaseKey,
-                        'Authorization' => 'Bearer ' . $supabaseKey,
-                    ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($cleanPath));
-                } else {
-                    // Hapus file langsung
-                    Http::withHeaders([
-                        'apikey' => $supabaseKey,
-                        'Authorization' => 'Bearer ' . $supabaseKey,
-                    ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($cleanPath));
-                }
+                // Optional: log response jika ingin debugging
+                // \Log::info("Delete response for $cleanPath", ['status' => $deleteResponse->status(), 'body' => $deleteResponse->body()]);
             }
         }
     
