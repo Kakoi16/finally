@@ -218,53 +218,53 @@ class AuthController extends Controller
     }
     
     public function loginKaryawan(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-    
-        // Ambil user dari Supabase berdasarkan email
-        $response = Http::withToken(env('SUPABASE_SERVICE_ROLE_KEY'))
-        ->withHeaders([
-            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
-        ])
-        ->get(env('SUPABASE_URL') . '/rest/v1/users', [
-            'select' => '*',
-            'email' => 'eq.' . $request->email,
-        ]);
-        if ($response->failed()) {
-            return response()->json([
-                'message' => 'Gagal koneksi ke Supabase.',
-                'error' => $response->body(),
-            ], 500);
-        }
-            
-    
-        $user = $response->json()[0] ?? null;
-    
-        if (!$user) {
-            return response()->json(['message' => 'Email tidak ditemukan.'], 401);
-        }
-    
-        // Cek password dan role
-        if (!Hash::check($request->password, $user['password'])) {
-            return response()->json(['message' => 'Password salah.'], 401);
-        }
-    
-        if (trim(strtolower($user['role'])) !== 'karyawan') {            
-            return response()->json(['message' => 'Hanya karyawan yang diperbolehkan login.'], 401);
-        }
-    
-        // Login berhasil
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
+
+    // Ambil user dari Supabase berdasarkan email
+    $response = Http::withToken(env('SUPABASE_SERVICE_ROLE_KEY'))
+    ->withHeaders([
+        'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+    ])
+    ->get(env('SUPABASE_URL') . '/rest/v1/users', [
+        'select' => '*',
+        'email' => 'eq.' . $request->email,
+    ]);
+
+    if ($response->failed()) {
         return response()->json([
-            'message' => 'Login berhasil.',
-            'user' => [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'email' => $user['email'],
-                'role' => $user['role'],
-            ],
-        ]);
+            'message' => 'Gagal koneksi ke Supabase.',
+            'error' => $response->body(),
+        ], 500);
     }
+
+    $user = $response->json()[0] ?? null;
+
+    if (!$user) {
+        return response()->json(['message' => 'Email tidak ditemukan.'], 401);
+    }
+
+    // Cek password dan role
+    if (!Hash::check($request->password, $user['password'])) {
+        return response()->json(['message' => 'Password salah.'], 401);
+    }
+
+    if (trim(strtolower($user['role'])) !== 'karyawan') {
+        return response()->json(['message' => 'Hanya karyawan yang diperbolehkan login.'], 401);
+    }
+
+    // Login berhasil, kirim data yang cocok dengan frontend
+    return response()->json([
+        'message' => 'Login berhasil.',
+        'access_token' => base64_encode(Str::random(40)), // atau pakai JWT jika sudah ada
+        'id' => $user['id'],
+        'name' => $user['name'],
+        'email' => $user['email'],
+        'role' => $user['role'],
+    ]);
+}
+
 }
