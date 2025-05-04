@@ -252,7 +252,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Password salah.'], 401);
         }
     
-        if ($user['role'] !== 'karyawan') {
+        if (trim(strtolower($user['role'])) !== 'karyawan') {            
             return response()->json(['message' => 'Hanya karyawan yang diperbolehkan login.'], 401);
         }
     
