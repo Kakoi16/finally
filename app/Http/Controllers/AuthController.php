@@ -220,52 +220,51 @@ class AuthController extends Controller
     public function loginKaryawan(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
-
-        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-        $table       = env('SUPABASE_TABLE');
-
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                'apikey'        => env('SUPABASE_API_KEY'),
-            ])->get("$supabaseUrl/rest/v1/$table?email=eq." . $request->email . "&select=*");
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menghubungi server.'], 500);
+    
+        // Ambil user dari Supabase berdasarkan email
+        $response = Http::withToken(env('SUPABASE_SERVICE_ROLE_KEY'))
+        ->withHeaders([
+            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+        ])
+        ->get(env('SUPABASE_URL') . '/rest/v1/users', [
+            'select' => '*',
+            'email' => 'eq.' . $request->email,
+        ]);
+        if ($response->failed()) {
+            return response()->json([
+                'message' => 'Gagal koneksi ke Supabase.',
+                'error' => $response->body(),
+            ], 500);
         }
-
-        if (!$response->successful() || empty($response->json())) {
-            return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
+            
+    
+        $user = $response->json()[0] ?? null;
+    
+        if (!$user) {
+            return response()->json(['message' => 'Email tidak ditemukan.'], 401);
         }
-
-        $user = $response->json()[0];
-
-        // Cek password
+    
+        // Cek password dan role
         if (!Hash::check($request->password, $user['password'])) {
-            return response()->json(['success' => false, 'message' => 'Password salah.'], 401);
+            return response()->json(['message' => 'Password salah.'], 401);
         }
-
-        // Cek role admin
-        if ($user['role'] !== 'karyawan') {
-            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat login.'], 403);
+    
+        if (trim(strtolower($user['role'])) !== 'karyawan') {            
+            return response()->json(['message' => 'Hanya karyawan yang diperbolehkan login.'], 401);
         }
-
-        // Simpan user ke session
-        session([
-            'user' => [
-                'id'    => $user['id'],
-                'name'  => $user['name'],
-                'email' => $user['email'],
-                'role'  => $user['role'], // 'admin'
-            ],
-        ]);
-
+    
+        // Login berhasil
         return response()->json([
-            'success' => true,
             'message' => 'Login berhasil.',
-            'redirect' => route('archive') // atau ke /archive kalau mau langsung
+            'user' => [
+                'id' => $user['id'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'role' => $user['role'],
+            ],
         ]);
     }
 }
