@@ -209,6 +209,14 @@ foreach ($files as $file) {
     </table>
 </div>
 @else
+@if (session('success'))
+    <div class="p-3 mb-3 bg-green-100 text-green-800 rounded">{{ session('success') }}</div>
+@endif
+
+@if (session('error'))
+    <div class="p-3 mb-3 bg-red-100 text-red-800 rounded">{{ session('error') }}</div>
+@endif
+
         <!-- Fallback UI when no files are found -->
         <div class="text-center py-16 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

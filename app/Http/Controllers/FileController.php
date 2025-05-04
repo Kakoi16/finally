@@ -239,4 +239,27 @@ class FileController extends Controller
             ? redirect()->back()->with('success', 'Item berhasil diubah nama.')
             : redirect()->back()->with('error', 'Gagal mengubah nama item.');
     }
+    public function bulkDelete(Request $request)
+    {
+        $paths = $request->input('selected_items', []);
+
+        if (empty($paths)) {
+            return back()->with('error', 'Tidak ada item yang dipilih untuk dihapus.');
+        }
+
+        foreach ($paths as $path) {
+            // Kirim permintaan DELETE ke Supabase
+            $response = Http::withHeaders([
+                'apikey' => env('SUPABASE_API_KEY'),
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            ])->delete(env('SUPABASE_URL') . '/storage/v1/object/' . $path);
+
+            // Log jika gagal
+            if (!$response->ok()) {
+                \Log::error('Gagal menghapus: ' . $path . ' - ' . $response->body());
+            }
+        }
+
+        return back()->with('success', 'Item yang dipilih berhasil dihapus.');
+    }
 }
