@@ -252,19 +252,22 @@ class AuthController extends Controller
             return response()->json(['message' => 'Password salah.'], 401);
         }
     
-        if (trim(strtolower($user['role'])) !== 'karyawan') {            
+        $role = strtolower(trim($user['role'] ?? ''));
+
+        if ($role !== 'karyawan') {
             return response()->json(['message' => 'Hanya karyawan yang diperbolehkan login.'], 401);
         }
+        
     
         // Login berhasil
         return response()->json([
             'message' => 'Login berhasil.',
-            'user' => [
-                'id' => $user['id'],
-                'name' => $user['name'],
-                'email' => $user['email'],
-                'role' => $user['role'],
-            ],
+            'access_token' => base64_encode(Str::random(40)), // Token dummy
+            'id' => $user['id'],
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'role' => $user['role'],
         ]);
+        
     }
 }
