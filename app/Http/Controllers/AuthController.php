@@ -216,55 +216,43 @@ class AuthController extends Controller
     {
         return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
     }
-    public function loginViaSupabase(Request $request)
+    public function loginViaDatabase(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
-
-
-        // Ambil URL Supabase dari .env
+    
         $supabaseUrl = env('SUPABASE_URL');
-
-        // Auth via Supabase Auth REST
+    
         $response = Http::withHeaders([
             'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
-            'Content-Type' => 'application/json',
-        ])->post("$supabaseUrl/auth/v1/token?grant_type=password", [
-            'email' => $credentials['email'],
-            'password' => $credentials['password'],
-        ]);
-
-        if ($response->failed()) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
-        }
-
-        $user = $response->json('user');
-        $access_token = $response->json('access_token');
-
-        // Get user info from Supabase table
-        $userInfo = Http::withHeaders([
-            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
-            'Authorization' => 'Bearer ' . $access_token,
         ])->get("$supabaseUrl/rest/v1/users", [
-            'select' => 'role',
+            'select' => '*',
             'email' => 'eq.' . $credentials['email'],
         ]);
-
-        if ($userInfo->failed() || empty($userInfo[0]['role'])) {
-            return response()->json(['message' => 'Gagal mendapatkan role user'], 403);
+    
+        if ($response->failed() || empty($response[0])) {
+            return response()->json(['message' => 'Email atau password salah'], 401);
         }
-
-
-        if ($userInfo[0]['role'] !== 'karyawan') {
+    
+        $user = $response[0];
+    
+        if (!Hash::check($credentials['password'], $user['password'])) {
+            return response()->json(['message' => 'Email atau password salah'], 401);
+        }
+    
+        if ($user['role'] !== 'karyawan') {
             return response()->json(['message' => 'Akses hanya untuk karyawan'], 403);
         }
-
+    
+        $token = Str::random(60); // Atau buat token sesuai kebutuhan
+    
         return response()->json([
             'message' => 'Login berhasil',
-            'access_token' => $access_token,
+            'access_token' => $token,
             'user' => $user,
         ]);
     }
+    
 }
