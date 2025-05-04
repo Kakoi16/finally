@@ -19,8 +19,6 @@ use App\Http\Controllers\AuthController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::post('/login/admin', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'loginViaSupabase']); // untuk karyawan
 
-// Tambahkan route login untuk API
-Route::post('/login', [AuthController::class, 'loginViaSupabase']);
-
-Route::post('/login', [AuthController::class, 'login']);
