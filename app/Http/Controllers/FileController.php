@@ -76,7 +76,7 @@ class FileController extends Controller
                 'apikey' => $this->supabaseKey,
                 'Content-Type' => $file->getMimeType(),
             ])->withBody($fileContent, $file->getMimeType())
-              ->put($uploadUrl);
+                ->put($uploadUrl);
 
             return $response->successful();
         } catch (\Exception $e) {
@@ -146,7 +146,7 @@ class FileController extends Controller
                         $newName = $value . $oldName;
                         break;
                     case 'suffix':
-                        $newName = $extension 
+                        $newName = $extension
                             ? $baseName . $value . '.' . $extension
                             : $oldName . $value;
                         break;
@@ -212,7 +212,7 @@ class FileController extends Controller
         $parentDir = dirname($itemPath);
         $parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
         $newPath = ltrim($parentDir . '/' . $newName, '/');
-        
+
 
         // Update the item
         $updateResponse = Http::withHeaders([
@@ -242,22 +242,21 @@ class FileController extends Controller
     public function bulkDelete(Request $request)
     {
         $paths = explode("\n", $request->input('bulk-delete'));
-    
+
         $supabaseUrl = env('SUPABASE_URL');
         $serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
         $table = 'archives';
-    
+
         foreach ($paths as $path) {
             $cleanPath = trim($path);
-    
+
             if (!empty($cleanPath)) {
-                // Step 1: Hapus semua yang berada di dalam folder
                 Http::withHeaders([
                     'apikey' => $serviceRoleKey,
                     'Authorization' => 'Bearer ' . $serviceRoleKey,
                     'Prefer' => 'return=representation',
                 ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=like.{$cleanPath}/%");
-    
+
                 // Step 2: Hapus folder utamanya
                 Http::withHeaders([
                     'apikey' => $serviceRoleKey,
@@ -266,8 +265,7 @@ class FileController extends Controller
                 ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=eq.{$cleanPath}");
             }
         }
-    
+
         return back()->with('success', 'Folder dan isinya berhasil dihapus dari Supabase (archives).');
     }
-    
 }
