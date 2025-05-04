@@ -151,76 +151,103 @@ class FolderController extends Controller
         ]);
     }
     public function bulkRename(Request $request)
-{
-    $request->validate([
-        'renames' => 'required|string'
-    ]);
-
-    $lines = explode("\n", trim($request->renames));
-    $successCount = 0;
-
-    foreach ($lines as $line) {
-        $parts = explode('➡️', $line);
-
-        // Cek apakah format valid
-        if (count($parts) < 2) {
-            continue; // Lewati baris yang tidak valid
-        }
-
-        [$oldPath, $newName] = $parts;
-        $oldPath = trim($oldPath);
-        $newName = trim($newName);
-
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-        ])->get($this->supabaseUrl . '?path=eq.' . $oldPath);
-
-        if (!$response->successful() || empty($response->json())) {
-            continue;
-        }
-
-        $item = $response->json()[0];
-        $parentDir = dirname($oldPath);
-$parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
-$newPath = ltrim($parentDir . '/' . Str::slug($newName), '/');
-
-        $updateResponse = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json',
-        ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
-            'name' => $newName,
-            'path' => $newPath,
+    {
+        $request->validate([
+            'renames' => 'required|string'
         ]);
 
-        if ($updateResponse->successful()) {
-            $successCount++;
-        }
-    }
+        $lines = explode("\n", trim($request->renames));
+        $successCount = 0;
 
-    return redirect()->back()->with('success', "$successCount item berhasil di-rename.");
-}
+        foreach ($lines as $line) {
+            $parts = explode('➡️', $line);
+
+            // Cek apakah format valid
+            if (count($parts) < 2) {
+                continue; // Lewati baris yang tidak valid
+            }
+
+            [$oldPath, $newName] = $parts;
+            $oldPath = trim($oldPath);
+            $newName = trim($newName);
+
+            $response = Http::withHeaders([
+                'apikey' => $this->supabaseKey,
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+            ])->get($this->supabaseUrl . '?path=eq.' . $oldPath);
+
+            if (!$response->successful() || empty($response->json())) {
+                continue;
+            }
+
+            $item = $response->json()[0];
+            $parentDir = dirname($oldPath);
+            $parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
+            $newPath = ltrim($parentDir . '/' . Str::slug($newName), '/');
+
+            $updateResponse = Http::withHeaders([
+                'apikey' => $this->supabaseKey,
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+                'Content-Type' => 'application/json',
+            ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
+                'name' => $newName,
+                'path' => $newPath,
+            ]);
+
+            if ($updateResponse->successful()) {
+                $successCount++;
+            }
+        }
+
+        return redirect()->back()->with('success', "$successCount item berhasil di-rename.");
+    }
 
 
     public function bulkDelete(Request $request)
     {
-        $request->validate([
-            'selected_items' => 'required|string'
-        ]);
-
-        $paths = explode("\n", trim($request->input('selected_items'))); // explode manual dari textarea
-        $paths = array_map('trim', $paths);
-        
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-        ])->delete($this->supabaseUrl . '?path=in.(' . implode(',', $paths) . ')');
-        
-
-        return $response->successful()
-            ? redirect()->back()->with('success', 'Item terpilih berhasil dihapus.')
-            : redirect()->back()->with('error', 'Gagal menghapus item terpilih.');
+        $paths = explode("\n", $request->input('bulk-delete'));
+    
+        $supabaseUrl = env('SUPABASE_URL');
+        $supabaseKey = env('SUPABASE_API_KEY');
+    
+        foreach ($paths as $path) {
+            $cleanPath = trim($path);
+    
+            if (!empty($cleanPath)) {
+                // Cek apakah path adalah folder
+                if (Str::endsWith($cleanPath, '/')) {
+                    // Hapus isi folder terlebih dahulu
+                    $response = Http::withHeaders([
+                        'apikey' => $supabaseKey,
+                        'Authorization' => 'Bearer ' . $supabaseKey,
+                    ])->get("$supabaseUrl/rest/v1/files?path=like.$cleanPath%");
+    
+                    if ($response->successful()) {
+                        $files = $response->json();
+                        foreach ($files as $file) {
+                            Http::withHeaders([
+                                'apikey' => $supabaseKey,
+                                'Authorization' => 'Bearer ' . $supabaseKey,
+                            ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($file['path']));
+                        }
+                    }
+    
+                    // Terakhir hapus folder entry-nya
+                    Http::withHeaders([
+                        'apikey' => $supabaseKey,
+                        'Authorization' => 'Bearer ' . $supabaseKey,
+                    ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($cleanPath));
+                } else {
+                    // Hapus file langsung
+                    Http::withHeaders([
+                        'apikey' => $supabaseKey,
+                        'Authorization' => 'Bearer ' . $supabaseKey,
+                    ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($cleanPath));
+                }
+            }
+        }
+    
+        return redirect()->back()->with('success', 'Item berhasil dihapus.');
     }
     public function renameFolder(Request $request, $folderPath)
     {
@@ -240,8 +267,8 @@ $newPath = ltrim($parentDir . '/' . Str::slug($newName), '/');
 
         $folder = $response->json()[0];
         $parentDir = dirname($folderPath);
-$parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
-$newPath = ltrim($parentDir . '/' . Str::slug($request->new_name), '/');
+        $parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
+        $newPath = ltrim($parentDir . '/' . Str::slug($request->new_name), '/');
 
         // Update the folder
         $updateResponse = Http::withHeaders([
@@ -258,11 +285,11 @@ $newPath = ltrim($parentDir . '/' . Str::slug($request->new_name), '/');
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
         ])->get($this->supabaseUrl . '?path=like.' . $folderPath . '/%');
-        
+
         if ($childrenResponse->successful()) {
             foreach ($childrenResponse->json() as $child) {
                 $newChildPath = Str::replaceFirst($folderPath, $newPath, $child['path']);
-        
+
                 Http::withHeaders([
                     'apikey' => $this->supabaseKey,
                     'Authorization' => 'Bearer ' . $this->supabaseKey,
@@ -272,7 +299,7 @@ $newPath = ltrim($parentDir . '/' . Str::slug($request->new_name), '/');
                 ]);
             }
         }
-        
+
         return $updateResponse->successful()
             ? redirect()->route('folders.showAny', ['any' => $newPath])->with('success', 'Folder berhasil diubah nama.')
             : redirect()->back()->with('error', 'Gagal mengubah nama folder.');
@@ -299,5 +326,5 @@ $newPath = ltrim($parentDir . '/' . Str::slug($request->new_name), '/');
             ? redirect()->route('archive')->with('success', 'Folder dan isinya berhasil dihapus.')
             : redirect()->back()->with('error', 'Gagal menghapus folder.');
     }
-    
+   
 }

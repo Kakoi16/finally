@@ -297,4 +297,40 @@ foreach ($files as $file) {
             });
         }
     });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const textareaDelete = document.getElementById('bulk-delete');
+    const selectAll = document.getElementById('select-all');
+
+    function updateDeleteArea() {
+        let paths = [];
+
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                paths.push(cb.value); // langsung ambil path dari value checkbox
+            }
+        });
+
+        if (textareaDelete) {
+            textareaDelete.value = paths.join('\n');
+        }
+    }
+
+    // checkbox masing-masing
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateDeleteArea);
+    });
+
+    // checkbox "select all"
+    if (selectAll) {
+        selectAll.addEventListener('change', () => {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateDeleteArea();
+        });
+    }
+
+    // Panggil saat pertama kali jika ada pre-checked
+    updateDeleteArea();
+});
 </script>

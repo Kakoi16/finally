@@ -72,7 +72,7 @@
                 @csrf
                 @method('DELETE')
                 <div class="space-y-2">
-                    <textarea name="selected_items[]" rows="2" placeholder="path/to/delete1&#10;path/to/delete2" class="w-full text-xs border border-red-200 bg-white p-2 rounded focus:ring-1 focus:ring-red-300 focus:border-red-300"></textarea>
+                    <textarea id="bulk-delete" name="bulk-delete" rows="2" placeholder="path/to/delete1&#10;path/to/delete2" class="w-full text-xs border border-red-200 bg-white p-2 rounded focus:ring-1 focus:ring-red-300 focus:border-red-300"></textarea>
                     <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-xs font-medium flex items-center justify-center shadow-sm transition-colors">
                         <i class="fas fa-trash-alt mr-2 text-xs"></i> Delete Selected
                     </button>
