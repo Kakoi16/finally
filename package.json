@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "start": "bun index.tsx"
+        "start": "bun index.html"
     },
     "devDependencies": {
         "axios": "^1.6.4",
