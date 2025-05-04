@@ -90,9 +90,10 @@ class AuthController extends Controller
         $verificationUrl = route('verification.verify', ['token' => $token]);
 
         try {
-            Mail::send('emails.verification', ['url' => $verificationUrl], function ($message) use ($request) {
+            Mail::send('emails.verification', ['url' => $verificationUrl, 'email' => $request->email], function ($message) use ($request) {
                 $message->to($request->email)->subject('Verifikasi Email');
             });
+            
             
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Gagal mengirim email: ' . $e->getMessage()], 500);
