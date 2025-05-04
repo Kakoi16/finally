@@ -51,9 +51,14 @@ class FileController extends Controller
 
         if ($response->successful() && $storageSuccess) {
             return redirect()->back()->with('success', 'File uploaded successfully.');
+        } elseif (!$response->successful() && $storageSuccess) {
+            return redirect()->back()->with('warning', 'File uploaded, but failed to save metadata.');
+        } elseif ($response->successful() && !$storageSuccess) {
+            return redirect()->back()->with('warning', 'Metadata saved, but failed to upload file.');
         } else {
             return redirect()->back()->with('error', 'Failed to upload file.');
         }
+        
     }
 
     private function sanitizeFilename($filename)
