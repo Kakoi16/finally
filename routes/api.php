@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,3 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Tambahkan route login untuk API
 Route::post('/login', [AuthController::class, 'loginViaSupabase']);
+
+Route::post('/login', [AuthController::class, 'login']);
