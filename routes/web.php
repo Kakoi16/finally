@@ -12,14 +12,15 @@ Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/login', [AuthController::class, 'loginViaSupabase']);
+    Route::post('/login/ionic', [AuthController::class, 'loginForIonic']); // Route untuk aplikasi Ionic
+    
 
     
     // Register (UI & API AJAX)
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'registerKaryawan'])->name('register.karyawan');
 
-    // Email Verification
+    // Email Verificationa
     Route::get('/verify/{token}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
 
     // Forgot & Reset Password

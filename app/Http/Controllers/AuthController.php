@@ -161,112 +161,127 @@ class AuthController extends Controller
 
 
     public function login(Request $request)
-    {
-        $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'email'    => 'required|email',
+        'password' => 'required|string',
+        'source'   => 'required|in:web,ionic'  // Menambahkan parameter 'source'
+    ]);
 
-        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
-        $table       = env('SUPABASE_TABLE');
+    $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+    $table       = env('SUPABASE_TABLE');
 
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
-                'apikey'        => env('SUPABASE_API_KEY'),
-            ])->get("$supabaseUrl/rest/v1/$table?email=eq." . $request->email . "&select=*");
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Gagal menghubungi server.'], 500);
-        }
-
-        if (!$response->successful() || empty($response->json())) {
-            return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
-        }
-
-        $user = $response->json()[0];
-
-        // Cek password
-        if (!Hash::check($request->password, $user['password'])) {
-            return response()->json(['success' => false, 'message' => 'Password salah.'], 401);
-        }
-
-        // Cek role admin
-        if ($user['role'] !== 'admin') {
-            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat login.'], 403);
-        }
-
-        // Simpan user ke session
-        session([
-            'user' => [
-                'id'    => $user['id'],
-                'name'  => $user['name'],
-                'email' => $user['email'],
-                'role'  => $user['role'], // 'admin'
-            ],
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login berhasil.',
-            'redirect' => route('archive') // atau ke /archive kalau mau langsung
-        ]);
+    try {
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'apikey'        => env('SUPABASE_API_KEY'),
+        ])->get("$supabaseUrl/rest/v1/$table?email=eq." . $request->email . "&select=*");
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => 'Gagal menghubungi server.'], 500);
     }
+
+    if (!$response->successful() || empty($response->json())) {
+        return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
+    }
+
+    $user = $response->json()[0];
+
+    // Cek password
+    if (!Hash::check($request->password, $user['password'])) {
+        return response()->json(['success' => false, 'message' => 'Password salah.'], 401);
+    }
+
+    // Menangani login berdasarkan source (web atau ionic)
+    if ($request->source === 'web') {
+        // Cek role admin untuk web
+        if ($user['role'] !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat login di web.'], 403);
+        }
+    } elseif ($request->source === 'ionic') {
+        // Cek role karyawan untuk Ionic
+        if ($user['role'] !== 'karyawan') {
+            return response()->json(['success' => false, 'message' => 'Hanya karyawan yang dapat login di Ionic.'], 403);
+        }
+    }
+
+    // Simpan user ke session
+    session([
+        'user' => [
+            'id'    => $user['id'],
+            'name'  => $user['name'],
+            'email' => $user['email'],
+            'role'  => $user['role'], // 'admin' atau 'karyawan'
+        ],
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Login berhasil.',
+        'redirect' => route('dashboard') // Atau ke halaman yang sesuai
+    ]);
+}
+
 
     public function showLogin()
     {
         return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
     }
     public function loginViaSupabase(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+{
+    $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'source' => 'required|in:web,ionic'  // Menambahkan parameter 'source'
+    ]);
 
+    // Ambil URL Supabase dari .env
+    $supabaseUrl = env('SUPABASE_URL');
 
-        // Ambil URL Supabase dari .env
-        $supabaseUrl = env('SUPABASE_URL');
+    // Auth via Supabase Auth REST
+    $response = Http::withHeaders([
+        'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+        'Content-Type' => 'application/json',
+    ])->post("$supabaseUrl/auth/v1/token?grant_type=password", [
+        'email' => $credentials['email'],
+        'password' => $credentials['password'],
+    ]);
 
-        // Auth via Supabase Auth REST
-        $response = Http::withHeaders([
-            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
-            'Content-Type' => 'application/json',
-        ])->post("$supabaseUrl/auth/v1/token?grant_type=password", [
-            'email' => $credentials['email'],
-            'password' => $credentials['password'],
-        ]);
-
-        if ($response->failed()) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
-        }
-
-        $user = $response->json('user');
-        $access_token = $response->json('access_token');
-
-        // Get user info from Supabase table
-        $userInfo = Http::withHeaders([
-            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
-            'Authorization' => 'Bearer ' . $access_token,
-        ])->get("$supabaseUrl/rest/v1/users", [
-            'select' => 'role',
-            'email' => 'eq.' . $credentials['email'],
-        ]);
-
-        if ($userInfo->failed() || empty($userInfo[0]['role'])) {
-            return response()->json(['message' => 'Gagal mendapatkan role user'], 403);
-        }
-
-
-        if ($userInfo[0]['role'] !== 'karyawan') {
-            return response()->json(['message' => 'Akses hanya untuk karyawan'], 403);
-        }
-
-        return response()->json([
-            'message' => 'Login berhasil',
-            'access_token' => $access_token,
-            'user' => $user,
-            'role' => $userInfo[0]['role'],
-        ]);
-        
+    if ($response->failed()) {
+        return response()->json(['message' => 'Email atau password salah'], 401);
     }
+
+    $user = $response->json('user');
+    $access_token = $response->json('access_token');
+
+    // Get user info from Supabase table
+    $userInfo = Http::withHeaders([
+        'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+        'Authorization' => 'Bearer ' . $access_token,
+    ])->get("$supabaseUrl/rest/v1/users", [
+        'select' => 'role',
+        'email' => 'eq.' . $credentials['email'],
+    ]);
+
+    if ($userInfo->failed() || empty($userInfo[0]['role'])) {
+        return response()->json(['message' => 'Gagal mendapatkan role user'], 403);
+    }
+
+    // Menangani login berdasarkan source (web atau ionic)
+    if ($credentials['source'] === 'web') {
+        if ($userInfo[0]['role'] !== 'admin') {
+            return response()->json(['message' => 'Akses hanya untuk admin di web'], 403);
+        }
+    } elseif ($credentials['source'] === 'ionic') {
+        if ($userInfo[0]['role'] !== 'karyawan') {
+            return response()->json(['message' => 'Akses hanya untuk karyawan di Ionic'], 403);
+        }
+    }
+
+    return response()->json([
+        'message' => 'Login berhasil',
+        'access_token' => $access_token,
+        'user' => $user,
+        'role' => $userInfo[0]['role'],
+    ]);
+}
 }
