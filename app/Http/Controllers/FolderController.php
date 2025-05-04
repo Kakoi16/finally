@@ -203,52 +203,6 @@ class FolderController extends Controller
     }
 
 
-    public function bulkDelete(Request $request)
-    {
-        $paths = explode("\n", $request->input('bulk-delete'));
-    
-        $supabaseUrl = env('SUPABASE_URL');
-        $supabaseKey = env('SUPABASE_API_KEY');
-    
-        foreach ($paths as $path) {
-            $cleanPath = trim($path);
-    
-            if (!empty($cleanPath)) {
-                // Cek apakah path adalah folder
-                if (Str::endsWith($cleanPath, '/')) {
-                    // Hapus isi folder terlebih dahulu
-                    $response = Http::withHeaders([
-                        'apikey' => $supabaseKey,
-                        'Authorization' => 'Bearer ' . $supabaseKey,
-                    ])->get("$supabaseUrl/rest/v1/files?path=like.$cleanPath%");
-    
-                    if ($response->successful()) {
-                        $files = $response->json();
-                        foreach ($files as $file) {
-                            Http::withHeaders([
-                                'apikey' => $supabaseKey,
-                                'Authorization' => 'Bearer ' . $supabaseKey,
-                            ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($file['path']));
-                        }
-                    }
-    
-                    // Terakhir hapus folder entry-nya
-                    Http::withHeaders([
-                        'apikey' => $supabaseKey,
-                        'Authorization' => 'Bearer ' . $supabaseKey,
-                    ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($cleanPath));
-                } else {
-                    // Hapus file langsung
-                    Http::withHeaders([
-                        'apikey' => $supabaseKey,
-                        'Authorization' => 'Bearer ' . $supabaseKey,
-                    ])->delete("$supabaseUrl/rest/v1/files?path=eq." . urlencode($cleanPath));
-                }
-            }
-        }
-    
-        return redirect()->back()->with('success', 'Item berhasil dihapus.');
-    }
     public function renameFolder(Request $request, $folderPath)
     {
         $request->validate([
