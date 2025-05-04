@@ -240,31 +240,34 @@ class FileController extends Controller
             : redirect()->back()->with('error', 'Gagal mengubah nama item.');
     }
     public function bulkDelete(Request $request)
-{
-    $paths = explode("\n", $request->input('bulk-delete'));
-
-    $supabaseUrl = env('SUPABASE_URL');
-    $serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
-    $table = 'archives';
-
-    foreach ($paths as $path) {
-        $cleanPath = trim($path);
-
-        if (!empty($cleanPath)) {
-            // Supabase REST API untuk hapus dengan filter path like
-            $response = Http::withHeaders([
-                'apikey' => $serviceRoleKey,
-                'Authorization' => 'Bearer ' . $serviceRoleKey,
-                'Content-Type' => 'application/json',
-                'Prefer' => 'return=representation', // opsional, untuk mendapatkan response data
-            ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=like.{$cleanPath}/%");
-
-            if (!$response->successful()) {
-                return back()->with('error', 'Gagal menghapus: ' . $cleanPath);
+    {
+        $paths = explode("\n", $request->input('bulk-delete'));
+    
+        $supabaseUrl = env('SUPABASE_URL');
+        $serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
+        $table = 'archives';
+    
+        foreach ($paths as $path) {
+            $cleanPath = trim($path);
+    
+            if (!empty($cleanPath)) {
+                // Step 1: Hapus semua yang berada di dalam folder
+                Http::withHeaders([
+                    'apikey' => $serviceRoleKey,
+                    'Authorization' => 'Bearer ' . $serviceRoleKey,
+                    'Prefer' => 'return=representation',
+                ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=like.{$cleanPath}/%");
+    
+                // Step 2: Hapus folder utamanya
+                Http::withHeaders([
+                    'apikey' => $serviceRoleKey,
+                    'Authorization' => 'Bearer ' . $serviceRoleKey,
+                    'Prefer' => 'return=representation',
+                ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=eq.{$cleanPath}");
             }
         }
+    
+        return back()->with('success', 'Folder dan isinya berhasil dihapus dari Supabase (archives).');
     }
-
-    return back()->with('success', 'Folder dan isinya berhasil dihapus dari Supabase (archives).');
-}
+    
 }
