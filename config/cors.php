@@ -19,7 +19,14 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:8100'],
+    'allowed_origins' => [
+        'http://localhost',
+        'https://localhost',          // 🔥 Tambahkan ini
+        'http://localhost:8100',      // Ionic serve
+        'capacitor://localhost',      // Capacitor apps
+        'http://localhost:8080',      // Android emulator (browser)
+        'http://10.0.2.2:8080',       // Android emulator (API)
+    ],
 
     'allowed_origins_patterns' => [],
 
