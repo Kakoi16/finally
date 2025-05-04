@@ -12,7 +12,8 @@ Route::middleware('guest')->group(function () {
     // Login
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/karyawan/login', [AuthController::class, 'loginViaSupabase']);
+    Route::post('/login', [AuthController::class, 'loginViaSupabase']);
+
     
     // Register (UI & API AJAX)
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
