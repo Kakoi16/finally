@@ -173,25 +173,6 @@
         </div>
     </div>
     @endif
-
-    <!-- Pagination (if needed) -->
-    @if(count($files) > 0)
-    <div class="px-6 py-3 border-t border-gray-200 bg-gray-50">
-        <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-500">
-                Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of <span class="font-medium">20</span> results
-            </div>
-            <div class="flex space-x-2">
-                <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    Previous
-                </button>
-                <button class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    Next
-                </button>
-            </div>
-        </div>
-    </div>
-    @endif
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
