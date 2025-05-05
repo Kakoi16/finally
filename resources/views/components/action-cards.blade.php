@@ -1,4 +1,6 @@
-<aside class="w-72 bg-white p-6 rounded-xl shadow-sm border border-gray-100 mr-6">
+<!-- Action Cards -->
+<aside id="action-cards" class="md:w-64 bg-white p-3 rounded-lg shadow-sm border border-gray-100 md:mr-4">
+
     <div class="flex items-center mb-8">
         <a href="/archive" class="flex items-center group">
             <div class="bg-yellow-50 p-2 rounded-lg group-hover:bg-yellow-100 transition-colors border border-yellow-100">

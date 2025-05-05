@@ -61,12 +61,20 @@
 document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
+    const actionCards = document.getElementById('action-cards');
 
-    // Toggle sidebar di mobilee
-    if (sidebarToggle && sidebar) {
+    if (sidebarToggle) {
         sidebarToggle.addEventListener('click', function () {
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('block');
+            // Periksa apakah sedang di subfolder (action-cards terlihat)
+            if (actionCards && !actionCards.classList.contains('hidden')) {
+                // Toggle action-cards
+                actionCards.classList.toggle('hidden');
+                actionCards.classList.toggle('block');
+            } else if (sidebar) {
+                // Toggle sidebar
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('block');
+            }
         });
     }
 
