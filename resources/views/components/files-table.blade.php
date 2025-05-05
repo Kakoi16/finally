@@ -168,4 +168,79 @@
             });
         }
     });
+    document.addEventListener('DOMContentLoaded', function () {
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const textareaDelete = document.getElementById('bulk-delete');
+    const selectAll = document.getElementById('select-all');
+
+    function updateDeleteArea() {
+    let paths = [];
+
+    const fetchFolderContents = async (path) => {
+    let allPaths = [];
+
+    const fetchRecursive = async (prefix) => {
+        try {
+            const response = await fetch(`/api/folder-contents?prefix=${encodeURIComponent(prefix)}`);
+            const data = await response.json();
+            const paths = data.paths || [];
+
+            for (const p of paths) {
+                allPaths.push(p);
+
+                // Cek apakah path ini adalah folder (dengan trailing slash)
+                if (p.endsWith('/')) {
+                    await fetchRecursive(p);
+                }
+            }
+        } catch (error) {
+            console.error('Gagal mengambil isi folder:', error);
+        }
+    };
+
+    await fetchRecursive(path + '/'); // pastikan ada trailing slash
+    return allPaths;
+};
+
+
+    const processCheckboxes = async () => {
+        for (const cb of checkboxes) {
+            if (cb.checked) {
+                const itemPath = cb.value;
+                const itemType = cb.closest('tr').dataset.type;
+
+                paths.push(itemPath); // selalu tambahkan path utama
+
+                // jika folder, fetch isinya
+                if (itemType === 'folder') {
+                    const contents = await fetchFolderContents(itemPath);
+                    paths.push(...contents);
+                }
+            }
+        }
+
+        if (textareaDelete) {
+            textareaDelete.value = paths.join('\n');
+        }
+    };
+
+    processCheckboxes();
+}
+
+    // checkbox maasing-masing
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateDeleteArea);
+    });
+
+    // checkbox "select all"
+    if (selectAll) {
+        selectAll.addEventListener('change', () => {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateDeleteArea();
+        });
+    }
+
+    // Panggil saat pertama kali jika ada pre-checked
+    updateDeleteArea();
+});
 </script>
