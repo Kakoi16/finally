@@ -73,7 +73,7 @@
                 const folderPath = this.getAttribute('data-path');
                 const container = document.getElementById('subfolders-' + folderPath);
 
-                fetch(`/folders/${folderPath}`)
+                fetch(`/archive/folders/${folderPath}`)
                     .then(response => response.text())
                     .then(html => {
                         container.innerHTML = html;
