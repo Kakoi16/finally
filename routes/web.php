@@ -72,7 +72,7 @@ Route::middleware(['admin.only'])->group(function () {
         ->name('files.uploadToFolder');
         Route::post('/folders/{folderPath}/upload', [FileController::class, 'upload'])->where('folderPath', '.*');    
     // Folder
-    Route::get('/folders/{any?}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.showAny');
+    Route::get('/archive/folders/{any?}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.showAny');
 
 
     Route::post('/folders/{parentFolder}/create-subfolder', [FolderController::class, 'createSubfolder'])->name('folders.createSubfolder');

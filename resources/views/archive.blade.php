@@ -43,7 +43,7 @@
         <a href="#" class="hover:text-blue-600">Dashboard</a>
     </div>
 
-    <!-- Halaman Dashboamrd -->
+    <!-- Halaman Dashboard -->
     <div id="dashboard-page" class="page-content">
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
             <i class="fas fa-home text-blue-500 text-4xl mb-3"></i>
@@ -73,7 +73,7 @@
                 const folderPath = this.getAttribute('data-path');
                 const container = document.getElementById('subfolders-' + folderPath);
 
-                fetch(`/archive/folders/${folderPath}`)
+                fetch(`/folders/${folderPath}`)
                     .then(response => response.text())
                     .then(html => {
                         container.innerHTML = html;
