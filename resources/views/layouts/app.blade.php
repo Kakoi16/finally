@@ -40,6 +40,27 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
 <script>
+     
+   document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.open-folder').forEach(icon => {
+            icon.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const folderPath = this.getAttribute('data-path');
+                const container = document.getElementById('subfolders-' + folderPath);
+
+                fetch(`/folders/${folderPath}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Failed to load subfolders:', error);
+                        container.innerHTML = '<p class="text-red-500">Error loading subfolders.</p>';
+                    });
+            });
+        });
+    });
 document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
