@@ -23,7 +23,7 @@
     @yield('custom-sidebar')
 @else
     @include('partials.sidebar')
-    @include('components')
+    @include('components.action-cards')
 @endif
 
 
