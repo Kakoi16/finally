@@ -86,42 +86,45 @@
         });
     });
 
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebar = document.getElementById('sidebar');
 
-    // Toggle sidebar di mobile
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function () {
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('block');
-        });
-    }
+    sidebarToggle?.addEventListener('click', function () {
+        const currentPath = window.location.pathname;
 
+        // Deteksi apakah sedang di halaman utama atau subfolder
+        const isMainPage = currentPath.includes('/archive');
+
+        // Toggle elemen sesuai kondisi
+        const targetSidebar = document.getElementById(isMainPage ? 'sidebar' : 'action-cards');
+        if (targetSidebar) {
+            targetSidebar.classList.toggle('hidden');
+            targetSidebar.classList.toggle('block');
+        }
+    });
+
+    // Fungsi showPage dan lainnya tetap seperti sebelumnya
     function showPage(pageId) {
-        // Hanya tampilkan halaman yang dipilih
         const page = document.getElementById(pageId);
         if (!page) return;
 
-        // Sembunyikan semua halaman terlebih dahulu
         document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
-        // Tampilkan halaman yang dipilih
         page.classList.remove('hidden');
-
-        // Perbarui breadcrumb
         updateBreadcrumb(pageId);
 
-        // Untuk tampilan mobile, sembunyikan sidebar
-        if (window.innerWidth < 768 && sidebar) {
-            sidebar.classList.add('hidden');
-            sidebar.classList.remove('block');
+        const currentPath = window.location.pathname;
+        const isMainPage = currentPath.includes('/archive');
+        const targetSidebar = document.getElementById(isMainPage ? 'sidebar' : 'action-cards');
+        if (window.innerWidth < 768 && targetSidebar) {
+            targetSidebar.classList.add('hidden');
+            targetSidebar.classList.remove('block');
         }
     }
 
+    // Fungsi updateBreadcrumb dan lainnya tetap
     function updateBreadcrumb(pageId) {
         const breadcrumb = document.getElementById('breadcrumb');
         if (!breadcrumb) return;
-
         let html = '<a href="#" class="hover:text-blue-600">Archive</a>';
         const names = {
             'dashboard-page': 'Dashboard',
@@ -135,48 +138,31 @@ document.addEventListener('DOMContentLoaded', function () {
         const name = names[pageId] || 'Dashboard';
         html += `<span class="mx-1">/</span><a href="#" class="hover:text-blue-600">${name}</a>`;
         breadcrumb.innerHTML = html;
-
-        // Update judul halaman
         const title = document.getElementById('page-title');
         if (title) title.innerText = name;
     }
 
-    // Menambahkan event listener pada menu sidebar
     document.querySelectorAll('.sidebar-menu').forEach(menu => {
         menu.addEventListener('click', function (e) {
             e.preventDefault();
             const pageId = this.getAttribute('data-page');
-
-            // Tampilkan halaman yang dipilih
             showPage(pageId);
-
-            // Update status aktif pada menu sidebar
             document.querySelectorAll('.sidebar-menu').forEach(m => {
                 m.classList.remove('bg-blue-100', 'text-blue-600');
                 m.classList.add('hover:bg-gray-100');
             });
-
             this.classList.add('bg-blue-100', 'text-blue-600');
             this.classList.remove('hover:bg-gray-100');
         });
     });
 
-    // Show default page (Dashboard) saat pertama kali halaman dimuat
+    // Show default
     showPage('dashboard-page');
     const defaultMenu = document.querySelector('[data-page="dashboard-page"]');
     if (defaultMenu) {
         defaultMenu.classList.add('bg-blue-100', 'text-blue-600');
         defaultMenu.classList.remove('hover:bg-gray-100');
     }
-
-    // Handling URL hash (e.g. for /folders/{folderName}#)
-    window.addEventListener('hashchange', function () {
-        const folderName = window.location.hash.substring(1); // Ambil bagian setelah '#'
-        if (folderName) {
-            // Logika untuk menampilkan halaman folder
-            showPage(folderName);
-        }
-    });
 });
 
 </script>
