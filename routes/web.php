@@ -64,7 +64,7 @@ Route::middleware(['admin.only'])->group(function () {
     Route::delete('/folders/bulk-delete', [FileController::class, 'bulkDelete'])->name('folders.bulk.delete');
     Route::get('/api/folder-contents', [FileController::class, 'getFolderContents']);
 
-    Route::post('/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
+    Route::post('/archive/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
         ->where('path', '.*')
         ->name('folders.subfolder.create');
         Route::post('/archive/upload/{folderPath?}', [FileController::class, 'upload'])
