@@ -64,46 +64,23 @@
 
 @push('scripts')
 <script>
-   
-   document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.open-folder').forEach(icon => {
-            icon.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                const folderPath = this.getAttribute('data-path');
-                const container = document.getElementById('subfolders-' + folderPath);
-
-                fetch(`/folders/${folderPath}`)
-                    .then(response => response.text())
-                    .then(html => {
-                        container.innerHTML = html;
-                    })
-                    .catch(error => {
-                        console.error('Failed to load subfolders:', error);
-                        container.innerHTML = '<p class="text-red-500">Error loading subfolders.</p>';
-                    });
-            });
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const actionCards = document.getElementById('action-cards');
 
-    sidebarToggle?.addEventListener('click', function () {
-        const currentPath = window.location.pathname;
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+            if (sidebar) {
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('block');
+            } else if (actionCards) {
+                actionCards.classList.toggle('hidden');
+                actionCards.classList.toggle('block');
+            }
+        });
+    }
 
-        // Deteksi apakah sedang di halaman utama atau subfolder
-        const isMainPage = currentPath.includes('/archive');
-
-        // Toggle elemen sesuai kondisi
-        const targetSidebar = document.getElementById(isMainPage ? 'sidebar' : 'action-cards');
-        if (targetSidebar) {
-            targetSidebar.classList.toggle('hidden');
-            targetSidebar.classList.toggle('block');
-        }
-    });
-
-    // Fungsi showPage dan lainnya tetap seperti sebelumnya
     function showPage(pageId) {
         const page = document.getElementById(pageId);
         if (!page) return;
@@ -112,16 +89,18 @@
         page.classList.remove('hidden');
         updateBreadcrumb(pageId);
 
-        const currentPath = window.location.pathname;
-        const isMainPage = currentPath.includes('/archive');
-        const targetSidebar = document.getElementById(isMainPage ? 'sidebar' : 'action-cards');
-        if (window.innerWidth < 768 && targetSidebar) {
-            targetSidebar.classList.add('hidden');
-            targetSidebar.classList.remove('block');
+        if (window.innerWidth < 768) {
+            if (sidebar) {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('block');
+            }
+            if (actionCards) {
+                actionCards.classList.add('hidden');
+                actionCards.classList.remove('block');
+            }
         }
     }
 
-    // Fungsi updateBreadcrumb dan lainnya tetap
     function updateBreadcrumb(pageId) {
         const breadcrumb = document.getElementById('breadcrumb');
         if (!breadcrumb) return;
@@ -164,6 +143,5 @@
         defaultMenu.classList.remove('hover:bg-gray-100');
     }
 });
-
 </script>
 @endpush
