@@ -43,7 +43,7 @@
         <a href="#" class="hover:text-blue-600">Dashboard</a>
     </div>
 
-    <!-- Halaman Dashboard -->
+    <!-- Halaman Dashboamrd -->
     <div id="dashboard-page" class="page-content">
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
             <i class="fas fa-home text-blue-500 text-4xl mb-3"></i>
