@@ -62,7 +62,7 @@ class FolderController extends Controller
             return false;
         });
 
-        $segments = explode('/archive/', $folderName);
+        $segments = explode('/', $folderName);
         $breadcrumbs = [];
         $pathSoFar = '';
 
