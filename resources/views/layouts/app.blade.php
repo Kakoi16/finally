@@ -23,6 +23,7 @@
     @yield('custom-sidebar')
 @else
     @include('partials.sidebar')
+    @include('components')
 @endif
 
 
