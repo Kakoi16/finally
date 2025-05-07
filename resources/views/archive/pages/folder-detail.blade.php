@@ -1,5 +1,9 @@
 @extends('layouts.subfolder')
 
+@section('custom-sidebar')
+    @include('components.action-cards', ['currentFolder' => $folderPath])
+@endsection
+
 @section('styles')
 <link href="{{ asset('css/archive.css') }}" rel="stylesheet">
 <style>
