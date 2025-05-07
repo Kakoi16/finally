@@ -12,9 +12,6 @@
 <body class="bg-gray-50">
     <div class="min-h-screen flex flex-col">
         
-        {{-- Header --}}
-        @include('partials.header')
-
         {{-- Main --}}
         <main class="flex-grow container mx-auto px-4 py-6 flex flex-col md:flex-row">
             
