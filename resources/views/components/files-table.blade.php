@@ -1,4 +1,4 @@
-<!-- Files Table -->
+<!-- Files aaTable -->
 <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <!-- Header with search -->
     <div class="px-6 py-4 border-b border-gray-100 bg-white">
