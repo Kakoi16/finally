@@ -11,10 +11,16 @@
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen flex flex-col">
-
         {{-- Main --}}
         <main class="flex-grow container mx-auto px-4 py-6 flex flex-col md:flex-row">
             
+            {{-- Sidebar --}}
+@if(View::hasSection('custom-sidebar'))
+    @yield('custom-sidebar')
+@else
+    @include('partials.sidebar')
+@endif
+
 
             {{-- Content --}}
             <section class="flex-grow bg-white rounded-lg shadow-md p-4">
