@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.subfolder')
 
 @section('styles')
 <link href="{{ asset('css/archive.css') }}" rel="stylesheet">
