@@ -22,21 +22,30 @@ class FolderController extends Controller
         $request->validate([
             'folder_name' => 'required|string|max:255',
         ]);
-
+    
+        $folderName = $request->folder_name;
+        $slug = Str::slug($folderName);
         $uploadedBy = auth()->user()->id ?? null;
-
+    
+        // 1. Buat folder secara fisik di storage lokal
+        $localFolderPath = 'files/' . $slug; // Contoh: storage/app/public/files/nama-folder
+        if (!Storage::disk('public')->exists($localFolderPath)) {
+            Storage::disk('public')->makeDirectory($localFolderPath);
+        }
+    
+        // 2. Simpan metadata ke Supabase
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
             'Content-Type' => 'application/json',
             'Prefer' => 'return=minimal',
         ])->post($this->supabaseUrl, [
-            'name' => $request->folder_name,
-            'path' => Str::slug($request->folder_name),
+            'name' => $folderName,
+            'path' => $localFolderPath,
             'type' => 'folder',
             'uploaded_by' => $uploadedBy,
         ]);
-
+    
         return $response->successful()
             ? redirect()->back()->with('success', 'Folder berhasil dibuat.')
             : redirect()->back()->with('error', 'Gagal membuat folder.');
