@@ -19,56 +19,54 @@ class FileController extends Controller
 
     // Upload file to specific folder
     public function upload(Request $request, $folderPath = null)
-{
-    $request->validate([
-        'file' => 'required|file',
-    ]);
-
-    $file = $request->file('file');
-    $uploadedBy = auth()->user()->id ?? null;
-
-    $cleanedPath = trim($folderPath ?? '', '/');
-    $originalName = $this->sanitizeFilename($file->getClientOriginalName());
-
-    $fullPath = $cleanedPath !== ''
-        ? $cleanedPath . '/' . $originalName
-        : $originalName;
-
-    // Simpan file ke folder lokal 'uploads'
-    $localPath = storage_path('app/uploads');
-    if (!file_exists($localPath)) {
-        mkdir($localPath, 0775, true);
+    {
+        $request->validate([
+            'file' => 'required|file',
+        ]);
+    
+        $file = $request->file('file');
+        $uploadedBy = auth()->user()->id ?? null;
+    
+        // Sanitasi path dan filename
+        $cleanedPath = trim($folderPath ?? '', '/');
+        $originalName = $this->sanitizeFilename($file->getClientOriginalName());
+    
+        // Path relatif yang akan disimpan di database
+        $relativePath = $cleanedPath !== ''
+            ? $cleanedPath . '/' . $originalName
+            : $originalName;
+    
+        // Path direktori lokal
+        $storageDir = storage_path('app/uploads/' . $cleanedPath);
+        if (!file_exists($storageDir)) {
+            mkdir($storageDir, 0775, true);
+        }
+    
+        // Pindahkan file ke lokal
+        $fileSize = $file->getSize();
+        $file->move($storageDir, $originalName);
+    
+        // Simpan metadata ke Supabase DB
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json; charset=utf-8',
+            'Prefer' => 'return=minimal',
+        ])->post($this->supabaseUrl, [
+            'name' => $originalName,
+            'path' => $relativePath,
+            'type' => $file->getClientMimeType(),
+            'size' => $fileSize,
+            'uploaded_by' => $uploadedBy,
+        ]);
+    
+        if ($response->successful()) {
+            return redirect()->back()->with('success', 'File uploaded successfully.');
+        } else {
+            return redirect()->back()->with('warning', 'File saved locally, but failed to save metadata.');
+        }
     }
-    $fileSize = $file->getSize();
-$file->move($localPath, $originalName);
-
-    // Simpan metadata ke Supabase
-    $response = Http::withHeaders([
-        'apikey' => $this->supabaseKey,
-        'Authorization' => 'Bearer ' . $this->supabaseKey,
-        'Content-Type' => 'application/json; charset=utf-8',
-        'Prefer' => 'return=minimal',
-    ])->post($this->supabaseUrl, [
-        'name' => $originalName,
-        'path' => $fullPath,
-        'type' => $file->getClientMimeType(),
-        'size' => $fileSize,
-        'uploaded_by' => $uploadedBy,
-    ]);
-
-    // Upload ke Supabase Storage
-    $storageSuccess = $this->uploadToSupabaseStorage($file, $fullPath);
-
-    if ($response->successful() && $storageSuccess) {
-        return redirect()->back()->with('success', 'File uploaded successfully.');
-    } elseif (!$response->successful() && $storageSuccess) {
-        return redirect()->back()->with('warning', 'File uploaded, but failed to save metadata.');
-    } elseif ($response->successful() && !$storageSuccess) {
-        return redirect()->back()->with('warning', 'Metadata saved, but failed to upload file.');
-    } else {
-        return redirect()->back()->with('error', 'Failed to upload file.');
-    }
-}
+    
 
 
     private function sanitizeFilename($filename)
