@@ -39,7 +39,8 @@ class FileController extends Controller
     if (!file_exists($localPath)) {
         mkdir($localPath, 0775, true);
     }
-    $file->move($localPath, $originalName);
+    $fileSize = $file->getSize();
+$file->move($localPath, $originalName);
 
     // Simpan metadata ke Supabase
     $response = Http::withHeaders([
@@ -51,7 +52,7 @@ class FileController extends Controller
         'name' => $originalName,
         'path' => $fullPath,
         'type' => $file->getClientMimeType(),
-        'size' => $file->getSize(),
+        'size' => $fileSize,
         'uploaded_by' => $uploadedBy,
     ]);
 
