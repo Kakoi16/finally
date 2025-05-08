@@ -36,12 +36,11 @@ class FileController extends Controller
             ? $cleanedPath . '/' . $originalName
             : $originalName;
     
-        // Path direktori lokal
-        $storageDir = storage_path('app/uploads/' . $cleanedPath);
-        if (!file_exists($storageDir)) {
-            mkdir($storageDir, 0775, true);
-        }
-    
+       // Path direktori lokal
+$storageDir = public_path('uploads/' . $cleanedPath);
+if (!file_exists($storageDir)) {
+    mkdir($storageDir, 0775, true);
+}
         // Pindahkan file ke lokal
         $fileSize = $file->getSize();
         $file->move($storageDir, $originalName);
