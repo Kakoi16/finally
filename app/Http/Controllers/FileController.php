@@ -19,47 +19,56 @@ class FileController extends Controller
 
     // Upload file to specific folder
     public function upload(Request $request, $folderPath = null)
-    {
-        $request->validate([
-            'file' => 'required|file',
-        ]);
+{
+    $request->validate([
+        'file' => 'required|file',
+    ]);
 
-        $file = $request->file('file');
-        $uploadedBy = auth()->user()->id ?? null;
+    $file = $request->file('file');
+    $uploadedBy = auth()->user()->id ?? null;
 
-        $cleanedPath = trim($folderPath ?? '', '/');
-        $originalName = $this->sanitizeFilename($file->getClientOriginalName());
+    $cleanedPath = trim($folderPath ?? '', '/');
+    $originalName = $this->sanitizeFilename($file->getClientOriginalName());
 
-        $fullPath = $cleanedPath !== ''
-            ? $cleanedPath . '/' . $originalName
-            : $originalName;
+    $fullPath = $cleanedPath !== ''
+        ? $cleanedPath . '/' . $originalName
+        : $originalName;
 
-        $response = Http::withHeaders([
-            'apikey' => $this->supabaseKey,
-            'Authorization' => 'Bearer ' . $this->supabaseKey,
-            'Content-Type' => 'application/json; charset=utf-8',
-            'Prefer' => 'return=minimal',
-        ])->post($this->supabaseUrl, [
-            'name' => $originalName,
-            'path' => $fullPath,
-            'type' => $file->getClientMimeType(),
-            'size' => $file->getSize(),
-            'uploaded_by' => $uploadedBy,
-        ]);
-
-        $storageSuccess = $this->uploadToSupabaseStorage($file, $fullPath);
-
-        if ($response->successful() && $storageSuccess) {
-            return redirect()->back()->with('success', 'File uploaded successfully.');
-        } elseif (!$response->successful() && $storageSuccess) {
-            return redirect()->back()->with('warning', 'File uploaded, but failed to save metadata.');
-        } elseif ($response->successful() && !$storageSuccess) {
-            return redirect()->back()->with('warning', 'Metadata saved, but failed to upload file.');
-        } else {
-            return redirect()->back()->with('error', 'Failed to upload file.');
-        }
-        
+    // Simpan file ke folder lokal 'uploads'
+    $localPath = storage_path('app/uploads');
+    if (!file_exists($localPath)) {
+        mkdir($localPath, 0775, true);
     }
+    $file->move($localPath, $originalName);
+
+    // Simpan metadata ke Supabase
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+        'Content-Type' => 'application/json; charset=utf-8',
+        'Prefer' => 'return=minimal',
+    ])->post($this->supabaseUrl, [
+        'name' => $originalName,
+        'path' => $fullPath,
+        'type' => $file->getClientMimeType(),
+        'size' => $file->getSize(),
+        'uploaded_by' => $uploadedBy,
+    ]);
+
+    // Upload ke Supabase Storage
+    $storageSuccess = $this->uploadToSupabaseStorage($file, $fullPath);
+
+    if ($response->successful() && $storageSuccess) {
+        return redirect()->back()->with('success', 'File uploaded successfully.');
+    } elseif (!$response->successful() && $storageSuccess) {
+        return redirect()->back()->with('warning', 'File uploaded, but failed to save metadata.');
+    } elseif ($response->successful() && !$storageSuccess) {
+        return redirect()->back()->with('warning', 'Metadata saved, but failed to upload file.');
+    } else {
+        return redirect()->back()->with('error', 'Failed to upload file.');
+    }
+}
+
 
     private function sanitizeFilename($filename)
     {
