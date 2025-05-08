@@ -24,33 +24,40 @@ class FolderController extends Controller
             'folder_name' => 'required|string|max:255',
         ]);
     
-        $folderName = $request->folder_name;
-        $slug = Str::slug($folderName);
         $uploadedBy = auth()->user()->id ?? null;
     
-        // 1. Buat folder secara fisik di storage lokal
-        $localFolderPath = 'files/' . $slug; // Contoh: storage/app/public/files/nama-folder
-        if (!Storage::disk('public')->exists($localFolderPath)) {
-            Storage::disk('public')->makeDirectory($localFolderPath);
+        // Sanitasi nama folder
+        $folderName = Str::slug($request->folder_name);
+        $localPath = public_path('uploads/' . $folderName);
+    
+        // Cek jika folder sudah ada
+        if (file_exists($localPath)) {
+            return redirect()->back()->with('warning', 'Folder sudah ada.');
         }
     
-        // 2. Simpan metadata ke Supabase
+        // Buat folder secara lokal
+        if (!mkdir($localPath, 0775, true)) {
+            return redirect()->back()->with('error', 'Gagal membuat folder secara lokal.');
+        }
+    
+        // Simpan metadata ke Supabase (hanya data, bukan file)
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
             'Content-Type' => 'application/json',
             'Prefer' => 'return=minimal',
         ])->post($this->supabaseUrl, [
-            'name' => $folderName,
-            'path' => $localFolderPath,
+            'name' => $request->folder_name,
+            'path' => $folderName,
             'type' => 'folder',
             'uploaded_by' => $uploadedBy,
         ]);
     
         return $response->successful()
             ? redirect()->back()->with('success', 'Folder berhasil dibuat.')
-            : redirect()->back()->with('error', 'Gagal membuat folder.');
+            : redirect()->back()->with('error', 'Folder dibuat lokal, tapi gagal simpan metadata.');
     }
+    
 
     public function show($folderName)
     {
