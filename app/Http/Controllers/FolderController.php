@@ -34,7 +34,7 @@ class FolderController extends Controller
         if (file_exists($localPath)) {
             return redirect()->back()->with('warning', 'Folder sudah ada.');
         }
-        $localPath = storage_path('public/storage/uploads/' . $folderName);
+    
         // Buat folder secara lokal
         if (!mkdir($localPath, 0775, true)) {
             return redirect()->back()->with('error', 'Gagal membuat folder secara lokal.');
@@ -123,44 +123,6 @@ class FolderController extends Controller
             ? redirect()->back()->with('success', 'Subfolder berhasil dibuat.')
             : redirect()->back()->with('error', 'Gagal membuat subfolder.');
     }
-
-    public function getLocalFolders()
-    {
-        $folderPath = public_path('uploads'); // Lokasi folder yang sesuai dengan createFolder()
-    
-        if (!file_exists($folderPath)) {
-            return response()->json([
-                'folders' => []
-            ]);
-        }
-    
-        // Ambil nama folder dalam direktori tersebut
-        $folders = array_filter(scandir($folderPath), function ($folder) use ($folderPath) {
-            return $folder !== '.' && $folder !== '..' && is_dir($folderPath . DIRECTORY_SEPARATOR . $folder);
-        });
-    
-        return response()->json([
-            'folders' => array_values($folders)
-        ]);
-        Storage::disk('public')->directories('files');
-
-    }
-    public function listLocalFolders()
-    {
-        $folderPath = storage_path('public/storage/uploads'); // Sesunnaikan dengan lokasi folder sebenarnya
-    
-        $folders = [];
-        if (file_exists($folderPath)) {
-            $folders = array_filter(scandir($folderPath), function ($folder) use ($folderPath) {
-                return $folder !== '.' && $folder !== '..' && is_dir($folderPath . DIRECTORY_SEPARATOR . $folder);
-            });
-        }
-    
-        return view('archive.pages.local-folders', [
-            'folders' => $folders
-        ]);
-    }
-    
 
     public function showAnyFolder($any)
     {
