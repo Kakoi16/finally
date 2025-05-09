@@ -34,7 +34,7 @@ class FolderController extends Controller
         if (file_exists($localPath)) {
             return redirect()->back()->with('warning', 'Folder sudah ada.');
         }
-        $localPath = storage_path('app/public/files/' . $folderName);
+        $localPath = storage_path('public/storage/uploads/' . $folderName);
         // Buat folder secara lokal
         if (!mkdir($localPath, 0775, true)) {
             return redirect()->back()->with('error', 'Gagal membuat folder secara lokal.');
@@ -147,7 +147,7 @@ class FolderController extends Controller
     }
     public function listLocalFolders()
     {
-        $folderPath = storage_path('app/public/files'); // Sesunnaikan dengan lokasi folder sebenarnya
+        $folderPath = storage_path('public/storage/uploads'); // Sesunnaikan dengan lokasi folder sebenarnya
     
         $folders = [];
         if (file_exists($folderPath)) {
