@@ -34,7 +34,7 @@ class FolderController extends Controller
         if (file_exists($localPath)) {
             return redirect()->back()->with('warning', 'Folder sudah ada.');
         }
-    
+        $localPath = storage_path('app/public/files/' . $folderName);
         // Buat folder secara lokal
         if (!mkdir($localPath, 0775, true)) {
             return redirect()->back()->with('error', 'Gagal membuat folder secara lokal.');
@@ -125,21 +125,43 @@ class FolderController extends Controller
     }
 
     public function getLocalFolders()
+    {
+        $folderPath = public_path('uploads'); // Lokasi folder yang sesuai dengan createFolder()
+    
+        if (!file_exists($folderPath)) {
+            return response()->json([
+                'folders' => []
+            ]);
+        }
+    
+        // Ambil nama folder dalam direktori tersebut
+        $folders = array_filter(scandir($folderPath), function ($folder) use ($folderPath) {
+            return $folder !== '.' && $folder !== '..' && is_dir($folderPath . DIRECTORY_SEPARATOR . $folder);
+        });
+    
+        return response()->json([
+            'folders' => array_values($folders)
+        ]);
+        Storage::disk('public')->directories('files');
+
+    }
+    public function listLocalFolders()
 {
-    $folderPath = 'files'; // Folder utama tempat semua folder user disimpan
+    $folderPath = public_path('uploads'); // Lokasi sesuai dengan createFolder()
 
-    // Ambil semua folder dari disk 'public' di bawah 'files'
-    $folders = Storage::disk('public')->directories($folderPath);
+    // Buat array folder jika direktori ada
+    $folders = [];
+    if (file_exists($folderPath)) {
+        $folders = array_filter(scandir($folderPath), function ($folder) use ($folderPath) {
+            return $folder !== '.' && $folder !== '..' && is_dir($folderPath . DIRECTORY_SEPARATOR . $folder);
+        });
+    }
 
-    // Hanya ambil nama folder (tanpa path penuh)
-    $folderNames = collect($folders)->map(function ($path) use ($folderPath) {
-        return str_replace($folderPath . '/', '', $path);
-    });
-
-    return response()->json([
-        'folders' => $folderNames
+    return view('archive.pages.local-folders', [
+        'folders' => $folders
     ]);
 }
+
 
 
     public function showAnyFolder($any)

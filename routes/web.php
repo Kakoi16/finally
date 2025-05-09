@@ -58,7 +58,8 @@ Route::get('/archive', [ArchiveController::class, 'index'])->name('archive')->mi
 Route::post('/files/upload', [FileController::class, 'upload'])->name('files.upload');
 Route::post('/folders/create', [FileController::class, 'createFolder'])->name('folders.create');
 
-Route::get('/local', [FolderController::class, 'getLocalFolders'])->name('folders.local');
+Route::get('/local', [FolderController::class, 'listLocalFolders'])->name('local.folders');
+
 // routes/folders
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
