@@ -146,23 +146,21 @@ class FolderController extends Controller
 
     }
     public function listLocalFolders()
-{
-    $folderPath = public_path('uploads'); // Lokasi sesuai dengan createFolder()
-
-    // Buat array folder jika direktori ada
-    $folders = [];
-    if (file_exists($folderPath)) {
-        $folders = array_filter(scandir($folderPath), function ($folder) use ($folderPath) {
-            return $folder !== '.' && $folder !== '..' && is_dir($folderPath . DIRECTORY_SEPARATOR . $folder);
-        });
+    {
+        $folderPath = storage_path('app/public/files'); // Sesuaikan dengan lokasi folder sebenarnya
+    
+        $folders = [];
+        if (file_exists($folderPath)) {
+            $folders = array_filter(scandir($folderPath), function ($folder) use ($folderPath) {
+                return $folder !== '.' && $folder !== '..' && is_dir($folderPath . DIRECTORY_SEPARATOR . $folder);
+            });
+        }
+    
+        return view('archive.pages.local-folders', [
+            'folders' => $folders
+        ]);
     }
-
-    return view('archive.pages.local-folders', [
-        'folders' => $folders
-    ]);
-}
-
-
+    
 
     public function showAnyFolder($any)
     {
