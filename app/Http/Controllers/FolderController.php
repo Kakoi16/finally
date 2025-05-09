@@ -124,6 +124,24 @@ class FolderController extends Controller
             : redirect()->back()->with('error', 'Gagal membuat subfolder.');
     }
 
+    public function getLocalFolders()
+{
+    $folderPath = 'files'; // Folder utama tempat semua folder user disimpan
+
+    // Ambil semua folder dari disk 'public' di bawah 'files'
+    $folders = Storage::disk('public')->directories($folderPath);
+
+    // Hanya ambil nama folder (tanpa path penuh)
+    $folderNames = collect($folders)->map(function ($path) use ($folderPath) {
+        return str_replace($folderPath . '/', '', $path);
+    });
+
+    return response()->json([
+        'folders' => $folderNames
+    ]);
+}
+
+
     public function showAnyFolder($any)
     {
         $supabasePath = $any;
