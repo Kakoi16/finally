@@ -147,7 +147,7 @@ class FolderController extends Controller
     }
     public function listLocalFolders()
     {
-        $folderPath = storage_path('app/public/files'); // Sesuaikan dengan lokasi folder sebenarnya
+        $folderPath = storage_path('app/public/files'); // Sesunnaikan dengan lokasi folder sebenarnya
     
         $folders = [];
         if (file_exists($folderPath)) {
