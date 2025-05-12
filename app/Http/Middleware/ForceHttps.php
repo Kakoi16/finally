@@ -17,12 +17,12 @@ class ForceHttps
     {
         if (
             !$request->secure() &&
-            (!isset($_SERVER['HTTP_X_FORWARDED_PROTO']) || $_SERVER['HTTP_X_FORWARDED_PROTO'] !== 'https')
-        ) {
-            return redirect()->secure($request->getRequestUri());
-        }
+             (!isset($_SERVER['HTTP_X_FORWARDED_PROTO']) || $_SERVER['HTTP_X_FORWARDED_PROTO'] !== 'https')
+         ) {
+             return redirect()->secure($request->getRequestUri());
+         }
     
-        return $next($request);
+         return $next($request);
     }
     
     

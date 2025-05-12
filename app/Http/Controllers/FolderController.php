@@ -28,7 +28,7 @@ class FolderController extends Controller
     
         // Sanitasi nama folder
         $folderName = Str::slug($request->folder_name);
-        $localPath = public_path('uploads/' . $folderName);
+        $localPath = storage_path('app/public/uploads/' . $folderName);
     
         // Cek jika folder sudah ada
         if (file_exists($localPath)) {
@@ -36,7 +36,7 @@ class FolderController extends Controller
         }
     
         // Buat folder secara lokal
-        if (!mkdir($localPath, 0775, true)) {
+        if (!Storage::disk('public')->makeDirectory('uploads/' . $folderName)) {
             return redirect()->back()->with('error', 'Gagal membuat folder secara lokal.');
         }
     
@@ -106,7 +106,12 @@ class FolderController extends Controller
 
         $uploadedBy = auth()->user()->id ?? null;
         $newPath = trim($path, '/') . '/' . Str::slug($request->folder_name);
+        $localSubfolderPath = storage_path('app/public/uploads/' . $newPath);
 
+        if (!Storage::disk('public')->makeDirectory('uploads/' . $newPath)) {
+            return redirect()->back()->with('error', 'Gagal membuat subfolder secara lokal.');
+        }
+        
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
@@ -172,50 +177,54 @@ class FolderController extends Controller
         $request->validate([
             'renames' => 'required|string'
         ]);
-
+    
         $lines = explode("\n", trim($request->renames));
         $successCount = 0;
-
+    
         foreach ($lines as $line) {
             $parts = explode('➡️', $line);
-
-            // Cek apakah format valid
+    
             if (count($parts) < 2) {
-                continue; // Lewati baris yang tidak valid
+                continue; // Format tidak valid
             }
-
-            [$oldPath, $newName] = $parts;
-            $oldPath = trim($oldPath);
-            $newName = trim($newName);
-
+    
+            [$oldPath, $newName] = array_map('trim', $parts);
+    
             $response = Http::withHeaders([
                 'apikey' => $this->supabaseKey,
                 'Authorization' => 'Bearer ' . $this->supabaseKey,
             ])->get($this->supabaseUrl . '?path=eq.' . $oldPath);
-
+    
             if (!$response->successful() || empty($response->json())) {
                 continue;
             }
-
+    
             $item = $response->json()[0];
             $parentDir = dirname($oldPath);
             $parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
-            $newPath = ltrim($parentDir . '/' . Str::slug($newName), '/');
-
+    
+            $oldStoragePath = 'uploads/' . ltrim($oldPath, '/');
+            $newStoragePath = 'uploads/' . ltrim($parentDir . '/' . $newName, '/');
+    
             $updateResponse = Http::withHeaders([
                 'apikey' => $this->supabaseKey,
                 'Authorization' => 'Bearer ' . $this->supabaseKey,
                 'Content-Type' => 'application/json',
             ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
                 'name' => $newName,
-                'path' => $newPath,
+                'path' => ltrim($parentDir . '/' . $newName, '/'),
             ]);
-
+    
             if ($updateResponse->successful()) {
+                // Rename file di storage lokal
+                if (Storage::disk('public')->exists($oldStoragePath)) {
+                    Storage::disk('public')->move($oldStoragePath, $newStoragePath);
+                }
+    
                 $successCount++;
             }
         }
-
+    
         return redirect()->back()->with('success', "$successCount item berhasil di-rename.");
     }
 

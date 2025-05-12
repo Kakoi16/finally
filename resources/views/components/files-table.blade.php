@@ -132,11 +132,24 @@
                                 </svg>
                             </a>
                             @endif
-                            <a href="#" class="text-gray-500 hover:text-gray-700 p-2 rounded-md hover:bg-gray-50 transition-colors" title="Download">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                            </a>
+                          @if(isset($file['type']))
+    @if($file['type'] === 'folder')
+        <a href="{{ route('download.folder', ['folderPath' => urlencode(base64_encode($file['path']))]) }}" class="text-gray-600 hover:text-gray-800" title="Download Folder">
+            <!-- Icon for folder download -->
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+        </a>
+    @else
+        <a href="{{ route('download.file', ['filePath' => urlencode(base64_encode($file['path']))]) }}" class="text-gray-600 hover:text-gray-800" title="Download File">
+            <!-- Icon for file download -->
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+        </a>
+    @endif
+@endif
+
                         </div>
                     </td>
                 </tr>

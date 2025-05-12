@@ -9,6 +9,8 @@ use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
 use Faker\Core\File;
 use Illuminate\Http\Request;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\TemplateController;
 
 Route::middleware('guest')->group(function () {
     // Login
@@ -83,7 +85,16 @@ Route::middleware(['admin.only'])->group(function () {
     Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
     
-    // web.php
+    Route::get('/download/folder/{folderPath}', [DownloadController::class, 'downloadFolder'])
+    ->where('folderPath', '.*')
+    ->name('download.folder');
+    Route::get('/download/file/{filePath}', [DownloadController::class, 'downloadFile'])
+    ->where('filePath', '.*')
+    ->name('download.file');
+Route::get('/template/edit-online/{filePath}', [TemplateController::class, 'editOnline'])->name('template.edit.online');
+Route::post('/template/zoho/save', [TemplateController::class, 'zohoSave'])->name('template.zoho.save');
+
+
 Route::put('/folders/{id}/rename', [FolderController::class, 'rename']);
 Route::delete('/folders/{id}', [FolderController::class, 'destroy']);
 // Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete'] )->name('folders.bulk.delete');

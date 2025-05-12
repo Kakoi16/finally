@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class FileController extends Controller
 {
@@ -31,19 +32,18 @@ class FileController extends Controller
         $cleanedPath = trim($folderPath ?? '', '/');
         $originalName = $this->sanitizeFilename($file->getClientOriginalName());
     
-        // Path relatif yang akan disimpan di database
+        // Path relatif untuk database dan untuk storage
         $relativePath = $cleanedPath !== ''
             ? $cleanedPath . '/' . $originalName
             : $originalName;
     
-       // Path direktori lokal
-$storageDir = public_path('uploads/' . $cleanedPath);
-if (!file_exists($storageDir)) {
-    mkdir($storageDir, 0775, true);
-}
-        // Pindahkan file ke lokal
-        $fileSize = $file->getSize();
-        $file->move($storageDir, $originalName);
+        // Path direktori storage (storage/app/public/uploads/...)
+        $storagePath = 'uploads/' . ($cleanedPath !== '' ? $cleanedPath . '/' : '');
+        $storedFilePath = $file->storeAs($storagePath, $originalName, 'public');
+    
+        if (!$storedFilePath) {
+            return redirect()->back()->with('error', 'Gagal menyimpan file secara lokal.');
+        }
     
         // Simpan metadata ke Supabase DB
         $response = Http::withHeaders([
@@ -55,17 +55,15 @@ if (!file_exists($storageDir)) {
             'name' => $originalName,
             'path' => $relativePath,
             'type' => $file->getClientMimeType(),
-            'size' => $fileSize,
+            'size' => $file->getSize(),
             'uploaded_by' => $uploadedBy,
         ]);
     
-        if ($response->successful()) {
-            return redirect()->back()->with('success', 'File uploaded successfully.');
-        } else {
-            return redirect()->back()->with('warning', 'File saved locally, but failed to save metadata.');
-        }
+        return $response->successful()
+            ? redirect()->back()->with('success', 'File berhasil di-upload.')
+            : redirect()->back()->with('warning', 'File disimpan secara lokal, tapi gagal menyimpan metadata.');
     }
-    
+
 
 
     private function sanitizeFilename($filename)
@@ -129,80 +127,107 @@ if (!file_exists($storageDir)) {
     }
 
     public function bulkRename(Request $request)
-    {
-        $request->validate([
-            'selected_items' => 'required|array',
-            'selected_items.*' => 'string',
-            'rename_pattern' => 'required|string',
-            'rename_value' => 'required|string',
-        ]);
+{
+    $request->validate([
+        'selected_items' => 'required|array',
+        'selected_items.*' => 'string',
+        'rename_pattern' => 'required|string',
+        'rename_value' => 'required|string',
+    ]);
 
-        $items = $request->selected_items;
-        $pattern = $request->rename_pattern;
-        $value = $request->rename_value;
+    $items = $request->selected_items;
+    $pattern = $request->rename_pattern;
+    $value = $request->rename_value;
 
-        foreach ($items as $index => $itemPath) {
-            $response = Http::withHeaders([
-                'apikey' => $this->supabaseKey,
-                'Authorization' => 'Bearer ' . $this->supabaseKey,
-            ])->get($this->supabaseUrl . '?path=eq.' . $itemPath);
-
-            if ($response->successful() && !empty($response->json())) {
-                $item = $response->json()[0];
-                $oldName = $item['name'];
-                $extension = pathinfo($oldName, PATHINFO_EXTENSION);
-                $baseName = pathinfo($oldName, PATHINFO_FILENAME);
-
-                switch ($pattern) {
-                    case 'prefix':
-                        $newName = $value . $oldName;
-                        break;
-                    case 'suffix':
-                        $newName = $extension
-                            ? $baseName . $value . '.' . $extension
-                            : $oldName . $value;
-                        break;
-                    case 'replace':
-                        $newName = str_replace($value, $request->replace_with, $oldName);
-                        break;
-                    case 'custom':
-                        $newName = str_replace('{n}', $index + 1, $value);
-                        if ($extension) {
-                            $newName .= '.' . $extension;
-                        }
-                        break;
-                    default:
-                        $newName = $oldName;
-                }
-
-                $parentDir = dirname($itemPath);
-                $parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
-                $newPath = ltrim($parentDir . '/' . $newName, '/');
-
-                Http::withHeaders([
-                    'apikey' => $this->supabaseKey,
-                    'Authorization' => 'Bearer ' . $this->supabaseKey,
-                    'Content-Type' => 'application/json',
-                ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
-                    'name' => $newName,
-                    'path' => $newPath,
-                ]);
-            }
-        }
-
-        return redirect()->back()->with('success', 'Item terpilih berhasil diubah nama.');
-    }
-    public function deleteItem(Request $request, $itemPath)
-    {
+    foreach ($items as $index => $itemPath) {
         $response = Http::withHeaders([
             'apikey' => $this->supabaseKey,
             'Authorization' => 'Bearer ' . $this->supabaseKey,
-        ])->delete($this->supabaseUrl . '?path=eq.' . $itemPath);
+        ])->get($this->supabaseUrl . '?path=eq.' . $itemPath);
 
-        return $response->successful()
-            ? redirect()->back()->with('success', 'Item berhasil dihapus.')
-            : redirect()->back()->with('error', 'Gagal menghapus item.');
+        if ($response->successful() && !empty($response->json())) {
+            $item = $response->json()[0];
+            $oldName = $item['name'];
+            $extension = pathinfo($oldName, PATHINFO_EXTENSION);
+            $baseName = pathinfo($oldName, PATHINFO_FILENAME);
+
+            switch ($pattern) {
+                case 'prefix':
+                    $newName = $value . $oldName;
+                    break;
+                case 'suffix':
+                    $newName = $extension
+                        ? $baseName . $value . '.' . $extension
+                        : $oldName . $value;
+                    break;
+                case 'replace':
+                    $newName = str_replace($value, $request->replace_with, $oldName);
+                    break;
+                case 'custom':
+                    $newName = str_replace('{n}', $index + 1, $value);
+                    if ($extension) {
+                        $newName .= '.' . $extension;
+                    }
+                    break;
+                default:
+                    $newName = $oldName;
+            }
+
+            $parentDir = dirname($itemPath);
+            $parentDir = ($parentDir === '.' || $parentDir === './') ? '' : $parentDir;
+            $newPath = ltrim($parentDir . '/' . $newName, '/');
+
+            // Update di Supabase
+            Http::withHeaders([
+                'apikey' => $this->supabaseKey,
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+                'Content-Type' => 'application/json',
+            ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
+                'name' => $newName,
+                'path' => $newPath,
+            ]);
+
+            // Rename file di lokal - dipindah ke dalam loop
+            $oldLocalPath = storage_path('app/public/uploads/' . $itemPath);
+            $newLocalPath = storage_path('app/public/uploads/' . $newPath);
+
+            $newDir = dirname($newLocalPath);
+            if (!file_exists($newDir)) {
+                mkdir($newDir, 0775, true);
+            }
+
+            if (file_exists($oldLocalPath)) {
+                rename($oldLocalPath, $newLocalPath);
+            }
+        }
     }
+
+    return redirect()->back()->with('success', 'Item terpilih berhasil diubah nama.');
+}
+
+public function deleteItem(Request $request, $itemPath)
+{
+    $fullPath = storage_path('app/public/uploads/' . $itemPath);
+
+    // Hapus dari Supabase
+    $response = Http::withHeaders([
+        'apikey' => $this->supabaseKey,
+        'Authorization' => 'Bearer ' . $this->supabaseKey,
+    ])->delete($this->supabaseUrl . '?path=eq.' . $itemPath);
+
+    // Hapus file/folder lokal jika Supabase berhasil
+    if ($response->successful()) {
+        if (File::isFile($fullPath)) {
+            File::delete($fullPath);
+        } elseif (File::isDirectory($fullPath)) {
+            File::deleteDirectory($fullPath);
+        }
+
+        return redirect()->back()->with('success', 'Item berhasil dihapus.');
+    }
+
+    return redirect()->back()->with('error', 'Gagal menghapus item.');
+}
     public function renameItem(Request $request, $itemPath)
     {
         $request->validate([
@@ -246,6 +271,18 @@ if (!file_exists($storageDir)) {
                 'path' => Str::replaceFirst($itemPath, $newPath, 'path'),
             ])->where('path', 'like', $itemPath . '/%');
         }
+// Rename file di storage lokal
+$oldLocalPath = storage_path('app/public/uploads/' . $itemPath);
+$newLocalPath = storage_path('app/public/uploads/' . $newPath);
+
+$newDir = dirname($newLocalPath);
+if (!file_exists($newDir)) {
+    mkdir($newDir, 0775, true);
+}
+
+if (file_exists($oldLocalPath)) {
+    rename($oldLocalPath, $newLocalPath);
+}
 
         return $updateResponse->successful()
             ? redirect()->back()->with('success', 'Item berhasil diubah nama.')
@@ -254,30 +291,40 @@ if (!file_exists($storageDir)) {
     public function bulkDelete(Request $request)
     {
         $paths = explode("\n", $request->input('bulk-delete'));
-
+    
         $supabaseUrl = env('SUPABASE_URL');
         $serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
         $table = 'archives';
-
+    
         foreach ($paths as $path) {
             $cleanPath = trim($path);
-
+    
             if (!empty($cleanPath)) {
+                // Step 1: Hapus isi folder dari Supabase
                 Http::withHeaders([
                     'apikey' => $serviceRoleKey,
                     'Authorization' => 'Bearer ' . $serviceRoleKey,
                     'Prefer' => 'return=representation',
                 ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=like.{$cleanPath}/%");
-
-                // Step 2: Hapus folder utamanya
+    
+                // Step 2: Hapus folder/file utama dari Supabase
                 Http::withHeaders([
                     'apikey' => $serviceRoleKey,
                     'Authorization' => 'Bearer ' . $serviceRoleKey,
                     'Prefer' => 'return=representation',
                 ])->delete("{$supabaseUrl}/rest/v1/{$table}?path=eq.{$cleanPath}");
+    
+                // Step 3: Hapus dari lokal
+                $localPath = storage_path('app/public/uploads/' . $cleanPath);
+                if (File::isFile($localPath)) {
+                    File::delete($localPath);
+                } elseif (File::isDirectory($localPath)) {
+                    File::deleteDirectory($localPath);
+                }
             }
         }
-
-        return back()->with('success', 'Folder dan isinya berhasil dihapus dari Supabase (archives).');
+    
+        return back()->with('success', 'Item berhasil dihapus dari Supabase dan lokal.');
     }
+    
 }
