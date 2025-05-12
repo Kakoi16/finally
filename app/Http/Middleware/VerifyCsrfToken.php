@@ -12,7 +12,8 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
    protected $except = [
-    'template/zoho/*',
+    'template/zoho/save'
 ];
+
 
 }
