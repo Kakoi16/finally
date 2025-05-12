@@ -17,9 +17,9 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/loginKaryawan', [AuthController::class, 'loginKaryawan']);
-    
 
-    
+
+
     // Register (UI & API AJAX)
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [AuthController::class, 'registerKaryawan'])->name('register.karyawan');
@@ -69,10 +69,10 @@ Route::middleware(['admin.only'])->group(function () {
     Route::post('/folders/{path}/subfolder', [FolderController::class, 'createSubfolder'])
         ->where('path', '.*')
         ->name('folders.subfolder.create');
-        Route::post('/archive/upload/{folderPath?}', [FileController::class, 'upload'])
+    Route::post('/archive/upload/{folderPath?}', [FileController::class, 'upload'])
         ->where('folderPath', '.*')
         ->name('files.uploadToFolder');
-        Route::post('/folders/{folderPath}/upload', [FileController::class, 'upload'])->where('folderPath', '.*');    
+    Route::post('/folders/{folderPath}/upload', [FileController::class, 'upload'])->where('folderPath', '.*');
     // Folder
     Route::get('/folders/{any?}', [FolderController::class, 'showAnyFolder'])->where('any', '.*')->name('folders.showAny');
 
@@ -84,22 +84,21 @@ Route::middleware(['admin.only'])->group(function () {
 
     Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
-    
+
     Route::get('/download/folder/{folderPath}', [DownloadController::class, 'downloadFolder'])
-    ->where('folderPath', '.*')
-    ->name('download.folder');
+        ->where('folderPath', '.*')
+        ->name('download.folder');
     Route::get('/download/file/{filePath}', [DownloadController::class, 'downloadFile'])
-    ->where('filePath', '.*')
-    ->name('download.file');
-Route::get('/template/edit-online/{filePath}', [TemplateController::class, 'editOnline'])->name('template.edit.online');
-Route::post('/template/zoho/save', [TemplateController::class, 'zohoSave'])->name('template.zoho.save');
+        ->where('filePath', '.*')
+        ->name('download.file');
+    Route::get('/template/edit-online/{filePath}', [TemplateController::class, 'editOnline'])->name('template.edit.online');
+    Route::post('/template/zoho/save', [TemplateController::class, 'zohoSave'])->name('template.zoho.save');
 
 
-Route::put('/folders/{id}/rename', [FolderController::class, 'rename']);
-Route::delete('/folders/{id}', [FolderController::class, 'destroy']);
-// Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete'] )->name('folders.bulk.delete');
-Route::post('/folders/bulk-rename', [FolderController::class, 'bulkRename'])->name('folders.bulk.rename');
-
+    Route::put('/folders/{id}/rename', [FolderController::class, 'rename']);
+    Route::delete('/folders/{id}', [FolderController::class, 'destroy']);
+    // Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete'] )->name('folders.bulk.delete');
+    Route::post('/folders/bulk-rename', [FolderController::class, 'bulkRename'])->name('folders.bulk.rename');
 });
 
 
@@ -108,4 +107,3 @@ Route::get('/files', [FileController::class, 'index'])->name('files.index');
 // Google login
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
-
