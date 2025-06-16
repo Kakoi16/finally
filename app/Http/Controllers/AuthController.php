@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB; // <-- TAMBAHKAN INI
 use Illuminate\Support\Facades\Password; // <-- TAMBAHKAN INI
 use Illuminate\Validation\ValidationException;
 
+
 class AuthController extends Controller
 {
     public function showRegisterForm()
@@ -59,21 +60,117 @@ class AuthController extends Controller
                     ->subject('Verifikasi Email Anda');
         });
 
+<<<<<<< HEAD
         return response()->json([
             'success' => true,
             'message' => 'Registrasi berhasil. Silakan cek email untuk verifikasi.'
         ]);
+=======
+        if (!$createUser->successful()) {
+            return response()->json(['success' => false, 'message' => 'Gagal membuat user.'], 500);
+        }
+
+        $user   = $createUser->json()[0] ?? null;
+        $userId = $user['id'] ?? null;
+
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'User berhasil dibuat tapi ID tidak ditemukan.'], 500);
+        }
+
+        // Buat token verifikasi
+        $token     = Str::random(60);
+        $tokenData = [
+            'user_id'    => $userId,
+            'token'      => $token,
+            'created_at' => now()->toISOString(),
+        ];
+
+        $saveToken = Http::withHeaders($headers)
+            ->withHeaders(['Prefer' => 'return=representation'])
+            ->post("$supabaseUrl/rest/v1/verification_tokens", $tokenData);
+
+
+        if (!$saveToken->successful()) {
+            return response()->json(['success' => false, 'message' => 'Gagal menyimpan token verifikasi.'], 500);
+        }
+
+        // Kirim email verifikasi
+        $verificationUrl = route('verification.verify', ['token' => $token]);
+
+        try {
+            Mail::send('emails.verification', ['url' => $verificationUrl, 'email' => $request->email], function ($message) use ($request) {
+                $message->to($request->email)->subject('Verifikasi Email');
+            });
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal mengirim email: ' . $e->getMessage()], 500);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Link verifikasi telah dikirim ke email Anda.']);
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     }
 
     public function verifyEmail($token)
     {
         \Log::info('Menerima token verifikasi:', ['token' => $token]);
 
+<<<<<<< HEAD
         $verify = VerificationToken::where('token', $token)->first();
 
         if (!$verify) {
             \Log::warning('Token tidak ditemukan:', ['token' => $token]);
             return response()->json(['success' => false, 'message' => 'Token tidak valid atau telah digunakan.']);
+=======
+        // Ambil token detail
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+            'apikey'        => env('SUPABASE_API_KEY'),
+        ])->get("$supabaseUrl/rest/v1/verification_tokens?token=eq.$token");
+
+        if ($response->successful() && $response->json()) {
+            $verificationData = $response->json()[0];
+
+            // Update user email_verified_at
+            $update = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'apikey'        => env('SUPABASE_API_KEY'),
+            ])->patch("$supabaseUrl/rest/v1/" . env('SUPABASE_TABLE') . "?id=eq." . $verificationData['user_id'], [
+                'email_verified_at' => now()->toISOString(),
+            ]);
+
+            if ($update->successful()) {
+                // Ambil detail user untuk cek rolenya
+                $userResponse = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                    'apikey'        => env('SUPABASE_API_KEY'),
+                ])->get("$supabaseUrl/rest/v1/" . env('SUPABASE_TABLE') . "?id=eq." . $verificationData['user_id']);
+
+                if ($userResponse->successful() && $userResponse->json()) {
+                    $user = $userResponse->json()[0];
+
+                    // Hapus token verifikasi
+                    Http::withHeaders([
+                        'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                        'apikey'        => env('SUPABASE_API_KEY'),
+                    ])->delete("$supabaseUrl/rest/v1/verification_tokens?id=eq." . $verificationData['id']);
+
+                    if ($user['role'] === 'karyawan') {
+                        // Kirim email ucapan terima kasih
+                        try {
+                            Mail::raw("Halo {$user['name']}, terima kasih telah memverifikasi email Anda!", function ($message) use ($user) {
+                                $message->to($user['email'])->subject('Verifikasi Berhasil');
+                            });
+                        } catch (\Exception $e) {
+                            return back()->withErrors(['error' => 'Email ucapan gagal dikirim: ' . $e->getMessage()]);
+                        }
+
+                        return response()->view('auth.thankyou', ['name' => $user['name']]); // Tampilkan halaman khusus ucapan
+                    }
+
+                    // Jika admin, redirect ke login
+                    return redirect()->route('login')->with('success', 'Email berhasil diverifikasi.');
+                }
+            }
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
         }
 
         $user = $verify->user;
@@ -97,6 +194,7 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+
     public function login(Request $request)
     {
         $request->validate([
@@ -104,6 +202,7 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+<<<<<<< HEAD
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -116,6 +215,45 @@ class AuthController extends Controller
 
         // Simpan ke session
         Auth::login($user);
+=======
+        $supabaseUrl = rtrim(env('SUPABASE_URL'), '/');
+        $table       = env('SUPABASE_TABLE');
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('SUPABASE_API_KEY'),
+                'apikey'        => env('SUPABASE_API_KEY'),
+            ])->get("$supabaseUrl/rest/v1/$table?email=eq." . $request->email . "&select=*");
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menghubungi server.'], 500);
+        }
+
+        if (!$response->successful() || empty($response->json())) {
+            return response()->json(['success' => false, 'message' => 'Email tidak ditemukan.'], 404);
+        }
+
+        $user = $response->json()[0];
+
+        // Cek password
+        if (!Hash::check($request->password, $user['password'])) {
+            return response()->json(['success' => false, 'message' => 'Password salah.'], 401);
+        }
+
+        // Cek role admin
+        if ($user['role'] !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Hanya admin yang dapat login.'], 403);
+        }
+
+        // Simpan user ke session
+        session([
+            'user' => [
+                'id'    => $user['id'],
+                'name'  => $user['name'],
+                'email' => $user['email'],
+                'role'  => $user['role'], // 'admin'
+            ],
+        ]);
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
 
         return response()->json([
             'success' => true,
@@ -124,11 +262,20 @@ class AuthController extends Controller
         ]);
     }
 
+<<<<<<< HEAD
+=======
+    public function showLogin()
+    {
+        return view('auth.login'); // Pastikan file resources/views/auth/login.blade.php ada
+    }
+    
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     public function loginKaryawan(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+<<<<<<< HEAD
             'device_name' => 'sometimes|string|max:255' // Opsional
         ]);
 
@@ -294,4 +441,54 @@ class AuthController extends Controller
     
     
     
+=======
+        ]);
+    
+        // Ambil user dari Supabase berdasarkan email
+        $response = Http::withToken(env('SUPABASE_SERVICE_ROLE_KEY'))
+        ->withHeaders([
+            'apikey' => env('SUPABASE_SERVICE_ROLE_KEY'),
+        ])
+        ->get(env('SUPABASE_URL') . '/rest/v1/users', [
+            'select' => '*',
+            'email' => 'eq.' . $request->email,
+        ]);
+        if ($response->failed()) {
+            return response()->json([
+                'message' => 'Gagal koneksi ke Supabase.',
+                'error' => $response->body(),
+            ], 500);
+        }
+            
+    
+        $user = $response->json()[0] ?? null;
+    
+        if (!$user) {
+            return response()->json(['message' => 'Email tidak ditemukan.'], 401);
+        }
+    
+        // Cek password dan role
+        if (!Hash::check($request->password, $user['password'])) {
+            return response()->json(['message' => 'Password salah.'], 401);
+        }
+    
+        $role = strtolower(trim($user['role'] ?? ''));
+
+        if ($role !== 'karyawan') {
+            return response()->json(['message' => 'Hanya karyawan yang diperbolehkan login.'], 401);
+        }
+        
+    
+        // Login berhasil
+        return response()->json([
+            'message' => 'Login berhasil.',
+            'access_token' => base64_encode(Str::random(40)), // Token dummy
+            'id' => $user['id'],
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'role' => $user['role'],
+        ]);
+        
+    }
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
 }

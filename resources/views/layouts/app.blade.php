@@ -57,6 +57,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+<<<<<<< HEAD
     {{-- Script Log Activity hanya aktif di luar halaman login --}}
     @if (!Request::is('login'))
     <script>
@@ -87,6 +88,8 @@
     </script>
     @endif
 
+=======
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     @stack('scripts')
 </body>
 </html>

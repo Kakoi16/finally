@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <nav aria-label="Breadcrumb" class="py-1">
     <ol class="flex items-center space-x-1.5 text-sm font-medium text-slate-500">
         {{-- Item Home --}}
@@ -36,5 +37,18 @@
             </li>
             @endforeach
         @endif
+=======
+<!-- Breadcrumbs -->
+<nav>
+    <ol class="breadcrumb">
+        <a href="{{ route('archive') }}">Home</a>
+
+        @foreach ($breadcrumbs as $crumb)
+        <li>
+            <a href="{{ route('folders.open', ['folderName' => $crumb['path']]) }}"> {{ $crumb['name'] }}
+            </a>
+        </li>
+        @endforeach
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     </ol>
 </nav>

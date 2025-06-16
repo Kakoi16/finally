@@ -9,6 +9,7 @@ use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\FolderController;
 use App\Http\Controllers\FileController;
 use Faker\Core\File;
+<<<<<<< HEAD
 use Illuminate\Http\Request; 
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\TemplateController;
@@ -49,6 +50,11 @@ Route::name('admin.')->group(function () {
 });
 
     Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verify.email');
+=======
+use Illuminate\Http\Request;
+use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\TemplateController;
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
 
 Route::middleware('guest')->group(function () {
 
@@ -59,9 +65,19 @@ Route::post('/shared-page/share', [ArchiveShareController::class, 'share'])->nam
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/loginKaryawan', [AuthController::class, 'loginKaryawan']);
+<<<<<<< HEAD
+=======
 
 
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
+
+
+<<<<<<< HEAD
     // Register (UI & API AJAX)\
+=======
+    // Email Verificationa
+    Route::get('/verify/{token}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
 
 Route::get ('/template/editonline/{encodedPath}', [SubfolderController::class, 'editOnl'])
      ->where('encodedPath', '.*')
@@ -155,7 +171,10 @@ Route::post('/folders/create', [FileController::class, 'createFolder'])->name('f
 // routes/folders
 // routes/web.php
 Route::middleware(['admin.only'])->group(function () {
+<<<<<<< HEAD
     
+=======
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     Route::delete('/folders/bulk-delete', [FileController::class, 'bulkDelete'])->name('folders.bulk.delete');
     Route::get('/api/folder-contents', [FileController::class, 'getFolderContents']);
 
@@ -177,6 +196,25 @@ Route::middleware(['admin.only'])->group(function () {
 
     Route::get('/folders/{folderName}', [FolderController::class, 'show'])->name('folders.open');
     Route::post('/folders', [FolderController::class, 'createFolder'])->name('folders.create');
+<<<<<<< HEAD
+=======
+
+    Route::get('/download/folder/{folderPath}', [DownloadController::class, 'downloadFolder'])
+        ->where('folderPath', '.*')
+        ->name('download.folder');
+    Route::get('/download/file/{filePath}', [DownloadController::class, 'downloadFile'])
+        ->where('filePath', '.*')
+        ->name('download.file');
+    Route::get('/template/edit-online/{filePath}', [TemplateController::class, 'editOnline'])->name('template.edit.online');
+    Route::post('/template/zoho/save', [TemplateController::class, 'zohoSave'])->name('template.zoho.save');
+
+
+    Route::put('/folders/{id}/rename', [FolderController::class, 'rename']);
+    Route::delete('/folders/{id}', [FolderController::class, 'destroy']);
+    // Route::post('/folders/bulk-delete', [FolderController::class, 'bulkDelete'] )->name('folders.bulk.delete');
+    Route::post('/folders/bulk-rename', [FolderController::class, 'bulkRename'])->name('folders.bulk.rename');
+});
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
 
     Route::get('/download/folder/{folderPath}', [DownloadController::class, 'downloadFolder'])
         ->where('folderPath', '.*')

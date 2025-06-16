@@ -20,6 +20,15 @@
                 <path d="M14.348 5.652a1 1 0 0 0-1.414 0L10 8.586 7.066 5.652a1 1 0 1 0-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 1 0 1.414 1.414L10 11.414l2.934 2.934a1 1 0 0 0 1.414-1.414L11.414 10l2.934-2.934a1 1 0 0 0 0-1.414z"/>
             </svg>
         </span>
+<<<<<<< HEAD
+=======
+    </div>
+@endif
+
+    <!-- Page Title & Action -->
+    <div class="flex justify-between items-center mb-6">
+        <h2 id="page-title" class="text-lg font-semibold">Dashboard</h2>
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     </div>
 @endif
 

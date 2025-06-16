@@ -3,12 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+<<<<<<< HEAD
 use App\Http\Controllers\PengajuanSuratController; // Pastikan ini di-import
 use App\Http\Controllers\Api\UserProfileController; // Pastikan ini di-import
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Api\PengajuanController; // Pastikan ini di-import
 use App\Http\Controllers\Api\DashboardController; // Pastikan ini di-import
 use App\Http\Controllers\Api\NotificationController;
+=======
+
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +85,7 @@ Route::post('/pengajuan-surats', [PengajuanSuratController::class, 'store']);
     Route::get('/pengajuan-surats/status-by-user', [PengajuanSuratController::class, 'statusByUser']);
 
 });
+<<<<<<< HEAD
 Route::post('/pengajuan-surats/generate-pdf', [App\Http\Controllers\PengajuanSuratController::class, 'generatePdfPreview'])->middleware('auth:sanctum');
 // Route verifikasi email (biasanya diakses dari link email, tidak perlu Sanctum)
 Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->name('verification.verify.api');
@@ -90,3 +95,10 @@ Route::get('/verify-email/{token}', [AuthController::class, 'verifyEmail'])->nam
 
 // Route untuk upload attachment (jika terpisah dan butuh auth)
 // Route::post('/upload-attachment', [PengajuanSuratController::class, 'uploadAttachment'])->middleware('auth:sanctum');
+=======
+Route::post('/login/admin', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'loginViaSupabase']); // untuk karyawan
+
+Route::post('/loginKaryawan', [AuthController::class, 'loginKaryawan']);
+
+>>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
