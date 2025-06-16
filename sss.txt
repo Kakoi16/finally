@@ -3,4 +3,276 @@ ashasias
 apacinaddddasasas
 
 
-cihuyy
+cihuyyaaaasaa
+
+
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+
+class FileController extends Controller
+{
+    protected $supabaseUrl;
+    protected $supabaseKey;
+
+    public function __construct()
+    {
+        $this->supabaseUrl = env('SUPABASE_URL') . '/rest/v1/archives';
+        $this->supabaseKey = env('SUPABASE_API_KEY');
+    }
+
+    // ... (existing methods)
+
+    /**
+     * Rename a file or folder
+     */
+    public function renameItem(Request $request, $itemPath)
+    {
+        $request->validate([
+            'new_name' => 'required|string|max:255',
+        ]);
+
+        // Get the item to rename
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->get($this->supabaseUrl . '?path=eq.' . $itemPath);
+
+        if (!$response->successful() || empty($response->json())) {
+            return redirect()->back()->with('error', 'Item tidak ditemukan.');
+        }
+
+        $item = $response->json()[0];
+        $newName = $request->new_name;
+        $newPath = dirname($itemPath) . '/' . $newName;
+
+        // Update the item
+        $updateResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
+            'name' => $newName,
+            'path' => $newPath,
+        ]);
+
+        // If it's a folder, update all its contents
+        if ($item['type'] === 'folder') {
+            $updateChildrenResponse = Http::withHeaders([
+                'apikey' => $this->supabaseKey,
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+                'Content-Type' => 'application/json',
+            ])->patch($this->supabaseUrl, [
+                'path' => Str::replaceFirst($itemPath, $newPath, 'path'),
+            ])->where('path', 'like', $itemPath . '/%');
+        }
+
+        return $updateResponse->successful()
+            ? redirect()->back()->with('success', 'Item berhasil diubah nama.')
+            : redirect()->back()->with('error', 'Gagal mengubah nama item.');
+    }
+
+    /**
+     * Delete a file or empty folder
+     */
+    public function deleteItem(Request $request, $itemPath)
+    {
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=eq.' . $itemPath);
+
+        return $response->successful()
+            ? redirect()->back()->with('success', 'Item berhasil dihapus.')
+            : redirect()->back()->with('error', 'Gagal menghapus item.');
+    }
+
+    /**
+     * Bulk rename items
+     */
+    public function bulkRename(Request $request)
+    {
+        $request->validate([
+            'selected_items' => 'required|array',
+            'selected_items.*' => 'string',
+            'rename_pattern' => 'required|string',
+            'rename_value' => 'required|string',
+        ]);
+
+        $items = $request->selected_items;
+        $pattern = $request->rename_pattern;
+        $value = $request->rename_value;
+        
+        foreach ($items as $index => $itemPath) {
+            // Get the item
+            $response = Http::withHeaders([
+                'apikey' => $this->supabaseKey,
+                'Authorization' => 'Bearer ' . $this->supabaseKey,
+            ])->get($this->supabaseUrl . '?path=eq.' . $itemPath);
+
+            if ($response->successful() && !empty($response->json())) {
+                $item = $response->json()[0];
+                $oldName = $item['name'];
+                $extension = pathinfo($oldName, PATHINFO_EXTENSION);
+                $baseName = pathinfo($oldName, PATHINFO_FILENAME);
+                
+                // Apply rename pattern
+                switch ($pattern) {
+                    case 'prefix':
+                        $newName = $value . $oldName;
+                        break;
+                    case 'suffix':
+                        $newName = $extension 
+                            ? $baseName . $value . '.' . $extension
+                            : $oldName . $value;
+                        break;
+                    case 'replace':
+                        $newName = str_replace($value, $request->replace_with, $oldName);
+                        break;
+                    case 'custom':
+                        $newName = str_replace('{n}', $index + 1, $value);
+                        if ($extension) {
+                            $newName .= '.' . $extension;
+                        }
+                        break;
+                    default:
+                        $newName = $oldName;
+                }
+                
+                $newPath = dirname($itemPath) . '/' . $newName;
+                
+                // Update the item
+                Http::withHeaders([
+                    'apikey' => $this->supabaseKey,
+                    'Authorization' => 'Bearer ' . $this->supabaseKey,
+                    'Content-Type' => 'application/json',
+                ])->patch($this->supabaseUrl . '?id=eq.' . $item['id'], [
+                    'name' => $newName,
+                    'path' => $newPath,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Item terpilih berhasil diubah nama.');
+    }
+}
+
+
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+
+class FolderController extends Controller
+{
+    protected $supabaseUrl;
+    protected $supabaseKey;
+
+    public function __construct()
+    {
+        $this->supabaseUrl = env('SUPABASE_URL') . '/rest/v1/archives';
+        $this->supabaseKey = env('SUPABASE_API_KEY');
+    }
+
+    // ... (existing methods)
+
+    /**
+     * Rename a folder
+     */
+    public function renameFolder(Request $request, $folderPath)
+    {
+        $request->validate([
+            'new_name' => 'required|string|max:255',
+        ]);
+
+        // Get the folder to rename
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->get($this->supabaseUrl . '?path=eq.' . $folderPath);
+
+        if (!$response->successful() || empty($response->json())) {
+            return redirect()->back()->with('error', 'Folder tidak ditemukan.');
+        }
+
+        $folder = $response->json()[0];
+        $newPath = dirname($folderPath) . '/' . Str::slug($request->new_name);
+
+        // Update the folder
+        $updateResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl . '?id=eq.' . $folder['id'], [
+            'name' => $request->new_name,
+            'path' => $newPath,
+        ]);
+
+        // Update all files/folders inside this folder
+        $updateChildrenResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+            'Content-Type' => 'application/json',
+        ])->patch($this->supabaseUrl, [
+            'path' => Str::replaceFirst($folderPath, $newPath, 'path'),
+        ])->where('path', 'like', $folderPath . '/%');
+
+        return $updateResponse->successful()
+            ? redirect()->route('folders.showAny', ['any' => $newPath])->with('success', 'Folder berhasil diubah nama.')
+            : redirect()->back()->with('error', 'Gagal mengubah nama folder.');
+    }
+
+    /**
+     * Delete a folder and its contents
+     */
+    public function deleteFolder(Request $request, $folderPath)
+    {
+        // First delete all contents of the folder
+        $deleteContentsResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=like.' . $folderPath . '/%');
+
+        // Then delete the folder itself
+        $deleteFolderResponse = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=eq.' . $folderPath);
+
+        return $deleteFolderResponse->successful()
+            ? redirect()->route('archive')->with('success', 'Folder dan isinya berhasil dihapus.')
+            : redirect()->back()->with('error', 'Gagal menghapus folder.');
+    }
+
+    /**
+     * Bulk delete items
+     */
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'selected_items' => 'required|array',
+            'selected_items.*' => 'string',
+        ]);
+
+        $paths = $request->selected_items;
+        
+        $response = Http::withHeaders([
+            'apikey' => $this->supabaseKey,
+            'Authorization' => 'Bearer ' . $this->supabaseKey,
+        ])->delete($this->supabaseUrl . '?path=in.(' . implode(',', $paths) . ')');
+
+        return $response->successful()
+            ? redirect()->back()->with('success', 'Item terpilih berhasil dihapus.')
+            : redirect()->back()->with('error', 'Gagal menghapus item terpilih.');
+    }
+}

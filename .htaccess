@@ -1,0 +1,6 @@
+
+RewriteOptions inherit
+RewriteEngine On
+RewriteRule ^public/ - [F,L]
+RewriteCond %{HTTP_HOST} ^.*$
+RewriteRule ^/?$ "https\:\/\/simpap\.my\.id\/public\/" [R=301,L]

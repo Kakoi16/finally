@@ -19,7 +19,16 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+   'allowed_origins' => [
+    'http://localhost',
+    'http://localhost:8100',
+    'http://127.0.0.1:8100',
+    'capacitor://localhost',
+    'ionic://localhost',
+    'http://localhost:4200', // untuk Angular default
+    'https://localhost',     // penting untuk mode https dev
+],
+
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +38,6 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];

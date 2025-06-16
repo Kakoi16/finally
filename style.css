@@ -1,0 +1,83 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #2b579a;
+    text-align: center;
+}
+
+.toolbar {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background-color: #2b579a;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #1e3f6f;
+}
+
+#editor-container {
+    display: flex;
+    gap: 20px;
+}
+
+#editor {
+    flex: 1;
+    background-color: #fff;
+    height: 600px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+#collaborators-list {
+    width: 250px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+#users {
+    list-style-type: none;
+    padding: 0;
+}
+
+#users li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+#status-bar {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #e5e5e5;
+    border-radius: 5px;
+    font-size: 14px;
+}

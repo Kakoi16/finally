@@ -6,12 +6,15 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class VerifyCsrfToken extends Middleware
 {
-    /**
-     * The URIs that should be excluded from CSRF verification.
-     *
-     * @var array<int, string>
-     */
-    protected $except = [
-        //
-    ];
+  // app/Http/Middleware/VerifyCsrfToken.php
+protected $except = [
+    '/zoho-callback',
+     '/zoho-call-back',                 // Jika Anda menggunakan path literal
+        '/zoho-call-back/*',               // Jika ada parameter setelahnya
+        '/zoho/template/save-callback/*'
+    
+];
+
+
+
 }

@@ -1,6 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
+@if(session('success'))
+    <div 
+        x-data="{ show: true }" 
+        x-show="show" 
+        x-transition 
+        class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4 max-w-lg mx-auto shadow"
+        role="alert"
+    >
+        <strong class="font-bold">Berhasil!</strong>
+        <span class="block sm:inline">{{ session('success') }}</span>
+        <span 
+            class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer"
+            @click="show = false"
+        >
+            <svg class="fill-current h-6 w-6 text-green-700" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <title>Close</title>
+                <path d="M14.348 5.652a1 1 0 0 0-1.414 0L10 8.586 7.066 5.652a1 1 0 1 0-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 1 0 1.414 1.414L10 11.414l2.934 2.934a1 1 0 0 0 1.414-1.414L11.414 10l2.934-2.934a1 1 0 0 0 0-1.414z"/>
+            </svg>
+        </span>
+    </div>
+@endif
+
     <!-- Page Title & Action -->
     <div class="flex justify-between items-center mb-6">
         <h2 id="page-title" class="text-lg font-semibold">Dashboard</h2>
@@ -34,7 +56,7 @@
     @include('archive.pages.all-files')
     @include('archive.pages.shared')
     @include('archive.pages.recent')
-    @include('archive.pages.favorites')
+    @include('archive.pages.submission')
     @include('archive.pages.trash')
     @include('archive.pages.register')
 
@@ -42,6 +64,28 @@
 
 @push('scripts')
 <script>
+   
+   document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.open-folder').forEach(icon => {
+            icon.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const folderPath = this.getAttribute('data-path');
+                const container = document.getElementById('subfolders-' + folderPath);
+
+                fetch(`/folders/${folderPath}`)
+                    .then(response => response.text())
+                    .then(html => {
+                        container.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Failed to load subfolders:', error);
+                        container.innerHTML = '<p class="text-red-500">Error loading subfolders.</p>';
+                    });
+            });
+        });
+    });
+
 document.addEventListener('DOMContentLoaded', function () {
     const sidebarToggle = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
@@ -84,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
             'all-files-page': 'Semua File',
             'shared-page': 'Shared',
             'recent-page': 'Recent',
-            'favorites-page': 'Favorites',
+            'submission-page': 'submission',
             'trash-page': 'Trash',
             'register-page': 'Daftar Karyawan'
         };

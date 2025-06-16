@@ -1,0 +1,138 @@
+[15-May-2025 03:33:25 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 03:33:25 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 03:33:33 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 03:33:33 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 03:33:37 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 03:33:37 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:13:24 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:13:24 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:24:15 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:24:15 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:35:20 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:35:20 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:38:59 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:38:59 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:42:44 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:42:44 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:44 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:44 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:46 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:46 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:56 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:56 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:57 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:57 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:58 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:58 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:58 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 04:59:58 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 34
+[15-May-2025 05:01:14 UTC] PHP Warning:  require(/home/kzykmuon/public_html/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/kzykmuon/public_html/public/index.php on line 36
+[15-May-2025 05:01:14 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/kzykmuon/public_html/public/../vendor/autoload.php' (include_path='.:/opt/alt/php83/usr/share/pear:/opt/alt/php83/usr/share/php:/usr/share/pear:/usr/share/php') in /home/kzykmuon/public_html/public/index.php:36
+Stack trace:
+#0 {main}
+  thrown in /home/kzykmuon/public_html/public/index.php on line 36
+[16-May-2025 14:32:12 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\TemplateController::zohoCallback() in /home/kzykmuon/public_html/app/Http/Controllers/TemplateController.php on line 130
+[17-May-2025 07:25:15 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\TemplateController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/SubfolderController.php on line 9
+[19-May-2025 08:59:44 UTC] PHP Fatal error:  Cannot declare class Carbon\Carbon, because the name is already in use in /home/kzykmuon/public_html/app/Libraries/Carbon/Carbon.php on line 836
+[21-May-2025 14:16:42 UTC] PHP Fatal error:  Trait "App\Models\SoftDeletes" not found in /home/kzykmuon/public_html/app/Models/Archive.php on line 7
+[21-May-2025 14:17:21 UTC] PHP Fatal error:  Cannot use Illuminate\Database\Eloquent\Model as Model because the name is already in use in /home/kzykmuon/public_html/app/Models/Archive.php on line 8
+[21-May-2025 14:37:54 UTC] PHP Fatal error:  Cannot use SoftDeletes as SoftDeletes because the name is already in use in /home/kzykmuon/public_html/app/Models/Archive.php on line 7
+[26-May-2025 17:03:42 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\ArchiveController::showUsers() in /home/kzykmuon/public_html/app/Http/Controllers/ArchiveController.php on line 589
+[05-Jun-2025 20:57:07 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 20:57:16 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 20:57:20 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 20:57:28 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 20:57:32 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 20:59:14 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 20:59:53 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:00:12 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:00:29 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:01:11 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:02:13 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:05:38 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:05:58 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:10:11 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:14:53 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:15:46 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:18:34 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:18:52 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:20:07 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:24:04 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:31:50 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 159
+[05-Jun-2025 21:37:47 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 160
+[05-Jun-2025 21:37:59 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 160
+[05-Jun-2025 21:38:19 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\UserProfileController::getCurrentUserProfile() in /home/kzykmuon/public_html/app/Http/Controllers/Api/UserProfileController.php on line 160
+[06-Jun-2025 15:55:43 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\ActivityController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/ActivityController.php on line 10
+[06-Jun-2025 15:55:53 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\ActivityController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/ActivityController.php on line 10
+[06-Jun-2025 15:56:26 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\ActivityController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/ActivityController.php on line 10
+[06-Jun-2025 15:56:32 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\ActivityController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/ActivityController.php on line 10
+[06-Jun-2025 16:33:52 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\ActivityController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/ActivityController.php on line 10
+[06-Jun-2025 16:34:01 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\ActivityController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/ActivityController.php on line 10
+[06-Jun-2025 17:38:33 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 9
+[06-Jun-2025 17:38:47 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 9
+[06-Jun-2025 17:38:53 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 9
+[06-Jun-2025 17:42:35 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 9
+[06-Jun-2025 17:42:43 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 9
+[06-Jun-2025 17:43:18 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 9
+[06-Jun-2025 17:46:37 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 8
+[06-Jun-2025 17:52:16 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\Api\PengajuanSuratController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 9
+[06-Jun-2025 17:59:21 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\Api\PengajuanSuratController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 9
+[06-Jun-2025 18:00:38 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\Api\PengajuanSuratController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 9
+[06-Jun-2025 18:01:36 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\Api\PengajuanSuratController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 9
+[08-Jun-2025 06:06:18 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\Api\PengajuanSuratController as PengajuanSuratController because the name is already in use in /home/kzykmuon/public_html/routes/api.php on line 9
+[08-Jun-2025 06:10:12 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\Api\PengajuanSuratController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanSurattController.php on line 12
+[08-Jun-2025 17:43:52 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\RiwayatSuratController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/RiwayatController.php on line 10
+[08-Jun-2025 17:44:15 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\RiwayatSuratController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/RiwayatController.php on line 10
+[08-Jun-2025 17:45:44 UTC] PHP Fatal error:  Cannot declare class App\Http\Controllers\RiwayatController, because the name is already in use in /home/kzykmuon/public_html/app/Http/Controllers/Api/RiwayatController.php on line 10
+[08-Jun-2025 18:09:13 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\PengajuanController::riwayatsurat() in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 67
+[08-Jun-2025 18:17:51 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\PengajuanController::riwayatsurat() in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 51
+[08-Jun-2025 18:20:41 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\PengajuanController::riwayatsurat() in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 51
+[08-Jun-2025 18:20:55 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\PengajuanController::riwayatsurat() in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 51
+[08-Jun-2025 18:27:36 UTC] PHP Fatal error:  Cannot redeclare App\Http\Controllers\Api\PengajuanController::riwayatsurat() in /home/kzykmuon/public_html/app/Http/Controllers/Api/PengajuanController.php on line 54
