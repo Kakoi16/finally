@@ -20,46 +20,20 @@
                 <path d="M14.348 5.652a1 1 0 0 0-1.414 0L10 8.586 7.066 5.652a1 1 0 1 0-1.414 1.414L8.586 10l-2.934 2.934a1 1 0 1 0 1.414 1.414L10 11.414l2.934 2.934a1 1 0 0 0 1.414-1.414L11.414 10l2.934-2.934a1 1 0 0 0 0-1.414z"/>
             </svg>
         </span>
-<<<<<<< HEAD
-=======
     </div>
 @endif
-
-    <!-- Page Title & Action -->
-    <div class="flex justify-between items-center mb-6">
-        <h2 id="page-title" class="text-lg font-semibold">Dashboard</h2>
->>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
-    </div>
-@endif
-
-  
-  <!-- Halaman Dashboard -->
-  <div id="dashboard-page" class="page-content">
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 text-center shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-            <div class="flex flex-col items-center">
-                <div class="bg-blue-100 p-4 rounded-full mb-4">
-                    <i class="fas fa-home text-blue-600 text-4xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-3">Selamat Datang di Sistem Archive</h3>
-                <p class="text-gray-600 max-w-md mx-auto">Pilih menu di sidebar untuk melihat konten</p>
-                <div class="mt-6 flex flex-wrap justify-center gap-4">
-                    <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center">
-                        <i class="fas fa-folder-open mr-2"></i> Jelajahi File
-                    </button>
-                    <button class="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors flex items-center">
-                        <i class="fas fa-plus mr-2"></i> Buat Baru
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <a href="{{ route('archive.trash') }}"
+<a href="{{ route('archive.trash') }}"
    class="inline-flex items-center hidden px-4 py-2 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700">
     <i class="fas fa-trash mr-2"></i> Lihat Tong Sampah
 </a>
 
+  
+  <!-- Halaman Dashboard -->
+
+
     <!-- Halaman lainnya -->
     @include('archive.pages.all-files')
+@include('archive.pages.halo') {{-- Tambahkan ini --}}
 @include('archive.pages.shared')
 @include('archive.pages.create-files')
 @include('archive.pages.recent')
@@ -103,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function () {
     updateBreadcrumb(pageId);
 
     const activityName = {
-        'dashboard-page': 'Buka Beranda',
         'all-files-page': 'Buka Semua File',
+        'dashboard-page': 'Buka Beranda',
         'create-page': 'Buka untuk membuat template',
         'shared-page': 'Buka Berbagi',
         'recent-page': 'Buka Aktivitas',
@@ -151,8 +125,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!breadcrumb) return;
         let html = '<a href="#" class="hover:text-blue-600 transition-colors">Archive</a>';
         const names = {
-            'dashboard-page': 'Beranda',
             'all-files-page': 'Semua File',
+            'dashboard-page': 'Beranda',
             'create-page': 'Buka untuk membuat template',
             'shared-page': 'Berbagi',
             'recent-page': 'Terbaru',
@@ -185,8 +159,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Show default
-    showPage('dashboard-page');
-    const defaultMenu = document.querySelector('[data-page="dashboard-page"]');
+    showPage('halo-page');
+   const defaultMenu = document.querySelector('[data-page="halo-page"]');
     if (defaultMenu) {
         defaultMenu.classList.add('bg-blue-100', 'text-blue-600');
         defaultMenu.classList.remove('hover:bg-gray-100');
@@ -198,9 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const contentArea = document.querySelector('.page-content');
         
         if (width < 640) { // Small screens
-            if (contentArea) contentArea.classList.add('px-2', 'py-2');
+            if (contentArea) contentArea.classList.add('px-2', 'py-2', '-z-1111');
         } else {
-            if (contentArea) contentArea.classList.remove('px-2', 'py-2');
+            if (contentArea) contentArea.classList.remove('px-2', 'py-2', '-z-1111');
         }
     }
     

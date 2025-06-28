@@ -20,7 +20,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'departemen'
     ];
 
     protected $hidden = [
@@ -59,4 +60,10 @@ class User extends Authenticatable
 {
     return $this->hasOne(Profile::class, 'user_id', 'id');
 }
+
+public function pengajuanSurats()
+{
+    return $this->hasMany(PengajuanSurat::class, 'user_id', 'id');
+}
+
 }

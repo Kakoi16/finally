@@ -9,12 +9,8 @@ use Illuminate\Support\Str;
 
 class DownloadController extends Controller
 {
-<<<<<<< HEAD
 
 public function downloadFile($encodedPath)
-=======
-    public function downloadFile($encodedPath)
->>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
 {
     $baseFolder = storage_path("app/public/uploads");
     $decodedParam = urldecode($encodedPath);
@@ -25,7 +21,6 @@ public function downloadFile($encodedPath)
         abort(403, "Access denied.");
     }
 
-<<<<<<< HEAD
     // Cek file dalam database
     $archive = Archive::where('path', $relativePath)->first();
 if (!$archive || $archive->is_deleted) {
@@ -33,18 +28,12 @@ if (!$archive || $archive->is_deleted) {
 }
 
 
-=======
->>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     if (!File::exists($fullPath) || !File::isFile($fullPath)) {
         abort(404, "File not found.");
     }
 
     return response()->download($fullPath);
 }
-<<<<<<< HEAD
-=======
-
->>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     public function downloadFolder($encodedPath)
     {
         $baseFolder = storage_path("app/public/uploads");

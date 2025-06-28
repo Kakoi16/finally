@@ -27,25 +27,31 @@
 </head>
 <body class="bg-gray-50">
     
-    <div class="min-h-screen flex flex-col">
+   <div class="min-h-screen flex flex-col">
         
         {{-- Header --}}
+         @if (!Request::is('login'))
         <header class="bg-white header-shadow sticky top-0 z-50 transition-all duration-300">
             @include('partials.header')
         </header>
+        @endif
 
         {{-- Main --}}
         <main class="flex-grow container mx-auto px-4 py-6 flex flex-col md:flex-row">
-           {{-- Sidebar --}}
-{{-- Sidebar --}}
-@if (!Request::is('login') && !Request::is('profile') && !Request::is('profile/edit')  && !Request::is('forgot-password'))
-    @if(View::hasSection('custom-sidebar'))
-        @yield('custom-sidebar')
-    @else
-        @include('partials.sidebar')
-    @endif
-@endif
+            
+            {{-- Sidebar --}}
+            @if (!Request::is([
+    'login',
+    'profile',
+    'profile/edit',
+]))
 
+                @if(View::hasSection('custom-sidebar'))
+                    @yield('custom-sidebar')
+                @else
+                    @include('partials.sidebar')
+                @endif
+            @endif
 
             {{-- Content --}}
             <section class="w-full flex-grow bg-white rounded-lg shadow-md p-4">
@@ -57,7 +63,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<<<<<<< HEAD
     {{-- Script Log Activity hanya aktif di luar halaman login --}}
     @if (!Request::is('login'))
     <script>
@@ -88,8 +93,6 @@
     </script>
     @endif
 
-=======
->>>>>>> 365f2682a4a0ba76b17f51277b96827dd8b5a819
     @stack('scripts')
 </body>
 </html>

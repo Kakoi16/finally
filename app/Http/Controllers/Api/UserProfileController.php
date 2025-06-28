@@ -25,6 +25,7 @@ class UserProfileController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'departemen' => 'nullable|string|max:255', // <-- Tambahkan validasi untuk departemen
             'phone_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
             'bio' => 'nullable|string',
@@ -40,7 +41,7 @@ class UserProfileController extends Controller
             'email' => $request->input('email'),
         ]);
 
-        $profileData = $request->only(['phone_number', 'address', 'bio', 'tanggal_lahir']);
+        $profileData = $request->only(['phone_number', 'address', 'bio', 'tanggal_lahir', 'departemen']);
         if (empty($profileData['tanggal_lahir'])) {
             $profileData['tanggal_lahir'] = null;
         }
@@ -114,7 +115,7 @@ class UserProfileController extends Controller
         if (!$path || !Storage::disk('public')->exists($path)) {
             // Mengembalikan gambar default jika tidak ada foto atau file tidak ditemukan
             // Pastikan Anda punya gambar default di public/images/default-avatar.png
-            $defaultPath = public_path('images/default-avatar.png');
+            $defaultPath = public_path('https://s6.imgcdn.dev/YcXKdt.png');
             if (file_exists($defaultPath)) {
                 return response()->file($defaultPath);
             }

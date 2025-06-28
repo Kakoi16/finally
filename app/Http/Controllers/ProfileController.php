@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule; // Penting untuk Rule::when atau aturan kondisional lainnya jika diperlukan
+use Illuminate\Validation\Rule; 
+use App\Models\Profile;
 
 class ProfileController extends Controller
 {
@@ -56,4 +57,27 @@ class ProfileController extends Controller
     return redirect()->route('profile')->with('success', 'Profil berhasil diperbarui!');
 }
 
+ public function getProfileUrl(Request $request)
+    {
+        $user = Auth::user(); // Ambil user yang sedang login
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $profile = Profile::where('user_id', $user->id)->first();
+
+        if (!$profile) {
+            return response()->json(['error' => 'Profil tidak ditemukan'], 404);
+        }
+
+        // Misalnya URL publik berbasis user_id
+        $url = url("/profile/{$user->id}");
+
+        // Jika kamu ingin pakai NIP:
+        // $url = url("/profile/{$profile->nip}");
+
+        return response()->json([
+            'url' => $url,
+        ]);
+    }
 }

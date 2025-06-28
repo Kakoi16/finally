@@ -293,24 +293,48 @@ document.addEventListener('DOMContentLoaded', function () {
             statusCell.innerHTML = statusHtml;
 
             // Kolom Aksi
-            const actionsCell = row.insertCell();
-            actionsCell.classList.add('px-6', 'py-4', 'whitespace-nowrap', 'text-right', 'text-sm', 'font-medium');
-            
-            if (submission.status === STATUS_PROSES) {
-                const approveButton = document.createElement('button');
-                approveButton.textContent = 'Setuju';
-                approveButton.classList.add('text-indigo-600', 'hover:text-indigo-900', 'mr-3', 'approve-btn');
-                approveButton.dataset.id = submission.id;
-                actionsCell.appendChild(approveButton);
+            // ... (di dalam fungsi renderTable(submissions)) ...
 
-                const rejectButton = document.createElement('button');
-                rejectButton.textContent = 'Tolak';
-                rejectButton.classList.add('text-red-600', 'hover:text-red-900', 'reject-btn');
-                rejectButton.dataset.id = submission.id;
-                actionsCell.appendChild(rejectButton);
-            } else {
-                actionsCell.textContent = '-';
-            }
+// Kolom Aksi
+const actionsCell = row.insertCell();
+actionsCell.classList.add('px-6', 'py-4', 'whitespace-nowrap', 'text-right', 'text-sm', 'font-medium');
+
+// Logika ini yang perlu kita pastikan sudah benar dan bekerja
+if (submission.status === STATUS_PROSES) {
+    const approveButton = document.createElement('button');
+    approveButton.textContent = 'Setuju';
+    approveButton.classList.add('text-indigo-600', 'hover:text-indigo-900', 'mr-3', 'approve-btn');
+    approveButton.dataset.id = submission.id;
+    actionsCell.appendChild(approveButton);
+
+    const rejectButton = document.createElement('button');
+    rejectButton.textContent = 'Tolak';
+    rejectButton.classList.add('text-red-600', 'hover:text-red-900', 'reject-btn');
+    rejectButton.dataset.id = submission.id;
+    actionsCell.appendChild(rejectButton);
+// ... (di dalam fungsi renderTable(submissions)) ...
+
+} else if (submission.status === STATUS_DISETUJUI) {
+    const downloadApprovedButton = document.createElement('a');
+    downloadApprovedButton.textContent = 'Unduh Disetujui';
+    downloadApprovedButton.classList.add('px-3', 'py-1', 'bg-green-500', 'text-white', 'rounded', 'hover:bg-green-600', 'download-approved-btn');
+
+    // BARIS INI YANG PERLU DIPERBAIKI LAGI
+    // downloadApprovedButton.href = `{{ url('api/pengajuan-surat') }}/${submission.id}/download-pdf`; // Ini penyebab error sebelumnya
+
+    // PERBAIKANNYA: Buat URL secara dinamis di JavaScript, sesuai dengan rute BARU di api.php
+    // Gunakan 'pengajuan-surats' (plural) dan akhiran '/download'
+    downloadApprovedButton.href = `{{ url('api/pengajuan-surats') }}/${submission.id}/download`;
+
+    downloadApprovedButton.download = `surat_cuti_${submission.surat_number || submission.id}_disetujui.pdf`;
+    actionsCell.appendChild(downloadApprovedButton);
+}
+// ... (lanjutkan kode fungsi renderTable) ...
+else { // Untuk status 'Ditolak'
+    actionsCell.textContent = '-'; // Atau tampilkan tombol lain jika ada aksi untuk status 'ditolak'
+}
+
+// ... (lanjutkan kode fungsi renderTable) ...
         });
     }
 

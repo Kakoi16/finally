@@ -26,9 +26,7 @@
     </style>
 </head>
 <body class="font-sans bg-gray-50">
-    <!-- Navigasi -->
-    <nav class="bg-blue-800 text-white shadow-lg fixed w-full z-10">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+    <nav class="bg-blue-800 text-white shadow-lg fixed w-full z-20"> <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -36,16 +34,14 @@
                 <span class="text-xl font-bold">ArsipKu</span>
             </div>
             
-            <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-6">
                 <a href="#" class="hover:text-blue-200 transition duration-300 py-2">Beranda</a>
                 <a href="#" class="hover:text-blue-200 transition duration-300 py-2">Arsip</a>
                 <a href="#" class="hover:text-blue-200 transition duration-300 py-2">Kategori</a>
                 <a href="#" class="hover:text-blue-200 transition duration-300 py-2">Tentang</a>
-                <a href="/login" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition duration-300 ml-4">Login</a>
+                <a href="/public/login" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition duration-300 ml-4">Login</a>
             </div>
             
-            <!-- Mobile menu button -->
             <div class="md:hidden flex items-center">
                 <button id="mobile-menu-button" class="focus:outline-none" aria-expanded="false" aria-controls="mobile-menu">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,34 +51,31 @@
             </div>
         </div>
         
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden bg-blue-700">
             <div class="px-2 pt-2 pb-4 space-y-2 sm:px-3">
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Beranda</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Arsip</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Kategori</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-blue-600">Tentang</a>
-                <a href="/login" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 hover:bg-blue-500 text-center">Login</a>
+                <a href="/public/login" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 hover:bg-blue-500 text-center">Login</a>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section dengan Parallax -->
-    <section class="parallax h-screen flex items-center justify-center pt-16" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
-        <div class="bg-black bg-opacity-50 p-8 rounded-lg max-w-2xl mx-4">
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Sistem Arsip Digital Perusahaan</h1>
-            <p class="text-xl text-gray-200 mb-6">Kelola dokumen perusahaan Anda dengan aman dan terorganisir</p>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg font-semibold transition duration-300">Mulai Jelajahi Arsip</button>
+    <section class="parallax h-screen flex items-center justify-center pt-16 relative" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+        <div class="relative z-10 p-8 rounded-lg max-w-3xl mx-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4 drop-shadow-lg">Sistem Arsip Digital Perusahaan Modern</h1>
+            <p class="text-xl text-gray-200 mb-6 drop-shadow">Kelola dokumen perusahaan Anda dengan aman, efisien, dan terorganisir.</p>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition duration-300 transform hover:scale-105 shadow-xl">Mulai Jelajahi Arsip</button>
         </div>
     </section>
 
-    <!-- Fitur -->
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Fitur Unggulan</h2>
             
             <div class="grid md:grid-cols-3 gap-8">
-                <!-- Fitur 1 -->
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div class="text-blue-600 mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +86,6 @@
                     <p class="text-gray-600">Organisir dokumen berdasarkan kategori dan jenis untuk memudahkan pencarian.</p>
                 </div>
                 
-                <!-- Fitur 2 -->
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div class="text-blue-600 mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -104,7 +96,6 @@
                     <p class="text-gray-600">Temukan dokumen yang Anda butuhkan dalam hitungan detik dengan fitur pencarian canggih.</p>
                 </div>
                 
-                <!-- Fitur 3 -->
                 <div class="bg-gray-50 p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div class="text-blue-600 mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,20 +109,18 @@
         </div>
     </section>
 
-    <!-- Parallax Section 2 -->
-    <section class="parallax h-64 flex items-center justify-center" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
-        <div class="bg-black bg-opacity-50 p-6 rounded-lg max-w-3xl mx-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-white text-center">Lebih dari 10.000 Dokumen Telah Diarsipkan</h2>
+    <section class="parallax h-72 flex items-center justify-center relative" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div class="relative z-10 p-6 rounded-lg max-w-3xl mx-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white text-center drop-shadow-md">Lebih dari <span class="text-blue-300">10.000 Dokumen</span> Telah Diarsipkan dengan Sukses!</h2>
         </div>
     </section>
 
-    <!-- Arsip Terbaru -->
     <section class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center text-gray-800 mb-12">Arsip Terbaru</h2>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Dokumen 1 -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-transform duration-300 hover:-translate-y-1">
                     <div class="bg-blue-100 p-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -148,7 +137,6 @@
                     </div>
                 </div>
                 
-                <!-- Dokumen 2 -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-transform duration-300 hover:-translate-y-1">
                     <div class="bg-green-100 p-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,7 +153,6 @@
                     </div>
                 </div>
                 
-                <!-- Dokumen 3 -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-transform duration-300 hover:-translate-y-1">
                     <div class="bg-purple-100 p-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -189,7 +176,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white py-10">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-4 gap-8">

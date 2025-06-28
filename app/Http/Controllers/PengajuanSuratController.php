@@ -8,10 +8,13 @@ use App\Models\Archive;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use App\Models\User; // Import model User
+use App\Models\Notification; // <<< IMPORT MODEL NOTIFICATION
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule; // Import Rule untuk validasi enum
 use PDF; // Tambahkan ini
 use Carbon\Carbon;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PengajuanSuratController extends Controller
 {
@@ -38,19 +41,32 @@ class PengajuanSuratController extends Controller
             'recommender_name' => 'nullable|string|max:255',
             'recommender_position' => 'nullable|string|max:255',
             'recommendation_reason' => 'nullable|string',
+            'user_id' => 'nullable|exists:users,id',
+
             // Validasi untuk file yang diunggah pengguna (jika ada)
             'user_uploaded_attachment' => 'nullable|file|mimes:pdf|max:2048', // Max 2MB
         ];
+        Log::info('User ID saat menyimpan pengajuan:', ['user_id' => auth()->id()]);
 
         $validatedData = $request->validate($validatedRules);
 
         // Data untuk PDF sama dengan validatedData, bisa ditambahkan item lain jika perlu
-        $pdfData = $validatedData;
-        $pdfData['current_date'] = Carbon::now()->translatedFormat('d F Y'); // Contoh data tambahan untuk PDF
+$userId = auth()->id();
+$profileUrl = 'https://simpap.my.id/public/profile/' . $userId;
 
-        if ($pdfData['category'] === 'Surat Rekomendasi' && empty($pdfData['recommender_name'])) {
-            $pdfData['recommender_name'] = $validatedData['name'];
-        }
+$qrSvg = QrCode::format('svg')->size(200)->generate($profileUrl);
+$base64Qr = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
+
+// Siapkan data untuk PDF (gabungan dari validatedData dan QR Code)
+$pdfData = $validatedData;
+$pdfData['qr_code'] = $base64Qr;
+$pdfData['current_date'] = Carbon::now()->translatedFormat('d F Y');
+
+// Isi recommender_name jika kosong untuk Surat Rekomendasi
+if ($pdfData['category'] === 'Surat Rekomendasi' && empty($pdfData['recommender_name'])) {
+    $pdfData['recommender_name'] = $pdfData['name'];
+}
+
 
         // 1. Generate PDF dari data formulir
         $generatedPdfFileName = Str::slug($validatedData['surat_number'] . '_' . $validatedData['category'] . '_generated') . '.pdf';
@@ -83,6 +99,7 @@ class PengajuanSuratController extends Controller
             $dataToStorePengajuan['attachment'] = $generatedPdfFileName; // Nama file PDF yang di-generate
             $dataToStorePengajuan['attachment_path'] = $generatedPdfStoragePath; // Path PDF yang di-generate
             $dataToStorePengajuan['status'] = PengajuanSurat::STATUS_PROSES;
+            $dataToStorePengajuan['user_id'] = auth()->id(); 
 
 
             // 2. Buat entri PengajuanSurat
@@ -171,12 +188,6 @@ class PengajuanSuratController extends Controller
         return response()->json($submissions);
     }
 
-    /**
-     * Update status pengajuan surat (Disetujui/Ditolak).
-     * @param Request $request
-     * @param PengajuanSurat $pengajuanSurat // Route Model Binding
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function updateStatus(Request $request, PengajuanSurat $pengajuanSurat)
     {
         $validated = $request->validate([
@@ -187,23 +198,43 @@ class PengajuanSuratController extends Controller
             'remarks' => 'nullable|string|max:1000', // Opsional: alasan penolakan atau catatan
         ]);
 
-        // Sebaiknya hanya status 'Proses' yang bisa diubah ke 'Disetujui' atau 'Ditolak'
-        // if ($pengajuanSurat->status !== PengajuanSurat::STATUS_PROSES) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Status pengajuan ini sudah final dan tidak dapat diubah lagi.'
-        //     ], 400); // Bad Request
-        // }
-
+        $oldStatus = $pengajuanSurat->status; // Simpan status lama
         $pengajuanSurat->status = $validated['status'];
-        if (isset($validated['remarks'])) {
-            // Pastikan Anda memiliki kolom 'remarks' di tabel pengajuan_surats jika ingin menggunakan ini
-            // $pengajuanSurat->remarks = $validated['remarks'];
-        }
+        // Anda bisa menyimpan remarks jika ada kolomnya
+        // $pengajuanSurat->remarks = $validated['remarks'] ?? null;
         $pengajuanSurat->save();
 
-        // TODO: Implementasi pengiriman notifikasi email ke karyawan (opsional)
-        // Mail::to($pengajuanSurat->email)->send(new SubmissionStatusUpdatedMail($pengajuanSurat));
+        // --- TAMBAHKAN LOGIKA NOTIFIKASI DI SINI ---
+        if ($oldStatus !== PengajuanSurat::STATUS_DISETUJUI && $pengajuanSurat->status === PengajuanSurat::STATUS_DISETUJUI) {
+            // Pastikan notifikasi hanya dibuat jika status berubah menjadi DISETUJUI
+            $recipientUser = null;
+            // Coba temukan user_id dari pengajuan, jika tidak ada, gunakan email
+            if ($pengajuanSurat->user_id) {
+                $recipientUser = User::find($pengajuanSurat->user_id);
+            } elseif ($pengajuanSurat->email) {
+                $recipientUser = User::where('email', $pengajuanSurat->email)->first();
+            }
+
+            if ($recipientUser) {
+                Notification::create([
+                    'user_id' => $recipientUser->id,
+                    'type' => 'status_update',
+                    'title' => 'Surat Anda Telah Disetujui!',
+                    'message' => "Pengajuan surat \"{$pengajuanSurat->surat_number}\" ({$pengajuanSurat->category}) telah disetujui. Anda bisa mengunduhnya sekarang.",
+                    'read' => false,
+                    'data' => [
+                        'pengajuan_id' => $pengajuanSurat->id,
+                        'surat_number' => $pengajuanSurat->surat_number,
+                        'category' => $pengajuanSurat->category,
+                        'status' => $pengajuanSurat->status,
+                    ],
+                ]);
+                Log::info("Notifikasi persetujuan surat dibuat untuk user_id: {$recipientUser->id}");
+            } else {
+                Log::warning("Gagal membuat notifikasi: User penerima tidak ditemukan untuk pengajuan ID: {$pengajuanSurat->id}");
+            }
+        }
+        // --- AKHIR LOGIKA NOTIFIKASI ---
 
         return response()->json([
             'success' => true,
@@ -211,6 +242,46 @@ class PengajuanSuratController extends Controller
             'data' => $pengajuanSurat
         ]);
     }
+    
+      public function getUserNotifications(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $notifications = Notification::where('user_id', $user->id)
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(10) // Ambil 10 notifikasi terbaru
+                                    ->get();
+
+        // Tandai notifikasi yang belum dibaca sebagai sudah dibaca (opsional, tergantung alur UI)
+        // Notification::where('user_id', $user->id)->where('read', false)->update(['read' => true]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $notifications,
+            'unread_count' => Notification::where('user_id', $user->id)->where('read', false)->count(),
+        ]);
+    }
+
+    // --- TAMBAHKAN METHOD UNTUK MENANDAI NOTIFIKASI SEBAGAI DIBACA ---
+    public function markNotificationAsRead(Request $request, Notification $notification)
+    {
+        $user = $request->user();
+
+        if (!$user || $notification->user_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $notification->read = true;
+        $notification->save();
+
+        return response()->json(['success' => true, 'message' => 'Notifikasi berhasil ditandai sebagai dibaca.']);
+    }
+
+
     public function statusByUser(Request $request)
 {
     $user = $request->user();
@@ -380,28 +451,141 @@ public function reject(Request $request)
     return redirect()->back()->with('success', 'Pengajuan surat berhasil ditolak dengan alasan.');
 }
 
+    // app/Http/Controllers/PengajuanSuratController.php
+
 public function downloadGeneratedPdf(Request $request, PengajuanSurat $pengajuan)
 {
-    $user = $request->user();
+    $loggedInUser = $request->user(); // Ganti nama variabel agar lebih jelas: user yang sedang login
 
-    // Keamanan Lapis 1: Pastikan pengguna hanya bisa mengunduh surat miliknya sendiri.
-    if ($pengajuan->email !== $user->email) {
+    // Pastikan user ada dan valid
+    if (!$loggedInUser) {
+        Log::warning('Akses ditolak: Tidak ada user terautentikasi saat mencoba mengunduh surat ID ' . $pengajuan->id);
+        return response()->json(['message' => 'Tidak terautentikasi.'], 401);
+    }
+
+    // Keamanan Lapis 1: Izinkan jika user adalah pemilik surat ATAU user memiliki role 'admin'
+    // Logika ini sudah benar jika $loggedInUser->role sudah teruji
+    if ($pengajuan->email !== $loggedInUser->email && $loggedInUser->role !== 'admin') {
+        Log::warning('Akses ditolak: User ' . $loggedInUser->email . ' (Role: ' . $loggedInUser->role . ') mencoba mengunduh surat ID ' . $pengajuan->id . ' milik ' . $pengajuan->email);
         return response()->json(['message' => 'Akses ditolak. Anda tidak memiliki izin untuk mengakses file ini.'], 403);
     }
 
-    // Keamanan Lapis 2: (Sesuai permintaan Anda) Pastikan statusnya adalah 'Disetujui'.
-    if ($pengajuan->status !== PengajuanSurat::STATUS_DISETUJUI) {
-        return response()->json(['message' => 'File tidak dapat diunduh karena status surat belum disetujui.'], 403);
+    // --- Log Debugging Sangat Penting di Sini ---
+    Log::info('--- Memanggil downloadGeneratedPdf untuk Pengajuan ID: ' . $pengajuan->id . ' ---');
+    Log::info('Status Pengajuan dari DB: ' . $pengajuan->status);
+    Log::info('Nilai Konstanta STATUS_DISETUJUI: ' . PengajuanSurat::STATUS_DISETUJUI);
+    // --- Akhir Log Debugging ---
+
+    // Siapkan data untuk PDF
+    $pdfData = $pengajuan->toArray(); // Konversi model ke array untuk data dasar
+
+    // --- BARIS YANG DIPERBAIKI UNTUK QR CODE ---
+    // Gunakan user_id dari pengajuan surat, bukan dari user yang sedang login
+    $qrProfileId = $pengajuan->user_id; 
+    // Fallback jika somehow user_id di pengajuan kosong (meskipun seharusnya tidak)
+    if (empty($qrProfileId)) {
+        // Jika user_id di pengajuan kosong, fallback ke ID user yang mengajukan berdasarkan email
+        // Ini membutuhkan query ke tabel users, pastikan User model sudah diimport
+        $applicantUser = \App\Models\User::where('email', $pengajuan->email)->first();
+        $qrProfileId = $applicantUser ? $applicantUser->id : $loggedInUser->id; // Fallback terakhir ke ID admin jika tidak ditemukan
+        Log::warning('User ID untuk QR Code kosong di pengajuan ID ' . $pengajuan->id . ', menggunakan ID: ' . $qrProfileId);
+    }
+    
+    $profileUrl = 'https://simpap.my.id/public/profile/' . $qrProfileId;
+    $qrSvg = QrCode::format('svg')->size(200)->generate($profileUrl);
+    $base64Qr = 'data:image/svg+xml;base64,' . base64_encode($qrSvg);
+    $pdfData['qr_code'] = $base64Qr;
+    // --- AKHIR PERBAIKAN QR CODE ---
+
+    $pdfData['current_date'] = Carbon::now()->translatedFormat('d F Y');
+    $pdfData['status'] = $pengajuan->status; // PENTING: Lewatkan status terbaru ke view
+
+    // Tentukan view template berdasarkan kategori
+    $viewName = 'pdf_templates.default_surat';
+    switch ($pengajuan->category) {
+        case 'Permohonan Cuti': $viewName = 'pdf_templates.permohonan_cuti'; break;
+        case 'Surat Keterangan Karyawan': $viewName = 'pdf_templates.keterangan_karyawan'; break;
+        case 'Pengajuan Keluhan': $viewName = 'pdf_templates.pengajuan_keluhan'; break;
+        case 'Surat Rekomendasi': $viewName = 'pdf_templates.surat_rekomendasi'; break;
     }
 
-    // Keamanan Lapis 3: Periksa apakah file benar-benar ada di storage.
-    $filePathInStorage = 'uploads/' . $pengajuan->attachment_path;
-    if (!$pengajuan->attachment_path || !Storage::disk('public')->exists($filePathInStorage)) {
-        Log::error('File PDF tidak ditemukan untuk pengajuan ID: ' . $pengajuan->id, ['path' => $filePathInStorage]);
-        return response()->json(['message' => 'File tidak ditemukan di server.'], 404);
-    }
+    DB::beginTransaction(); // Mulai transaksi database
+    try {
+        if (!view()->exists($viewName)) {
+            throw new \Exception("Template PDF tidak ditemukan: {$viewName}");
+        }
 
-    // Jika semua pemeriksaan lolos, kirim file untuk diunduh.
-    return Storage::disk('public')->download($filePathInStorage, $pengajuan->attachment);
+        $pdf = PDF::loadView($viewName, $pdfData);
+        $pdfContent = $pdf->output(); // Dapatkan konten PDF sebagai string
+
+        // Tentukan nama file dan path untuk PDF yang telah disetujui
+        $approvedFileName = Str::slug($pengajuan->surat_number . '_' . $pengajuan->category . '_disetujui') . '.pdf';
+        $approvedStorageRelativePath = 'karyawan/' . $approvedFileName; // Path relatif untuk DB
+        $fullApprovedStoragePath = 'uploads/' . $approvedStorageRelativePath; // Path lengkap untuk Storage::put/download
+
+        // Opsi: Hapus file lama jika nama file berubah atau untuk memastikan versi terbaru
+        if ($pengajuan->attachment_path && $pengajuan->attachment_path !== $approvedStorageRelativePath) {
+            $oldFullPath = 'uploads/' . $pengajuan->attachment_path;
+            if (Storage::disk('public')->exists($oldFullPath)) {
+                Storage::disk('public')->delete($oldFullPath);
+                Log::info('File PDF lama dihapus untuk ID: ' . $pengajuan->id . ' di: ' . $oldFullPath);
+            }
+        }
+
+        // Simpan PDF yang di-generate ulang dengan stempel persetujuan
+        Storage::disk('public')->put($fullApprovedStoragePath, $pdfContent);
+        Log::info('PDF yang disetujui berhasil disimpan untuk ID: ' . $pengajuan->id . ' di: ' . $fullApprovedStoragePath);
+
+        // Update path dan nama file di model PengajuanSurat di database
+        if ($pengajuan->attachment !== $approvedFileName || $pengajuan->attachment_path !== $approvedStorageRelativePath) {
+            $pengajuan->attachment = $approvedFileName;
+            $pengajuan->attachment_path = $approvedStorageRelativePath;
+            $pengajuan->save();
+            Log::info('Model PengajuanSurat diupdate dengan path lampiran baru untuk ID: ' . $pengajuan->id);
+        } else {
+             Log::info('Path lampiran di model PengajuanSurat sudah yang terbaru untuk ID: ' . $pengajuan->id);
+        }
+        
+        DB::commit(); // Komit transaksi
+
+        // Kirim file untuk diunduh.
+        if (Storage::disk('public')->exists($fullApprovedStoragePath)) {
+            Log::info('Mengirim file PDF untuk diunduh dari: ' . $fullApprovedStoragePath);
+            return Storage::disk('public')->download($fullApprovedStoragePath, $approvedFileName);
+        } else {
+            Log::error('File PDF yang disetujui tidak ditemukan setelah disimpan. Path: ' . $fullApprovedStoragePath);
+            return response()->json(['message' => 'Terjadi kesalahan: File PDF yang disetujui tidak ditemukan di server setelah regenerasi.'], 500);
+        }
+
+    } catch (\Exception $e) {
+        DB::rollBack(); // Rollback transaksi jika ada error
+        Log::error('Error saat me-regenerate atau mengunduh PDF untuk ID ' . $pengajuan->id . ': ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString(),
+            'request_data' => $request->except('user_uploaded_attachment')
+        ]);
+        return response()->json(['message' => 'Gagal me-regenerate atau mengunduh file PDF: ' . $e->getMessage()], 500);
+    }
 }
+public function getLastNumber(Request $request)
+{
+    $category = $request->input('category'); // Ambil dari body POST
+
+    if (!$category) {
+        return response()->json([
+            'message' => 'Kategori surat tidak ditemukan.'
+        ], 400);
+    }
+
+    $lastSurat = PengajuanSurat::where('category', $category)
+        ->orderByDesc('created_at')
+        ->first();
+
+    $lastNumber = $lastSurat ? $lastSurat->surat_number : null;
+
+    return response()->json([
+        'last_number' => $lastNumber
+    ]);
+}
+
+
 }

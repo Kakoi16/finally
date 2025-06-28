@@ -15,46 +15,53 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getSuratStats()
-    {
-        try {
-            // Menggunakan Query Builder untuk efisiensi
-            $stats = DB::table('pengajuan_surats')
-                ->select(
-                    // Menghitung jumlah surat dengan status 'Proses'
-                    DB::raw("COUNT(CASE WHEN status = 'Proses' THEN 1 END) as diajukan"),
-                    // Menghitung jumlah surat dengan status 'Disetujui'
-                    DB::raw("COUNT(CASE WHEN status = 'Disetujui' THEN 1 END) as disetujui"),
-                    // Menghitung jumlah surat dengan status 'Ditolak'
-                    DB::raw("COUNT(CASE WHEN status = 'Ditolak' THEN 1 END) as ditolak")
-                )
-                ->first(); // Mengambil satu baris hasil
+   public function getSuratStats(Request $request)
+{
+    try {
+        $email = $request->query('email');
+        $name = $request->query('name');
 
-            // Jika tidak ada data sama sekali, inisialisasi dengan 0
-            if (!$stats) {
-                $stats = [
-                    'diajukan' => 0,
-                    'disetujui' => 0,
-                    'ditolak' => 0,
-                ];
-            }
-
-            // Mengirim response dalam format JSON
-            return response()->json([
-                'success' => true,
-                'message' => 'Statistik surat berhasil diambil',
-                'data' => $stats
-            ], 200);
-
-        } catch (\Exception $e) {
-            // Menangani jika terjadi error
+        if (!$email || !$name) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengambil data: ' . $e->getMessage(),
-                'data'    => null
-            ], 500);
+                'message' => 'Email dan nama harus disediakan.',
+                'data' => null
+            ], 400);
         }
+
+        $stats = DB::table('pengajuan_surats')
+            ->select(
+                DB::raw("COUNT(CASE WHEN status = 'Proses' THEN 1 END) as diajukan"),
+                DB::raw("COUNT(CASE WHEN status = 'Disetujui' THEN 1 END) as disetujui"),
+                DB::raw("COUNT(CASE WHEN status = 'Ditolak' THEN 1 END) as ditolak")
+            )
+            ->where('email', $email)
+            ->where('name', $name)
+            ->first();
+
+        if (!$stats) {
+            $stats = [
+                'diajukan' => 0,
+                'disetujui' => 0,
+                'ditolak' => 0,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Statistik surat berhasil diambil',
+            'data' => $stats
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal mengambil data: ' . $e->getMessage(),
+            'data' => null
+        ], 500);
     }
+}
+
    public function getAdminInfo()
     {
         try {
